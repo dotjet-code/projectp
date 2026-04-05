@@ -99,7 +99,7 @@ export default function ResultsPage() {
           </div>
 
           {/* Top 3 cards — display order: 2nd, 1st, 3rd */}
-          <div className="grid grid-cols-3 items-end gap-5 mb-6">
+          <div className="grid grid-cols-3 items-end gap-2 sm:gap-5 mb-6">
             {[top3[1], top3[0], top3[2]].map((member) => {
               const i = top3.indexOf(member);
               const isFirst = i === 0;
@@ -108,7 +108,7 @@ export default function ResultsPage() {
                   key={member.id}
                   href={`/members/${member.slug}`}
                   className={`group relative flex flex-col items-center rounded-2xl bg-white border border-white/80 shadow-sm hover:shadow-md transition-all ${
-                    isFirst ? "p-7 shadow-lg border-[#ffd230]/40" : "p-5"
+                    isFirst ? "p-4 sm:p-7 shadow-lg border-[#ffd230]/40" : "p-3 sm:p-5"
                   }`}
                 >
                   <span className={`absolute left-1/2 -translate-x-1/2 ${isFirst ? "-top-4 text-4xl" : "-top-3 text-3xl"}`}>
@@ -119,9 +119,9 @@ export default function ResultsPage() {
                     alt={member.name}
                     width={isFirst ? 104 : 80}
                     height={isFirst ? 104 : 80}
-                    className={`${isFirst ? "size-26" : "size-16"} mt-4 rounded-full object-cover object-top shadow-md ${top3Rings[i]}`}
+                    className={`${isFirst ? "size-16 sm:size-26" : "size-12 sm:size-16"} mt-4 rounded-full object-cover object-top shadow-md ${top3Rings[i]}`}
                   />
-                  <p className={`mt-3 font-bold text-foreground group-hover:text-primary-dark transition-colors ${isFirst ? "text-lg" : "text-base"}`}>
+                  <p className={`mt-2 sm:mt-3 font-bold text-foreground group-hover:text-primary-dark transition-colors ${isFirst ? "text-sm sm:text-lg" : "text-xs sm:text-base"}`}>
                     {member.name}
                   </p>
                   <span
@@ -147,7 +147,7 @@ export default function ResultsPage() {
             <p className="text-[11px] font-bold text-primary-dark mb-3 font-[family-name:var(--font-outfit)] tracking-wider">
               ⭐ 次期 PLAYER 確定
             </p>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {runnerUp.map((member) => (
                 <Link
                   key={member.id}
@@ -187,7 +187,7 @@ export default function ResultsPage() {
           </div>
 
           {/* 7-12位 — PIT */}
-          <div className="grid grid-cols-3 gap-3 opacity-80">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 opacity-80">
             {lower.map((member) => (
               <Link
                 key={member.id}
@@ -227,7 +227,7 @@ export default function ResultsPage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
             {predictionResults.map((pr, idx) => (
               <div key={idx} className="rounded-2xl bg-white/70 border border-white/80 p-5 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
@@ -277,7 +277,7 @@ export default function ResultsPage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
             {highlights.map((h, i) => (
               <div key={i} className="rounded-2xl bg-white/70 border border-white/80 p-5 shadow-sm">
                 <p className="text-2xl mb-2">{h.icon}</p>
@@ -297,7 +297,7 @@ export default function ResultsPage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
             {/* PLAYER */}
             <div className="rounded-2xl bg-white/70 border border-white/80 p-5 shadow-sm">
               <div className="flex items-center gap-2 mb-1">

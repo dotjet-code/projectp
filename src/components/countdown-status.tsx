@@ -5,7 +5,7 @@ import Link from "next/link";
 export function CountdownStatus() {
   return (
     <section className="mx-auto max-w-[964px] px-4 -mt-6 relative z-10">
-      <div className="grid grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
         {/* Countdown */}
         <div
           className="relative overflow-hidden rounded-2xl p-5 text-white shadow-[0_10px_15px_rgba(162,244,253,0.4)]"

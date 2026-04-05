@@ -217,11 +217,11 @@ function LiveSection() {
     <SectionCard title="ライブ作成" icon="🎤">
       <div className="rounded-2xl bg-white/70 border border-white/80 p-5 shadow-sm space-y-4">
         <div className="grid grid-cols-2 gap-4">
-          <div><Label>公演名</Label><Input defaultValue="Project P LIVE STAGE #12" /></div>
-          <div><Label>会場</Label><Input defaultValue="品川ステラボール" /></div>
+          <div><Label>公演名</Label><Input defaultValue="SPACE ODD お披露目ライブ" /></div>
+          <div><Label>会場</Label><Input defaultValue="SPACE ODD" /></div>
         </div>
         <div className="grid grid-cols-3 gap-4">
-          <div><Label>開催日</Label><Input defaultValue="2026-04-05" /></div>
+          <div><Label>開催日</Label><Input defaultValue="2026-04-29" /></div>
           <div><Label>投票開始</Label><Input defaultValue="15:00" /></div>
           <div><Label>投票終了</Label><Input defaultValue="21:00" /></div>
         </div>
@@ -249,7 +249,7 @@ function CheckinSection() {
         </div>
       </div>
       <div className="rounded-2xl border border-[rgba(206,250,254,0.5)] bg-gradient-to-r from-[rgba(236,254,255,0.8)] to-[rgba(240,249,255,0.8)] px-5 py-4 text-center">
-        <p className="text-sm font-bold text-primary-dark">🟢 チェックイン受付中 — Project P LIVE STAGE #12</p>
+        <p className="text-sm font-bold text-primary-dark">🟢 チェックイン受付中 — SPACE ODD お披露目ライブ</p>
       </div>
     </SectionCard>
   );

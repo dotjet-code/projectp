@@ -125,7 +125,7 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ s
       <main className="pb-10">
         {/* Hero */}
         <section className="relative overflow-hidden bg-gradient-to-b from-[#e0f7fa] via-[#b2ebf2] to-transparent pb-10 pt-8">
-          <div className="mx-auto flex max-w-[996px] items-start gap-10 px-4">
+          <div className="mx-auto flex flex-col sm:flex-row max-w-[996px] items-center sm:items-start gap-6 sm:gap-10 px-4">
             {/* Avatar */}
             <div className="relative shrink-0">
               <Image
@@ -133,7 +133,7 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ s
                 alt={member.name}
                 width={180}
                 height={180}
-                className="size-[180px] rounded-[24px] object-cover object-top shadow-lg"
+                className="size-[140px] sm:size-[180px] rounded-[24px] object-cover object-top shadow-lg"
               />
               {member.isLive && (
                 <div className="absolute left-3 top-3 flex items-center gap-1 rounded-full bg-[#fb2c36] px-2.5 py-1 shadow-md">
@@ -144,7 +144,7 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ s
             </div>
 
             {/* Info */}
-            <div className="flex-1 pt-2">
+            <div className="flex-1 pt-2 text-center sm:text-left">
               <span
                 className={`inline-block rounded-full px-3 py-0.5 text-[11px] font-bold tracking-wider text-white font-[family-name:var(--font-outfit)] ${
                   isPlayer
@@ -163,7 +163,7 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ s
               </p>
 
               {/* Stat bars */}
-              <div className="mt-4 flex flex-col gap-2 max-w-[380px]">
+              <div className="mt-4 flex flex-col gap-2 max-w-[380px] mx-auto sm:mx-0">
                 <StatBar label="バズ" value={detail.stats.buzz} max={maxStat} color="linear-gradient(90deg, #00d3f3, #2b7fff)" />
                 <StatBar label="同接" value={detail.stats.concurrent} max={maxStat} color="linear-gradient(90deg, #00bcff, #2b7fff)" />
                 <StatBar label="収支" value={detail.stats.revenue} max={maxStat} color="linear-gradient(90deg, #a684ff, #c27aff)" />
@@ -217,7 +217,7 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ s
 
         {/* Charts */}
         <section className="mx-auto max-w-[964px] px-4 mt-10">
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             {/* Line chart */}
             <div>
               <div className="flex items-center gap-3 mb-5">
@@ -248,7 +248,7 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ s
 
         {/* Status badges */}
         <section className="mx-auto max-w-[964px] px-4 mt-6">
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             <div className="flex items-center gap-3 rounded-2xl bg-white/70 border border-white/80 px-5 py-4 shadow-sm">
               <span className="text-xl">📡</span>
               <div>

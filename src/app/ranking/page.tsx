@@ -154,7 +154,7 @@ export default function RankingPage() {
                     />
 
                     {/* Name + Role */}
-                    <div className="w-28 shrink-0">
+                    <div className="flex-1 md:flex-none md:w-28 min-w-0">
                       <p className="text-sm font-bold text-foreground group-hover:text-primary-dark transition-colors">
                         {member.name}
                       </p>
@@ -178,8 +178,8 @@ export default function RankingPage() {
                       )}
                     </div>
 
-                    {/* Stats */}
-                    <div className="flex-1 flex items-center gap-4">
+                    {/* Stats — hidden on mobile */}
+                    <div className="hidden md:flex flex-1 items-center gap-4">
                       <div className="flex-1">
                         <p className="text-[9px] text-muted mb-0.5 font-[family-name:var(--font-outfit)]">バズ</p>
                         <StatMiniBar value={member.detail.stats.buzz} max={maxBuzz} color="#00d3f3" />
@@ -194,8 +194,8 @@ export default function RankingPage() {
                       </div>
                     </div>
 
-                    {/* Mini sparkline */}
-                    <div className="w-14 shrink-0">
+                    {/* Mini sparkline — hidden on mobile */}
+                    <div className="hidden sm:block w-14 shrink-0">
                       <MiniSparkline data={member.detail.monthlyPoints} />
                     </div>
 
@@ -232,7 +232,7 @@ export default function RankingPage() {
               </span>
               <span className="text-xs text-muted">当月の7日配信ボーナスのみ反映</span>
             </div>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {liveBonus.map((item) => {
                 const member = members.find((m) => m.slug === item.slug);
                 if (!member) return null;

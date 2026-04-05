@@ -121,25 +121,25 @@ export function Hero() {
         </div>
 
         <h1 className="text-center">
-          <span className="font-[family-name:var(--font-outfit)] text-7xl font-black tracking-tight bg-gradient-to-r from-[#00b8db] via-primary-blue to-[#8e51ff] bg-clip-text text-transparent">
+          <span className="font-[family-name:var(--font-outfit)] text-4xl sm:text-5xl md:text-7xl font-black tracking-tight bg-gradient-to-r from-[#00b8db] via-primary-blue to-[#8e51ff] bg-clip-text text-transparent">
             Project P
           </span>
         </h1>
 
-        <p className="mt-4 text-center text-xl font-medium text-[#62748e]">
+        <p className="mt-4 text-center text-base sm:text-xl font-medium text-[#62748e]">
           12人の現在地を、いま見届けよう。
         </p>
 
-        <div className="mt-8 flex items-center justify-center gap-4">
+        <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
           <Link
             href="/prediction"
-            className="flex items-center gap-1 rounded-2xl bg-gradient-to-r from-primary to-primary-blue px-8 py-3.5 text-base font-bold text-white shadow-[0_10px_15px_rgba(83,234,253,0.4)] transition hover:shadow-[0_10px_20px_rgba(83,234,253,0.5)]"
+            className="flex w-full sm:w-auto items-center justify-center gap-1 rounded-2xl bg-gradient-to-r from-primary to-primary-blue px-8 py-3.5 text-base font-bold text-white shadow-[0_10px_15px_rgba(83,234,253,0.4)] transition hover:shadow-[0_10px_20px_rgba(83,234,253,0.5)]"
           >
             🎯 予想する →
           </Link>
           <Link
             href="/results"
-            className="flex items-center gap-1 rounded-2xl bg-white/80 border border-white/80 px-8 py-3.5 text-base font-bold text-[#45556c] shadow-sm transition hover:bg-white"
+            className="flex w-full sm:w-auto items-center justify-center gap-1 rounded-2xl bg-white/80 border border-white/80 px-8 py-3.5 text-base font-bold text-[#45556c] shadow-sm transition hover:bg-white"
           >
             🏆 結果を見る →
           </Link>

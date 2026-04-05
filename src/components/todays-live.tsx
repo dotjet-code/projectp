@@ -99,7 +99,7 @@ export function TodaysLive() {
             ))}
           </div>
 
-          <div className="relative flex items-center justify-between">
+          <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               {/* Date + Badge */}
               <div className="flex items-center gap-2 mb-2">
@@ -107,7 +107,7 @@ export function TodaysLive() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <span className="font-[family-name:var(--font-outfit)] text-sm font-bold text-[#7f22fe]">
-                  2026-04-05
+                  2026-04-29
                 </span>
                 <span
                   className="rounded-full bg-gradient-to-r from-purple to-[#ed6aff] px-2.5 py-0.5 text-[11px] font-bold tracking-wider text-white shadow-[0_1px_3px_#ddd6ff] font-[family-name:var(--font-outfit)] animate-pulse"
@@ -118,12 +118,12 @@ export function TodaysLive() {
 
               {/* Title */}
               <h3 className="text-lg font-bold text-foreground">
-                Project P LIVE STAGE #12
+                SPACE ODD お披露目ライブ
               </h3>
 
               {/* Venue */}
               <p className="mt-1 text-sm text-muted">
-                品川ステラボール ｜ 投票 15:00〜21:00
+                SPACE ODD ｜ 投票 15:00〜21:00
               </p>
             </div>
 

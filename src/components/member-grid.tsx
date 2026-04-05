@@ -72,7 +72,7 @@ export function MemberGrid() {
       </p>
 
       {/* Grid Labels + Members */}
-      <div className="grid grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* PLAYER Side */}
         <div>
           <div className="mb-4 flex items-center gap-2">
@@ -80,7 +80,7 @@ export function MemberGrid() {
               1位〜6位 — ステージの主役
             </span>
           </div>
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
             {playerMembers.map((member) => (
               <MemberCard key={member.id} member={member} />
             ))}
@@ -94,7 +94,7 @@ export function MemberGrid() {
               7位以下 — 逆襲の待機組
             </span>
           </div>
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
             {pitMembers.map((member) => (
               <MemberCard key={member.id} member={member} />
             ))}

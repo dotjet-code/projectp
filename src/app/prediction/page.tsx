@@ -169,7 +169,7 @@ function PredictionSection({
         </div>
 
         {/* Candidates */}
-        <div className={`grid ${candidates.length <= 6 ? "grid-cols-6" : "grid-cols-6"} gap-1 ${isLocked ? "opacity-60 pointer-events-none" : ""}`}>
+        <div className={`grid grid-cols-3 sm:grid-cols-6 gap-1 ${isLocked ? "opacity-60 pointer-events-none" : ""}`}>
           {candidates.map((member) => (
             <MemberCandidate
               key={member.id}
@@ -257,7 +257,7 @@ export default function PredictionPage() {
 
         {/* Countdown + Entry Type */}
         <section className="mx-auto max-w-[964px] px-4">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
             {/* Countdown */}
             <div
               className="relative overflow-hidden rounded-2xl px-6 py-4 text-white shadow-[0_10px_15px_rgba(162,244,253,0.4)]"

@@ -63,7 +63,7 @@ export function Rankings() {
 
   return (
     <section className="mx-auto max-w-[964px] px-4 mt-12">
-      <div className="grid grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
         <RankingCard
           title="PLAYER 暫定TOP3"
           titleColor="#007595"

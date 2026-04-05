@@ -68,13 +68,13 @@ function MemberCard({ member }: { member: Member }) {
       </div>
 
       {/* Image */}
-      <div className="relative mx-4 mt-4 size-[195px]">
+      <div className="relative mx-3 sm:mx-4 mt-3 sm:mt-4 aspect-square">
         <Image
           src={member.avatarUrl}
           alt={member.name}
           width={195}
           height={195}
-          className="size-full rounded-[20px] object-cover object-top shadow-sm"
+          className="absolute inset-0 size-full rounded-[20px] object-cover object-top shadow-sm"
         />
         {member.isLive && (
           <div className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-[#fb2c36] px-2 py-0.5 shadow-md">
@@ -193,7 +193,7 @@ export default function MembersPage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-5">
             {members.map((member) => (
               <MemberCard key={member.id} member={member} />
             ))}
@@ -211,7 +211,7 @@ export default function MembersPage() {
 
           <div className="rounded-2xl bg-white/70 border border-white/80 p-5 shadow-sm">
             <p className="text-sm text-muted mb-3">ステージの主役として活躍するメンバー</p>
-            <div className="grid grid-cols-6">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6">
               {playerMembers.map((member) => (
                 <CompactMemberRow key={member.id} member={member} />
               ))}
@@ -230,7 +230,7 @@ export default function MembersPage() {
 
           <div className="rounded-2xl bg-white/70 border border-white/80 p-5 shadow-sm">
             <p className="text-sm text-muted mb-3">逆襲の機会を待つメンバー</p>
-            <div className="grid grid-cols-6">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6">
               {pitMembers.map((member) => (
                 <CompactMemberRow key={member.id} member={member} />
               ))}
