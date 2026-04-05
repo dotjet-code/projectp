@@ -155,7 +155,7 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ s
                 {member.role}
               </span>
 
-              <h1 className="mt-1 text-3xl font-bold text-foreground">{member.name}</h1>
+              <h1 className="mt-1 text-2xl sm:text-3xl font-bold text-foreground">{member.name}</h1>
 
               <p className="mt-1 font-[family-name:var(--font-outfit)] text-xl font-extrabold text-[#0092b8]">
                 #{member.rank}

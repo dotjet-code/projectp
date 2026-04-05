@@ -80,7 +80,7 @@ export default function RankingPage() {
         {/* Page Header */}
         <section className="relative overflow-hidden bg-gradient-to-b from-[#e0f7fa] via-[#b2ebf2]/30 to-transparent pt-10 pb-8 text-center">
           <p className="text-4xl mb-2">📊</p>
-          <h1 className="font-[family-name:var(--font-outfit)] text-3xl font-extrabold bg-gradient-to-r from-primary to-primary-blue bg-clip-text text-transparent">
+          <h1 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-primary to-primary-blue bg-clip-text text-transparent">
             総合ランキング
           </h1>
           <p className="mt-2 text-sm text-muted">
@@ -155,7 +155,7 @@ export default function RankingPage() {
 
                     {/* Name + Role */}
                     <div className="flex-1 md:flex-none md:w-28 min-w-0">
-                      <p className="text-sm font-bold text-foreground group-hover:text-primary-dark transition-colors">
+                      <p className="text-sm font-bold text-foreground group-hover:text-primary-dark transition-colors truncate">
                         {member.name}
                       </p>
                       <span
@@ -200,7 +200,7 @@ export default function RankingPage() {
                     </div>
 
                     {/* Total */}
-                    <div className="w-20 shrink-0 text-right">
+                    <div className="w-14 sm:w-20 shrink-0 text-right">
                       <span className="font-[family-name:var(--font-outfit)] text-lg font-black text-foreground">
                         {member.points.toLocaleString()}
                       </span>

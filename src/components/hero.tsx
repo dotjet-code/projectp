@@ -78,7 +78,7 @@ export function Hero() {
       </div>
 
       {/* Animated ocean waves */}
-      <div className="absolute bottom-0 left-0 right-0 h-28">
+      <div className="absolute bottom-0 left-0 right-0 h-28 overflow-hidden">
         <svg
           viewBox="0 0 1440 120" className="absolute bottom-0 h-full" preserveAspectRatio="none"
           style={{ width: "200%", animation: "wave 12s ease-in-out infinite" }}

@@ -80,7 +80,7 @@ export default function ResultsPage() {
           </div>
           <div className="relative">
             <p className="text-5xl mb-3">🏆</p>
-            <h1 className="font-[family-name:var(--font-outfit)] text-3xl font-extrabold bg-gradient-to-r from-[#f59e0b] via-[#ef4444] to-[#8b5cf6] bg-clip-text text-transparent">
+            <h1 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-[#f59e0b] via-[#ef4444] to-[#8b5cf6] bg-clip-text text-transparent">
               今月の最終結果
             </h1>
             <p className="mt-2 text-sm text-muted">
@@ -111,7 +111,7 @@ export default function ResultsPage() {
                     isFirst ? "p-4 sm:p-7 shadow-lg border-[#ffd230]/40" : "p-3 sm:p-5"
                   }`}
                 >
-                  <span className={`absolute left-1/2 -translate-x-1/2 ${isFirst ? "-top-4 text-4xl" : "-top-3 text-3xl"}`}>
+                  <span className={`absolute left-1/2 -translate-x-1/2 ${isFirst ? "-top-3 sm:-top-4 text-2xl sm:text-4xl" : "-top-2 sm:-top-3 text-xl sm:text-3xl"}`}>
                     {medals[i]}
                   </span>
                   <Image
@@ -133,9 +133,9 @@ export default function ResultsPage() {
                   >
                     {member.role}
                   </span>
-                  <p className={`mt-2 font-[family-name:var(--font-outfit)] font-black text-[#0092b8] ${isFirst ? "text-2xl" : "text-lg"}`}>
+                  <p className={`mt-2 font-[family-name:var(--font-outfit)] font-black text-[#0092b8] ${isFirst ? "text-base sm:text-2xl" : "text-sm sm:text-lg"}`}>
                     {member.points.toLocaleString()}
-                    <span className={`font-bold text-muted ml-1 ${isFirst ? "text-sm" : "text-xs"}`}>pts</span>
+                    <span className={`font-bold text-muted ml-0.5 sm:ml-1 ${isFirst ? "text-[10px] sm:text-sm" : "text-[9px] sm:text-xs"}`}>pts</span>
                   </p>
                 </Link>
               );

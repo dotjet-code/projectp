@@ -68,7 +68,7 @@ function MemberCard({ member }: { member: Member }) {
       </div>
 
       {/* Image */}
-      <div className="relative mx-3 sm:mx-4 mt-3 sm:mt-4 aspect-square">
+      <div className="relative mx-2 sm:mx-4 mt-2 sm:mt-4 aspect-square">
         <Image
           src={member.avatarUrl}
           alt={member.name}
@@ -176,7 +176,7 @@ export default function MembersPage() {
         {/* Page Header */}
         <section className="pt-10 pb-8 text-center">
           <p className="text-4xl mb-2">👥</p>
-          <h1 className="font-[family-name:var(--font-outfit)] text-3xl font-extrabold bg-gradient-to-r from-primary to-primary-blue bg-clip-text text-transparent">
+          <h1 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-primary to-primary-blue bg-clip-text text-transparent">
             メンバー紹介
           </h1>
           <p className="mt-2 text-sm text-muted">

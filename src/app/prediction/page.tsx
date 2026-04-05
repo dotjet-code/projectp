@@ -48,7 +48,7 @@ function SlotCard({ index, member, label, onRemove }: {
   onRemove: () => void;
 }) {
   return (
-    <div className={`flex flex-col items-center gap-1.5 rounded-2xl border-2 border-dashed px-6 py-4 min-w-[120px] transition-all ${
+    <div className={`flex flex-col items-center gap-1.5 rounded-2xl border-2 border-dashed px-3 sm:px-6 py-3 sm:py-4 min-w-[90px] sm:min-w-[120px] transition-all ${
       member ? "border-primary/30 bg-[#ecfeff]/50" : "border-gray-200 bg-white/50"
     }`}>
       {member ? (
@@ -156,7 +156,7 @@ function PredictionSection({
         )}
 
         {/* Slots */}
-        <div className={`flex items-center justify-center gap-4 mb-6 ${isLocked ? "opacity-60 pointer-events-none" : ""}`}>
+        <div className={`flex flex-wrap items-center justify-center gap-2 sm:gap-4 mb-6 ${isLocked ? "opacity-60 pointer-events-none" : ""}`}>
           {slotLabels.map((label, i) => (
             <SlotCard
               key={i}
@@ -247,7 +247,7 @@ export default function PredictionPage() {
         {/* Page Header */}
         <section className="pt-10 pb-6 text-center">
           <p className="text-4xl mb-2">🎯</p>
-          <h1 className="font-[family-name:var(--font-outfit)] text-3xl font-extrabold bg-gradient-to-r from-primary to-primary-blue bg-clip-text text-transparent">
+          <h1 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-primary to-primary-blue bg-clip-text text-transparent">
             今月の順位予想
           </h1>
           <p className="mt-2 text-sm text-muted max-w-md mx-auto">

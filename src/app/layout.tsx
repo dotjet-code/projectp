@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" className={`${outfit.variable} ${notoSansJP.variable} antialiased`}>
-      <body className="min-h-screen">{children}</body>
+      <body className="min-h-screen overflow-x-hidden">{children}</body>
     </html>
   );
 }
