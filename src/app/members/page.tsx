@@ -2,8 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { members, type Member } from "@/lib/data";
+import {
+  getRankedMembers,
+  type RankedMember,
+} from "@/lib/projectp/live-stats";
 
+export const dynamic = "force-dynamic";
+
+type Member = RankedMember;
 const medals = ["🥇", "🥈", "🥉"];
 
 function SnsIcons() {
@@ -76,19 +82,6 @@ function MemberCard({ member }: { member: Member }) {
           height={195}
           className="absolute inset-0 size-full rounded-[20px] object-cover object-top shadow-sm"
         />
-        {member.isLive && (
-          <div className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-[#fb2c36] px-2 py-0.5 shadow-md">
-            <span className="size-1.5 rounded-full bg-white opacity-60 animate-pulse" />
-            <span className="text-[10px] font-bold text-white">LIVE</span>
-          </div>
-        )}
-        {member.isTrending && (
-          <div className="absolute right-2 top-2 flex size-6 items-center justify-center rounded-full bg-[#d0fae5] shadow-sm">
-            <svg className="size-3.5 text-[#00d492]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-            </svg>
-          </div>
-        )}
       </div>
 
       {/* Info */}
@@ -165,7 +158,8 @@ function CompactMemberRow({ member }: { member: Member }) {
   );
 }
 
-export default function MembersPage() {
+export default async function MembersPage() {
+  const members = await getRankedMembers();
   const playerMembers = members.filter((m) => m.role === "PLAYER");
   const pitMembers = members.filter((m) => m.role === "PIT");
 

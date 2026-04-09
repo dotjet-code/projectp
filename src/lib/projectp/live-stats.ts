@@ -30,13 +30,13 @@ export type RankedMember = Member & {
 };
 
 /**
- * 全メンバーの最新実データを一括取得し、data.ts とマージして
- * 「実ポイントで並べ直した 12人」を返す。
+ * 全メンバーの最新実データを一括取得し、data.ts とマージして返す。
  *
- * 実データがあるメンバー → buzz/concurrent を差し替え、TOTAL も再計算
- * 実データが無いメンバー → data.ts のダミー値そのまま
+ * ダミー数字は一切表示しない方針。
+ * - 実データあり → buzz/concurrent は実データ、revenue は 0（手動入力未実装）
+ * - 実データなし → すべて 0
  *
- * 並び替えのベースは effectivePoints（実データ合算 or ダミーの points）。
+ * 並び替えは effectivePoints（実データ合算）降順。同点は名前順。
  * 上位6名を PLAYER、残り6名を PIT に自動振り分け。
  */
 export async function getRankedMembers(): Promise<RankedMember[]> {
@@ -53,7 +53,7 @@ export async function getRankedMembers(): Promise<RankedMember[]> {
   const nameToMemberId = new Map<string, string>();
   for (const r of connectedMembers) nameToMemberId.set(r.name, r.id);
 
-  // 2. 最新スナップショットを一括取得（連携済みメンバーぶん）
+  // 2. 最新スナップショットを一括取得
   const snapshotsByMemberId = new Map<
     string,
     { top_video_views: number | null; live_view_total: number | null }
@@ -69,7 +69,6 @@ export async function getRankedMembers(): Promise<RankedMember[]> {
       )
       .order("snapshot_date", { ascending: false });
 
-    // 各メンバーの最新 1件だけ採用
     for (const s of snaps ?? []) {
       if (!snapshotsByMemberId.has(s.member_id)) {
         snapshotsByMemberId.set(s.member_id, {
@@ -80,43 +79,37 @@ export async function getRankedMembers(): Promise<RankedMember[]> {
     }
   }
 
-  // 3. data.ts の 12人をマージ
+  // 3. data.ts の 12人をマージ（ダミーは 0 で上書き）
   const merged: RankedMember[] = dummyMembers.map((m) => {
     const memberId = nameToMemberId.get(m.name);
     const snap = memberId ? snapshotsByMemberId.get(memberId) : undefined;
 
-    if (!snap) {
-      return {
-        ...m,
-        hasLiveData: false,
-        effectivePoints: m.points,
-      };
-    }
-
-    const buzz = snap.top_video_views ?? 0;
-    const concurrent = (snap.live_view_total ?? 0) * 10;
-    // 収支はまだ実データ連携していないので、ダミー値を残す
-    const revenue = m.detail.stats.revenue;
+    const buzz = snap?.top_video_views ?? 0;
+    const concurrent = (snap?.live_view_total ?? 0) * 10;
+    const revenue = 0; // 収支は未実装
     const total = buzz + concurrent + revenue;
 
     return {
       ...m,
       detail: {
         ...m.detail,
-        stats: {
-          ...m.detail.stats,
-          buzz,
-          concurrent,
-        },
+        stats: { buzz, concurrent, revenue },
       },
-      hasLiveData: true,
+      hasLiveData: Boolean(snap),
       effectivePoints: total,
       points: total,
+      isTrending: false,
+      isLive: false,
     };
   });
 
-  // 4. effectivePoints 降順でソート → rank/role を再割り当て
-  merged.sort((a, b) => b.effectivePoints - a.effectivePoints);
+  // 4. effectivePoints 降順ソート（同点は名前順で安定化）
+  merged.sort((a, b) => {
+    if (b.effectivePoints !== a.effectivePoints) {
+      return b.effectivePoints - a.effectivePoints;
+    }
+    return a.name.localeCompare(b.name, "ja");
+  });
   return merged.map((m, i) => ({
     ...m,
     rank: i + 1,

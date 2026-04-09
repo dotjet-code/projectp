@@ -103,9 +103,6 @@ function MemberCandidate({ member, selected, onSelect }: {
         className="size-12 rounded-full object-cover object-top shadow-sm"
       />
       <p className="text-[11px] font-bold text-foreground text-center leading-tight">{member.name}</p>
-      <p className="font-[family-name:var(--font-outfit)] text-[10px] text-muted">
-        総合 {member.points.toLocaleString()}
-      </p>
     </button>
   );
 }

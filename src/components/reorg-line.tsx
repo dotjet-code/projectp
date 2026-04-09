@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { members } from "@/lib/data";
+import { getRankedMembers } from "@/lib/projectp/live-stats";
 
-export function ReorgLine() {
-  const borderMembers = members.filter((m) => m.rank >= 5 && m.rank <= 8);
+export async function ReorgLine() {
+  const ranked = await getRankedMembers();
+  const borderMembers = ranked.filter((m) => m.rank >= 5 && m.rank <= 8);
 
   return (
     <section className="mx-auto max-w-[964px] px-4 mt-12">
@@ -20,7 +21,7 @@ export function ReorgLine() {
 
       {/* Card */}
       <div className="rounded-2xl bg-white/70 border border-white/80 p-5 shadow-sm">
-        {borderMembers.map((member, i) => (
+        {borderMembers.map((member) => (
           <div key={member.id}>
             {/* Reorg line between rank 6 and 7 */}
             {member.rank === 7 && (
@@ -33,12 +34,23 @@ export function ReorgLine() {
             )}
 
             {/* Member row */}
-            <Link href={`/members/${member.slug}`} className="flex items-center gap-3 rounded-[20px] px-3 py-3 hover:bg-white/50 transition-colors group">
+            <Link
+              href={`/members/${member.slug}`}
+              className="flex items-center gap-3 rounded-[20px] px-3 py-3 hover:bg-white/50 transition-colors group"
+            >
               <span className="w-8 font-[family-name:var(--font-outfit)] text-base font-extrabold text-[#0092b8] text-center">
                 #{member.rank}
               </span>
-              <Image src={member.avatarUrl} alt={member.name} width={36} height={36} className="size-9 rounded-full object-cover object-top shadow-sm" />
-              <span className="flex-1 text-sm font-bold text-foreground group-hover:text-primary-dark transition-colors">{member.name}</span>
+              <Image
+                src={member.avatarUrl}
+                alt={member.name}
+                width={36}
+                height={36}
+                className="size-9 rounded-full object-cover object-top shadow-sm"
+              />
+              <span className="flex-1 text-sm font-bold text-foreground group-hover:text-primary-dark transition-colors">
+                {member.name}
+              </span>
               <span
                 className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold tracking-wider text-white font-[family-name:var(--font-outfit)] ${
                   member.role === "PLAYER"
