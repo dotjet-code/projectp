@@ -4,10 +4,10 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { members } from "@/lib/data";
+import { getLiveStatsByName } from "@/lib/projectp/live-stats";
 
-export function generateStaticParams() {
-  return members.map((m) => ({ slug: m.slug }));
-}
+// 実データを毎アクセス時に取得する。静的生成との併用を避けるためプリレンダリングは無効化。
+export const dynamic = "force-dynamic";
 
 function StatBar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
   const pct = Math.min((value / max) * 100, 100);
@@ -115,9 +115,28 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ s
   const member = members.find((m) => m.slug === slug);
   if (!member) notFound();
 
-  const { detail } = member;
+  // 実データ取得（失敗してもダミーにフォールバックするだけ）
+  const live = await getLiveStatsByName(member.name).catch(() => null);
+
+  // 実データがあれば stats.buzz / concurrent を差し替え
+  const detail = live
+    ? {
+        ...member.detail,
+        stats: {
+          ...member.detail.stats,
+          buzz: live.buzzPoints,
+          concurrent: live.livePoints,
+        },
+      }
+    : member.detail;
+
   const isPlayer = member.role === "PLAYER";
-  const maxStat = Math.max(detail.stats.buzz, detail.stats.concurrent, detail.stats.revenue) * 1.2;
+  const maxStat = Math.max(detail.stats.buzz, detail.stats.concurrent, detail.stats.revenue, 1) * 1.2;
+
+  // TOTAL: 実データがある場合は stats 合計、無い場合はダミーの member.points
+  const totalPoints = live
+    ? detail.stats.buzz + detail.stats.concurrent + detail.stats.revenue
+    : member.points;
 
   return (
     <>
@@ -162,6 +181,13 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ s
                 {member.isTrending && <span className="ml-1 text-sm text-[#00d492]">↑</span>}
               </p>
 
+              {live && (
+                <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 tracking-wider font-[family-name:var(--font-outfit)]">
+                  <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  LIVE DATA · {live.snapshotDate}
+                </p>
+              )}
+
               {/* Stat bars */}
               <div className="mt-4 flex flex-col gap-2 max-w-[380px] mx-auto sm:mx-0">
                 <StatBar label="バズ" value={detail.stats.buzz} max={maxStat} color="linear-gradient(90deg, #00d3f3, #2b7fff)" />
@@ -172,7 +198,7 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ s
               <div className="mt-4 flex items-baseline gap-2">
                 <span className="font-[family-name:var(--font-outfit)] text-xs font-semibold tracking-wider text-muted">TOTAL</span>
                 <span className="font-[family-name:var(--font-outfit)] text-2xl font-black italic text-foreground">
-                  {member.points.toLocaleString()}
+                  {totalPoints.toLocaleString()}
                 </span>
                 <span className="font-[family-name:var(--font-outfit)] text-sm font-bold italic text-muted">pts</span>
               </div>
