@@ -120,14 +120,22 @@ export function Hero() {
           <span className="size-2 rounded-full bg-primary opacity-90 animate-pulse" />
         </div>
 
-        <h1 className="text-center">
+        <p className="text-center text-lg sm:text-2xl font-bold text-foreground">
+          主役は、勝ち取るもの。
+        </p>
+
+        <h1 className="mt-2 text-center">
           <span className="font-[family-name:var(--font-outfit)] text-4xl sm:text-5xl md:text-7xl font-black tracking-tight bg-gradient-to-r from-[#00b8db] via-primary-blue to-[#8e51ff] bg-clip-text text-transparent">
             Project P
           </span>
         </h1>
 
-        <p className="mt-4 text-center text-base sm:text-xl font-medium text-[#62748e]">
-          12人の現在地を、いま見届けよう。
+        <p className="mt-3 text-center text-xs sm:text-sm text-[#62748e] max-w-lg mx-auto leading-relaxed">
+          Project Pは、バズ・同接・収支を競い、
+          <br />
+          上位6名が次の主役を勝ち取る競争型エンタメプロジェクトです。
+          <br className="hidden sm:block" />
+          ここは、未来のステージを懸けた戦いの場です。
         </p>
 
         <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">

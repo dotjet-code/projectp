@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export function Footer() {
   return (
     <footer className="relative mt-16 pb-10 overflow-hidden">
@@ -25,6 +27,21 @@ export function Footer() {
         <p className="text-sm text-muted text-center">
           12人の現在地を、いま見届けよう。
         </p>
+
+        {/* Links */}
+        <div className="mt-2 flex items-center gap-4">
+          <Link href="/about" className="text-xs text-muted hover:text-primary-dark transition-colors">
+            Project Pとは？
+          </Link>
+          <span className="text-xs text-gray-300">|</span>
+          <Link href="/members" className="text-xs text-muted hover:text-primary-dark transition-colors">
+            メンバー
+          </Link>
+          <span className="text-xs text-gray-300">|</span>
+          <Link href="/ranking" className="text-xs text-muted hover:text-primary-dark transition-colors">
+            ランキング
+          </Link>
+        </div>
       </div>
     </footer>
   );
