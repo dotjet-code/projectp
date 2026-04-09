@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Member } from "@/lib/data";
 import { getRankedMembers } from "@/lib/projectp/live-stats";
+import { FloatingLiveBadge } from "./live-badge";
 
 function RoleBadge({ role }: { role: Member["role"] }) {
   const isPlayer = role === "PLAYER";
@@ -18,24 +19,24 @@ function RoleBadge({ role }: { role: Member["role"] }) {
   );
 }
 
-function LiveBadge() {
-  return (
-    <span className="absolute -top-1 -right-1 flex items-center gap-0.5 rounded-full bg-gradient-to-r from-live to-live-end px-1.5 py-0.5 text-[9px] font-bold text-white shadow-sm opacity-90">
-      <span className="size-1.5 rounded-full bg-white animate-pulse" />
-      LIVE
-    </span>
-  );
-}
-
 function MemberCard({ member }: { member: Member }) {
   return (
-    <Link href={`/members/${member.slug}`} className="group flex flex-col items-center gap-2 cursor-pointer">
+    <Link
+      href={`/members/${member.slug}`}
+      className="group flex flex-col items-center gap-2 cursor-pointer"
+    >
       {/* Avatar */}
       <div className="relative">
         <div className="size-[72px] overflow-hidden rounded-full bg-gray-200 shadow-md ring-2 ring-white">
-          <Image src={member.avatarUrl} alt={member.name} width={72} height={72} className="size-full object-cover object-top" />
+          <Image
+            src={member.avatarUrl}
+            alt={member.name}
+            width={72}
+            height={72}
+            className="size-full object-cover object-top"
+          />
         </div>
-        {member.isLive && <LiveBadge />}
+        <FloatingLiveBadge slug={member.slug} />
         <RoleBadge role={member.role} />
       </div>
 
@@ -45,11 +46,10 @@ function MemberCard({ member }: { member: Member }) {
           <span className="font-[family-name:var(--font-outfit)] text-sm font-extrabold text-[#0092b8]">
             #{member.rank}
           </span>
-          {member.isTrending && (
-            <span className="text-[10px] text-[#00d492]">↑</span>
-          )}
         </div>
-        <p className="text-sm font-bold text-foreground group-hover:text-primary-dark transition-colors">{member.name}</p>
+        <p className="text-sm font-bold text-foreground group-hover:text-primary-dark transition-colors">
+          {member.name}
+        </p>
       </div>
     </Link>
   );

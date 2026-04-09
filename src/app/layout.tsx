@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit, Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
 import "./animations.css";
+import { LiveStatusProvider } from "@/lib/projectp/live-status-client";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -27,7 +28,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" className={`${outfit.variable} ${notoSansJP.variable} antialiased`}>
-      <body className="min-h-screen overflow-x-hidden">{children}</body>
+      <body className="min-h-screen overflow-x-hidden">
+        <LiveStatusProvider>{children}</LiveStatusProvider>
+      </body>
     </html>
   );
 }

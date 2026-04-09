@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getRankedMembers, type RankedMember } from "@/lib/projectp/live-stats";
+import { LiveBadge } from "./live-badge";
 
 const medals = ["🥇", "🥈", "🥉"];
 
@@ -42,7 +43,12 @@ function RankingCard({
             <span className="text-xl">{medals[i]}</span>
             <Image src={member.avatarUrl} alt={member.name} width={44} height={44} className="size-11 rounded-full object-cover object-top shadow-sm" />
             <div className="flex-1">
-              <p className="text-sm font-bold text-foreground group-hover:text-primary-dark transition-colors">{member.name}</p>
+              <div className="flex items-center gap-1.5">
+                <p className="text-sm font-bold text-foreground group-hover:text-primary-dark transition-colors">
+                  {member.name}
+                </p>
+                <LiveBadge slug={member.slug} size="xs" />
+              </div>
               <p className="font-[family-name:var(--font-outfit)] text-xs font-semibold text-muted">
                 {member.points.toLocaleString()} pts
               </p>

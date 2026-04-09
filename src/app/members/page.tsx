@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { FloatingLiveBadge } from "@/components/live-badge";
 import {
   getRankedMembers,
   type RankedMember,
@@ -82,6 +83,7 @@ function MemberCard({ member }: { member: Member }) {
           height={195}
           className="absolute inset-0 size-full rounded-[20px] object-cover object-top shadow-sm"
         />
+        <FloatingLiveBadge slug={member.slug} />
       </div>
 
       {/* Info */}

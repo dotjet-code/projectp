@@ -3,6 +3,7 @@ import { currentPeriod } from "./period";
 import {
   fetchLiveAggregate,
   fetchMyChannel,
+  fetchRecentVideoIds,
   fetchTopVideoInPeriod,
 } from "./youtube";
 
@@ -31,7 +32,7 @@ export async function takeSnapshotForMember(
 
   const period = currentPeriod();
   const channel = await fetchMyChannel(member.google_refresh_token);
-  const [topVideo, live] = await Promise.all([
+  const [topVideo, live, recentVideoIds] = await Promise.all([
     fetchTopVideoInPeriod(
       member.google_refresh_token,
       channel.uploadsPlaylistId,
@@ -41,6 +42,11 @@ export async function takeSnapshotForMember(
       member.google_refresh_token,
       channel.uploadsPlaylistId,
       period
+    ),
+    fetchRecentVideoIds(
+      member.google_refresh_token,
+      channel.uploadsPlaylistId,
+      50
     ),
   ]);
 
@@ -77,6 +83,18 @@ export async function takeSnapshotForMember(
     );
     if (error) {
       throw new Error(`upsert failed: ${error.message}`);
+    }
+
+    // ライブ判定用の直近動画IDキャッシュも更新
+    const { error: recentErr } = await supabase
+      .from("members")
+      .update({
+        recent_video_ids: recentVideoIds,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", member.id);
+    if (recentErr) {
+      throw new Error(`recent_video_ids update failed: ${recentErr.message}`);
     }
   }
 

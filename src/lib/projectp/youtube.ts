@@ -38,6 +38,30 @@ export async function fetchMyChannel(refreshToken: string): Promise<ChannelInfo>
   };
 }
 
+/**
+ * uploads プレイリストから直近 N 本の動画 ID を返す。
+ * ライブ判定の入り口として使う。
+ * コスト: playlistItems.list = 1 unit × 1リクエスト
+ */
+export async function fetchRecentVideoIds(
+  refreshToken: string,
+  uploadsPlaylistId: string,
+  limit = 50
+): Promise<string[]> {
+  const yt = getYoutubeDataClient(refreshToken);
+  const res = await yt.playlistItems.list({
+    part: ["contentDetails"],
+    playlistId: uploadsPlaylistId,
+    maxResults: Math.min(limit, 50),
+  });
+  const ids: string[] = [];
+  for (const it of res.data.items ?? []) {
+    const vid = it.contentDetails?.videoId;
+    if (vid) ids.push(vid);
+  }
+  return ids;
+}
+
 // =====================================================================
 // バズ指標
 // 期間内に投稿された動画のうち、最も再生された1本

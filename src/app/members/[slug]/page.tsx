@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { FloatingLiveBadge } from "@/components/live-badge";
+import { LiveNowIndicator } from "@/components/live-now-indicator";
 import { members } from "@/lib/data";
 import { getRankedMembers } from "@/lib/projectp/live-stats";
 
@@ -71,6 +73,7 @@ export default async function MemberDetailPage({
                 height={180}
                 className="size-[140px] sm:size-[180px] rounded-[24px] object-cover object-top shadow-lg"
               />
+              <FloatingLiveBadge slug={base.slug} />
             </div>
 
             {/* Info */}
@@ -103,6 +106,11 @@ export default async function MemberDetailPage({
                   集計準備中
                 </p>
               )}
+
+              {/* 現在ライブ配信中なら赤バッジ + 視聴者数 + 視聴リンク */}
+              <div className="mt-1">
+                <LiveNowIndicator slug={base.slug} />
+              </div>
 
               {/* Stat bars */}
               <div className="mt-4 flex flex-col gap-2 max-w-[380px] mx-auto sm:mx-0">

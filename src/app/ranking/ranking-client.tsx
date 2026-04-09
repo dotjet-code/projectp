@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { RankedMember } from "@/lib/projectp/live-stats";
+import { LiveBadge } from "@/components/live-badge";
 
 type TabType = "all" | "player" | "pit";
 
@@ -130,19 +131,22 @@ export function RankingClient({ members }: { members: RankedMember[] }) {
                   />
 
                   {/* Name + Role */}
-                  <div className="flex-1 md:flex-none md:w-28 min-w-0">
+                  <div className="flex-1 md:flex-none md:w-32 min-w-0">
                     <p className="text-sm font-bold text-foreground group-hover:text-primary-dark transition-colors truncate">
                       {member.name}
                     </p>
-                    <span
-                      className={`inline-block mt-0.5 rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider text-white font-[family-name:var(--font-outfit)] ${
-                        member.role === "PLAYER"
-                          ? "bg-gradient-to-r from-player to-player-end"
-                          : "bg-gradient-to-r from-pit to-pit-end"
-                      }`}
-                    >
-                      {member.role}
-                    </span>
+                    <div className="mt-0.5 flex items-center gap-1">
+                      <span
+                        className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider text-white font-[family-name:var(--font-outfit)] ${
+                          member.role === "PLAYER"
+                            ? "bg-gradient-to-r from-player to-player-end"
+                            : "bg-gradient-to-r from-pit to-pit-end"
+                        }`}
+                      >
+                        {member.role}
+                      </span>
+                      <LiveBadge slug={member.slug} size="xs" />
+                    </div>
                   </div>
 
                   {/* LIVE DATA indicator */}
