@@ -158,7 +158,7 @@ function PointsSection() {
             <tr className="border-b border-gray-100 text-left">
               <th className="px-4 py-3 text-xs font-bold text-muted">メンバー</th>
               <th className="px-4 py-3 text-xs font-bold text-muted">バズ</th>
-              <th className="px-4 py-3 text-xs font-bold text-muted">同接</th>
+              <th className="px-4 py-3 text-xs font-bold text-muted">配信</th>
               <th className="px-4 py-3 text-xs font-bold text-muted">収支</th>
             </tr>
           </thead>

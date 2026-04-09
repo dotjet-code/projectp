@@ -170,7 +170,7 @@ export default async function AdminStatsPage() {
 
                   <div className="rounded-xl border border-cyan-200 bg-cyan-50 p-4">
                     <p className="text-xs font-bold text-cyan-700">
-                      📡 同接（ライブ視聴）
+                      📡 配信（ライブ視聴）
                     </p>
                     <p className="mt-1 text-2xl font-extrabold text-cyan-900">
                       {formatNumber(r.livePoints)}

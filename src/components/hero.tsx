@@ -131,7 +131,7 @@ export function Hero() {
         </h1>
 
         <p className="mt-3 text-center text-xs sm:text-sm text-[#62748e] max-w-lg mx-auto leading-relaxed">
-          Project Pは、バズ・同接・収支を競い、
+          Project Pは、バズ・配信・収支を競い、
           <br />
           上位6名が次の主役を勝ち取る競争型エンタメプロジェクトです。
           <br className="hidden sm:block" />

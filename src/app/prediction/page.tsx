@@ -295,7 +295,7 @@ export default function PredictionPage() {
               <div>
                 <p className="text-sm font-bold text-primary-dark">予想と翌月再編成の関係</p>
                 <p className="text-xs text-muted mt-1">
-                  月間3指標（バズ・同接・収支）で土台を作り、月末特番で最終確定。最終順位が翌月のPLAYER/PIT編成を決定します！
+                  月間3指標（バズ・配信・収支）で土台を作り、月末特番で最終確定。最終順位が翌月のPLAYER/PIT編成を決定します！
                 </p>
               </div>
             </div>

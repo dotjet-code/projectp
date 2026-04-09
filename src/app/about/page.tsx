@@ -82,7 +82,7 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {[
                 { label: "バズ", icon: "🔥", desc: "SNSでの話題性、動画再生数、トレンド力。注目を集めた者が勝つ。", color: "from-primary/10 to-primary-cyan/10", border: "border-primary/15" },
-                { label: "同接", icon: "📡", desc: "配信の同時接続数。リアルタイムでファンを動かせるかが問われる。", color: "from-primary-blue/10 to-[#5b9bff]/10", border: "border-primary-blue/15" },
+                { label: "配信", icon: "📡", desc: "配信の同時接続数。リアルタイムでファンを動かせるかが問われる。", color: "from-primary-blue/10 to-[#5b9bff]/10", border: "border-primary-blue/15" },
                 { label: "収支", icon: "💰", desc: "グッズ・投げ銭・チケットなどの経済指標。応援が数字になる。", color: "from-purple/10 to-[#c27aff]/10", border: "border-purple/15" },
               ].map((stat) => (
                 <div key={stat.label} className={`rounded-2xl border bg-gradient-to-br ${stat.color} ${stat.border} p-5`}>

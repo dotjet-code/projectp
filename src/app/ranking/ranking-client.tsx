@@ -83,7 +83,7 @@ export function RankingClient({ members }: { members: RankedMember[] }) {
           総合ランキング
         </h1>
         <p className="mt-2 text-sm text-muted">
-          2026年4月クール — バズ / 同接 / 収支 の3指標合算
+          2026年4月クール — バズ / 配信 / 収支 の3指標合算
         </p>
       </section>
 
@@ -184,7 +184,7 @@ export function RankingClient({ members }: { members: RankedMember[] }) {
                       <StatMiniBar value={member.detail.stats.buzz} max={maxBuzz} color="#00d3f3" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-[9px] text-muted mb-0.5 font-[family-name:var(--font-outfit)]">同接</p>
+                      <p className="text-[9px] text-muted mb-0.5 font-[family-name:var(--font-outfit)]">配信</p>
                       <StatMiniBar value={member.detail.stats.concurrent} max={maxConc} color="#2b7fff" />
                     </div>
                     <div className="flex-1">
@@ -260,7 +260,7 @@ export function RankingClient({ members }: { members: RankedMember[] }) {
         <div className="flex items-center gap-3 mb-5">
           <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-primary to-primary-blue" />
           <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-primary-dark tracking-tight">
-            📊 バズ / 同接 / 収支
+            📊 バズ / 配信 / 収支
           </h2>
         </div>
 
@@ -307,7 +307,7 @@ export function RankingClient({ members }: { members: RankedMember[] }) {
             </div>
             <div className="flex items-center gap-1.5">
               <div className="size-2.5 rounded-full bg-primary-blue" />
-              <span className="text-[11px] text-muted">同接</span>
+              <span className="text-[11px] text-muted">配信</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="size-2.5 rounded-full bg-purple" />

@@ -65,7 +65,7 @@ function SimpleLineChart({ data }: { data: number[] }) {
 }
 
 function RadarChart({ stats }: { stats: { buzz: number; concurrent: number; revenue: number } }) {
-  const labels = ["バズ", "支持率", "同接", "収支", "成長"];
+  const labels = ["バズ", "支持率", "配信", "収支", "成長"];
   const maxVal = 1000;
   const values = [stats.buzz, 400, stats.concurrent, stats.revenue, 500];
   const cx = 50, cy = 50, r = 35;
@@ -191,7 +191,7 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ s
               {/* Stat bars */}
               <div className="mt-4 flex flex-col gap-2 max-w-[380px] mx-auto sm:mx-0">
                 <StatBar label="バズ" value={detail.stats.buzz} max={maxStat} color="linear-gradient(90deg, #00d3f3, #2b7fff)" />
-                <StatBar label="同接" value={detail.stats.concurrent} max={maxStat} color="linear-gradient(90deg, #00bcff, #2b7fff)" />
+                <StatBar label="配信" value={detail.stats.concurrent} max={maxStat} color="linear-gradient(90deg, #00bcff, #2b7fff)" />
                 <StatBar label="収支" value={detail.stats.revenue} max={maxStat} color="linear-gradient(90deg, #a684ff, #c27aff)" />
               </div>
 

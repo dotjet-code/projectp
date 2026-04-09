@@ -4,7 +4,7 @@ const cards = [
   {
     icon: "📊",
     title: "何を競う？",
-    desc: "バズ・同接・収支の3つのポイントを積み上げて競います。",
+    desc: "バズ・配信・収支の3つのポイントを積み上げて競います。",
     color: "from-primary/10 to-primary-blue/10",
     border: "border-primary/15",
   },

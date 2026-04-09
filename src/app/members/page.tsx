@@ -243,7 +243,7 @@ export default function MembersPage() {
           <div className="rounded-2xl border border-[rgba(206,250,254,0.5)] bg-gradient-to-r from-[rgba(236,254,255,0.8)] to-[rgba(240,249,255,0.8)] px-5 py-5 text-center">
             <p className="text-2xl mb-2">🔄</p>
             <p className="text-sm font-bold text-primary-dark">
-              月間3指標（バズ・同接・収支）と月末特番の結果により、毎月 PLAYER / PIT が再編成されます
+              月間3指標（バズ・配信・収支）と月末特番の結果により、毎月 PLAYER / PIT が再編成されます
             </p>
           </div>
         </section>
