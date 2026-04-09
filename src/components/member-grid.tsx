@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { members, type Member } from "@/lib/data";
+import type { Member } from "@/lib/data";
+import { getRankedMembers } from "@/lib/projectp/live-stats";
 
 function RoleBadge({ role }: { role: Member["role"] }) {
   const isPlayer = role === "PLAYER";
@@ -54,9 +55,10 @@ function MemberCard({ member }: { member: Member }) {
   );
 }
 
-export function MemberGrid() {
-  const playerMembers = members.filter((m) => m.role === "PLAYER");
-  const pitMembers = members.filter((m) => m.role === "PIT");
+export async function MemberGrid() {
+  const ranked = await getRankedMembers();
+  const playerMembers = ranked.filter((m) => m.role === "PLAYER");
+  const pitMembers = ranked.filter((m) => m.role === "PIT");
 
   return (
     <section className="mx-auto max-w-[964px] px-4 mt-12">

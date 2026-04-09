@@ -8,6 +8,9 @@ import { TrendingLive } from "@/components/trending-live";
 import { TodaysLive } from "@/components/todays-live";
 import { Footer } from "@/components/footer";
 
+// 実データ反映のためプリレンダリング無効化
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <>

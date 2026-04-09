@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { members } from "@/lib/data";
+import { getRankedMembers, type RankedMember } from "@/lib/projectp/live-stats";
 
 const medals = ["🥇", "🥈", "🥉"];
 
@@ -17,7 +17,7 @@ function RankingCard({
   accentFrom: string;
   accentTo: string;
   borderColor: string;
-  items: typeof members;
+  items: RankedMember[];
 }) {
   return (
     <div className="flex flex-col gap-5">
@@ -57,9 +57,10 @@ function RankingCard({
   );
 }
 
-export function Rankings() {
-  const playerTop3 = members.filter((m) => m.role === "PLAYER").slice(0, 3);
-  const pitTop3 = members.filter((m) => m.role === "PIT").slice(0, 3);
+export async function Rankings() {
+  const ranked = await getRankedMembers();
+  const playerTop3 = ranked.filter((m) => m.role === "PLAYER").slice(0, 3);
+  const pitTop3 = ranked.filter((m) => m.role === "PIT").slice(0, 3);
 
   return (
     <section className="mx-auto max-w-[964px] px-4 mt-12">
