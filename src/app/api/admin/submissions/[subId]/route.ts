@@ -1,16 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logAudit } from "@/lib/projectp/audit";
+import { getActiveStage } from "@/lib/projectp/stage";
 
 /**
  * PATCH /api/admin/submissions/:subId
  * body: { status: "approved" | "rejected" | "revoked" }
  *
- * approved:  balance_entries に profit を加算
- * rejected:  記録のみ
- * revoked:   承認/却下を取り消して pending に戻す。
- *            元が approved だった場合は balance_entries から profit を減算。
+ * period_id が null の提出は、承認時に active Stage を自動補完する。
  */
+
+async function resolvePeriodId(sub: { period_id: unknown }): Promise<string | null> {
+  if (sub.period_id) return sub.period_id as string;
+  const stage = await getActiveStage().catch(() => null);
+  return stage?.id ?? null;
+}
+
 export async function PATCH(
   req: NextRequest,
   ctx: { params: Promise<{ subId: string }> }
@@ -39,6 +44,9 @@ export async function PATCH(
   const currentStatus = sub.status as string;
   const newStatus = body.status as string;
 
+  // period_id を解決（null なら active Stage で補完）
+  const periodId = await resolvePeriodId(sub);
+
   // 取り消し: approved or rejected → pending に戻す
   if (newStatus === "revoked") {
     if (currentStatus === "pending") {
@@ -46,9 +54,8 @@ export async function PATCH(
     }
 
     // approved だった場合、balance_entries から profit を減算
-    if (currentStatus === "approved" && sub.period_id) {
+    if (currentStatus === "approved" && periodId) {
       const memberId = sub.member_id as string;
-      const periodId = sub.period_id as string;
       const profit = Number(sub.profit);
 
       const { data: existing } = await supabase
@@ -98,22 +105,27 @@ export async function PATCH(
 
   const now = new Date().toISOString();
 
+  // period_id が null だった場合、この機会に補完して保存
+  const updatePatch: Record<string, unknown> = {
+    status: newStatus,
+    reviewed_at: now,
+    review_note: body.reviewNote ?? null,
+  };
+  if (!sub.period_id && periodId) {
+    updatePatch.period_id = periodId;
+  }
+
   const { error: upErr } = await supabase
     .from("balance_submissions")
-    .update({
-      status: newStatus,
-      reviewed_at: now,
-      review_note: body.reviewNote ?? null,
-    })
+    .update(updatePatch)
     .eq("id", subId);
   if (upErr) {
     return NextResponse.json({ error: upErr.message }, { status: 500 });
   }
 
   // 承認時: balance_entries に加算
-  if (newStatus === "approved" && sub.period_id) {
+  if (newStatus === "approved" && periodId) {
     const memberId = sub.member_id as string;
-    const periodId = sub.period_id as string;
     const profit = Number(sub.profit);
 
     const { data: existing } = await supabase

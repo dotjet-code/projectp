@@ -29,7 +29,7 @@ export async function PATCH(
   // 提出を取得
   const { data: sub, error: fetchErr } = await supabase
     .from("balance_submissions")
-    .select("id, member_id, profit, status")
+    .select("id, member_id, period_id, profit, status")
     .eq("id", subId)
     .maybeSingle();
   if (fetchErr || !sub) {
@@ -44,14 +44,19 @@ export async function PATCH(
 
   const now = new Date().toISOString();
 
-  // ステータス更新
+  // ステータス更新（period_id が null なら stageId で補完）
+  const updatePatch: Record<string, unknown> = {
+    status: body.status,
+    reviewed_at: now,
+    review_note: body.reviewNote ?? null,
+  };
+  if (!sub.period_id) {
+    updatePatch.period_id = stageId;
+  }
+
   const { error: upErr } = await supabase
     .from("balance_submissions")
-    .update({
-      status: body.status,
-      reviewed_at: now,
-      review_note: body.reviewNote ?? null,
-    })
+    .update(updatePatch)
     .eq("id", subId);
   if (upErr) {
     return NextResponse.json({ error: upErr.message }, { status: 500 });
