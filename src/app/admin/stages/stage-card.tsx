@@ -219,6 +219,12 @@ export function StageCard({
             >
               💖 投票
             </Link>
+            <Link
+              href={`/admin/stages/${stage.id}/submissions`}
+              className="rounded-full border border-amber-300 px-3 py-1.5 text-xs font-bold text-amber-700 hover:bg-amber-50"
+            >
+              📸 提出審査
+            </Link>
             <a
               href={`/api/admin/stages/${stage.id}/export-csv`}
               className="rounded-full border border-green-300 px-3 py-1.5 text-xs font-bold text-green-700 hover:bg-green-50"
