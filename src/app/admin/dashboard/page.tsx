@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { listStages, type Stage } from "@/lib/projectp/stage";
+import { listRecentAuditLogs } from "@/lib/projectp/audit";
 import { AdminNav } from "../admin-nav";
 
 export const dynamic = "force-dynamic";
@@ -79,6 +80,7 @@ export default async function AdminDashboardPage() {
   const { stages, members } = await buildDashboardData();
   const closedStages = stages.filter((s) => s.status === "closed");
   const activeStage = stages.find((s) => s.status === "active") ?? null;
+  const auditLogs = await listRecentAuditLogs(15).catch(() => []);
 
   // 連携状況
   const connectedCount = members.filter((m) => m.connected).length;
@@ -235,6 +237,39 @@ export default async function AdminDashboardPage() {
           ))}
         </div>
       </section>
+
+      {/* Audit log */}
+      {auditLogs.length > 0 && (
+        <section className="mt-10">
+          <h2 className="text-lg font-semibold mb-3">操作ログ（直近15件）</h2>
+          <ul className="divide-y divide-gray-200 rounded-2xl border border-gray-200 overflow-hidden bg-white">
+            {auditLogs.map((log) => (
+              <li key={log.id} className="px-4 py-2.5 text-xs">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[9px] font-bold text-gray-700 tracking-wider">
+                        {log.action}
+                      </span>
+                      {log.actor && (
+                        <span className="text-[10px] text-muted">{log.actor}</span>
+                      )}
+                    </div>
+                    {log.detail && (
+                      <p className="mt-0.5 text-[11px] text-foreground truncate">
+                        {log.detail}
+                      </p>
+                    )}
+                  </div>
+                  <span className="text-[10px] text-muted shrink-0">
+                    {new Date(log.createdAt).toLocaleString("ja-JP")}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </main>
   );
 }

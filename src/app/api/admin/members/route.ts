@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { logAudit } from "@/lib/projectp/audit";
 
 /**
  * 開発用：メンバー一覧取得 / 作成 / 更新エンドポイント。
@@ -49,10 +50,22 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: "id is required" }, { status: 400 });
   }
   const supabase = createAdminClient();
+  // 名前を取得（ログ用）
+  const { data: m } = await supabase
+    .from("members")
+    .select("name")
+    .eq("id", id)
+    .maybeSingle();
   const { error } = await supabase.from("members").delete().eq("id", id);
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+  await logAudit({
+    action: "member.delete",
+    targetType: "member",
+    targetId: id,
+    detail: `${(m?.name as string) ?? id} を削除`,
+  });
   return NextResponse.json({ ok: true });
 }
 
@@ -79,5 +92,11 @@ export async function POST(req: NextRequest) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+  await logAudit({
+    action: "member.create",
+    targetType: "member",
+    targetId: (data as { id: string }).id,
+    detail: `${body.name.trim()} を追加`,
+  });
   return NextResponse.json({ member: data });
 }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logAudit } from "@/lib/projectp/audit";
 import {
   getActiveStage,
   getStageById,
@@ -38,6 +39,12 @@ export async function POST(
 
   try {
     await updateStageStatus(id, "active");
+    await logAudit({
+      action: "stage.reopen",
+      targetType: "stage",
+      targetId: id,
+      detail: `${stage.title ?? stage.name} を再オープン`,
+    });
     return NextResponse.json({ ok: true, stage: { ...stage, status: "active" } });
   } catch (e) {
     return NextResponse.json(

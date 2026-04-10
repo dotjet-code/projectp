@@ -219,6 +219,13 @@ export function StageCard({
             >
               💖 投票
             </Link>
+            <a
+              href={`/api/admin/stages/${stage.id}/export-csv`}
+              className="rounded-full border border-green-300 px-3 py-1.5 text-xs font-bold text-green-700 hover:bg-green-50"
+              download
+            >
+              📥 CSV
+            </a>
             <button
               type="button"
               onClick={() => setMode("edit")}

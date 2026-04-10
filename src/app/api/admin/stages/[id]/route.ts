@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logAudit } from "@/lib/projectp/audit";
 import {
   deleteStage,
   getStageById,
@@ -45,7 +46,14 @@ export async function DELETE(
 ) {
   const { id } = await ctx.params;
   try {
+    const stage = await getStageById(id);
     await deleteStage(id);
+    await logAudit({
+      action: "stage.delete",
+      targetType: "stage",
+      targetId: id,
+      detail: `${stage?.title ?? stage?.name ?? id} を削除`,
+    });
     return NextResponse.json({ ok: true });
   } catch (e) {
     return NextResponse.json(

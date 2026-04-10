@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStageById, updateStageStatus } from "@/lib/projectp/stage";
+import { logAudit } from "@/lib/projectp/audit";
 import {
   getBalanceTotalsByStage,
   getSpecialTotalsByStage,
@@ -134,6 +135,12 @@ export async function POST(
 
   // 6) Stage を closed に
   await updateStageStatus(stage.id, "closed");
+  await logAudit({
+    action: "stage.finalize",
+    targetType: "stage",
+    targetId: stage.id,
+    detail: `${stage.title ?? stage.name} を確定`,
+  });
 
   // 7) 予想の的中を自動採点（失敗しても finalize 自体は成功扱い）
   let predictionScoring: { scored: number } = { scored: 0 };
