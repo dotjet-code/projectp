@@ -145,6 +145,21 @@ export default async function MemberDetailPage({
                   pts
                 </span>
               </div>
+
+              {/* Special points (LIVE DAY ONLY 別レイヤー) */}
+              {me.specialPoints > 0 && (
+                <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 px-3 py-1.5">
+                  <span className="rounded-full bg-gradient-to-r from-purple-600 to-pink-500 px-2 py-0.5 text-[9px] font-bold text-white tracking-wider font-[family-name:var(--font-outfit)]">
+                    SPECIAL
+                  </span>
+                  <span className="text-[10px] font-bold text-purple-700 tracking-wider font-[family-name:var(--font-outfit)]">
+                    LIVE DAY ONLY
+                  </span>
+                  <span className="font-[family-name:var(--font-outfit)] text-sm font-extrabold text-purple-900">
+                    +{me.specialPoints.toLocaleString()}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </section>

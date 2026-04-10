@@ -1,5 +1,9 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { members as dummyMembers, type Member } from "@/lib/data";
+import {
+  getBalanceTotalsByStage,
+  getSpecialTotalsByStage,
+} from "./balance-special";
 import { getActiveStage, type Stage } from "./stage";
 
 /**
@@ -24,10 +28,14 @@ export type LiveMemberStats = {
 /**
  * 実データとダミーをマージした「ランキング用メンバー」型。
  * role/rank は実ポイントで並べ直したもの。
+ *
+ * specialPoints はルール上「別レイヤー」なので effectivePoints には
+ * 含めず、UI でだけ SPECIAL バッジ等で表示する。
  */
 export type RankedMember = Member & {
   hasLiveData: boolean;
   effectivePoints: number;
+  specialPoints: number;
 };
 
 export type RankingContext = {
@@ -101,6 +109,14 @@ export async function getRankingContext(): Promise<RankingContext> {
     }
   }
 
+  // 2.5 active Stage があれば収支・特別ポイントも取得
+  const balanceMap = activeStage
+    ? await getBalanceTotalsByStage(activeStage.id)
+    : new Map<string, number>();
+  const specialMap = activeStage
+    ? await getSpecialTotalsByStage(activeStage.id)
+    : new Map<string, number>();
+
   // 3. data.ts の 12人をマージ（ダミーは 0 で上書き）
   const merged: RankedMember[] = dummyMembers.map((m) => {
     const memberId = nameToMemberId.get(m.name);
@@ -108,7 +124,9 @@ export async function getRankingContext(): Promise<RankingContext> {
 
     const buzz = snap?.top_video_views ?? 0;
     const concurrent = (snap?.live_view_total ?? 0) * 10;
-    const revenue = 0; // 収支は未実装
+    const revenue = memberId ? (balanceMap.get(memberId) ?? 0) : 0;
+    const special = memberId ? (specialMap.get(memberId) ?? 0) : 0;
+    // 合計は buzz + concurrent + revenue。special は別レイヤーなので含めない
     const total = buzz + concurrent + revenue;
 
     return {
@@ -119,6 +137,7 @@ export async function getRankingContext(): Promise<RankingContext> {
       },
       hasLiveData: Boolean(snap),
       effectivePoints: total,
+      specialPoints: special,
       points: total,
       isTrending: false,
       isLive: false,
