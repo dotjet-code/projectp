@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { listStages } from "@/lib/projectp/stage";
-import { LogoutButton } from "../logout-button";
+import { AdminNav } from "../admin-nav";
 import { CreateStageForm } from "./create-stage-form";
 import { StageCard } from "./stage-card";
 
@@ -13,24 +12,8 @@ export default async function AdminStagesPage() {
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-12">
-      <div className="mb-2 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Project P / Admin: Stage 管理</h1>
-        <div className="flex items-center gap-4">
-          <Link
-            href="/admin/connect"
-            className="text-xs text-gray-500 hover:text-gray-900 underline"
-          >
-            ← メンバー管理
-          </Link>
-          <Link
-            href="/admin/stats"
-            className="text-xs text-gray-500 hover:text-gray-900 underline"
-          >
-            ポイント状況 →
-          </Link>
-          <LogoutButton />
-        </div>
-      </div>
+      <AdminNav current="stages" />
+      <h1 className="text-2xl font-bold mb-1">Stage 管理</h1>
       <p className="text-sm text-gray-600 mb-8">
         特番から次の特番までが1つの Stage。Series は半年の括り。
       </p>

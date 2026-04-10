@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { currentPeriod } from "@/lib/projectp/period";
-import { LogoutButton } from "../logout-button";
+import { getActiveStage } from "@/lib/projectp/stage";
+import { AdminNav } from "../admin-nav";
 import { RunBatchButton } from "./run-batch-button";
 
 export const dynamic = "force-dynamic";
@@ -64,7 +64,7 @@ function formatNumber(n: number | null | undefined): string {
 }
 
 export default async function AdminStatsPage() {
-  const period = currentPeriod();
+  const stage = await getActiveStage();
   const rows = await getLatestSnapshots();
 
   // ポイント計算（Project P ルール）
@@ -84,30 +84,22 @@ export default async function AdminStatsPage() {
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-12">
+      <AdminNav current="stats" />
       <div className="mb-2 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Project P / Admin: ポイント状況</h1>
-        <div className="flex items-center gap-4">
-          <Link
-            href="/admin/stages"
-            className="text-xs text-gray-500 hover:text-gray-900 underline"
-          >
-            Stage 管理
-          </Link>
-          <Link
-            href="/admin/connect"
-            className="text-xs text-gray-500 hover:text-gray-900 underline"
-          >
-            メンバー管理
-          </Link>
-          <LogoutButton />
-        </div>
-      </div>
-      <div className="mb-4 flex items-center justify-end">
+        <h1 className="text-2xl font-bold">ポイント状況</h1>
         <RunBatchButton />
       </div>
       <p className="text-sm text-gray-600 mb-2">
-        集計期間: <span className="font-mono">{period.name}</span> （
-        {period.startDate} 〜 {period.endDate}）
+        {stage ? (
+          <>
+            Stage:{" "}
+            <span className="font-bold text-foreground">
+              {stage.title ?? stage.name}
+            </span>{" "}
+            （{stage.startDate} 〜 {stage.endDate}）</>
+        ) : (
+          <span className="text-gray-500">active な Stage はありません</span>
+        )}
       </p>
       <p className="text-xs text-gray-500 mb-8">
         ※ 各メンバーの最新スナップショットを表示します。バッチで毎日更新されます。
