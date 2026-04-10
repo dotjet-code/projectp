@@ -43,12 +43,12 @@ export default async function PredictionPage() {
         <section className="pt-10 pb-6 text-center">
           <p className="text-4xl mb-2">🎯</p>
           <h1 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-primary to-primary-blue bg-clip-text text-transparent">
-            Stage 順位予想
+            順位予想
           </h1>
           <p className="mt-2 text-sm text-muted max-w-md mx-auto">
             {stage
-              ? `${stage.title ?? stage.name} の最終順位を予想しよう。月末特番で確定した結果が翌月再編成を決める。`
-              : "現在 active な Stage がありません。"}
+              ? `「${stage.title ?? stage.name}」の最終順位を予想しよう。特番で確定した結果が、次の再編成を決める。`
+              : "現在進行中のステージがありません。次のステージが始まると予想できるようになります。"}
           </p>
         </section>
 

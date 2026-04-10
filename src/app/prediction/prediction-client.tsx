@@ -331,9 +331,9 @@ export function PredictionClient({
         <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center">
           <p className="text-3xl mb-3">⏳</p>
           <p className="text-sm text-gray-600">
-            現在 active な Stage がありません。
+            現在進行中のステージがありません。
             <br />
-            新しい Stage が始まると予想投票が開けます。
+            次のステージが始まると予想投票が開けます。
           </p>
         </div>
       </section>
@@ -347,7 +347,7 @@ export function PredictionClient({
         <div className="rounded-2xl border border-[rgba(206,250,254,0.5)] bg-gradient-to-r from-[rgba(236,254,255,0.8)] to-[rgba(240,249,255,0.8)] px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <p className="text-[10px] font-semibold tracking-wider text-primary-dark">
-              CURRENT STAGE
+              NOW PLAYING
             </p>
             <p className="text-sm font-bold text-foreground">
               {stage.title ?? stage.name}

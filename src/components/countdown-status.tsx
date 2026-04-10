@@ -134,7 +134,7 @@ export async function CountdownStatus() {
             ) : (
               <div className="flex items-end gap-1 rounded-[20px] bg-white/20 px-5 py-2">
                 <span className="font-[family-name:var(--font-outfit)] text-base font-black leading-6">
-                  Stage 未開始
+                  準備中
                 </span>
               </div>
             )}
@@ -145,15 +145,15 @@ export async function CountdownStatus() {
         <div className="flex items-center justify-between rounded-2xl bg-white/70 border border-white/80 px-5 py-4 shadow-sm">
           <div className="flex flex-col gap-1">
             <span className="text-xs font-semibold tracking-widest text-muted font-[family-name:var(--font-outfit)]">
-              CURRENT STAGE
+              NOW PLAYING
             </span>
             {stage ? (
               <>
                 <div className="flex items-center gap-2">
                   <span className="rounded-full bg-gradient-to-r from-primary to-primary-cyan px-2.5 py-0.5 text-[11px] font-bold text-white tracking-wider shadow-[0_1px_3px_#a2f4fd]">
-                    {stage.seriesNumber !== null && stage.stageNumber !== null
-                      ? `S${stage.seriesNumber}・STAGE ${stage.stageNumber}`
-                      : "STAGE"}
+                    {stage.stageNumber !== null
+                      ? `ステージ ${stage.stageNumber}`
+                      : "ステージ"}
                   </span>
                   <span className="text-sm font-bold text-foreground">
                     {stage.title ?? stage.name}
@@ -164,7 +164,7 @@ export async function CountdownStatus() {
                 </p>
               </>
             ) : (
-              <span className="text-sm text-muted">Stage 未開始</span>
+              <span className="text-sm text-muted">次のステージは近日開始</span>
             )}
           </div>
           <Link

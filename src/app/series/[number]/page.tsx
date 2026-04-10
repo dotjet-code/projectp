@@ -69,7 +69,7 @@ export default async function SeriesPage({
           {data.rows.length === 0 ? (
             <p className="text-sm text-muted">
               この Series にはまだ確定済み Stage がありません。
-              Stage が確定するとここに累計が表示されます。
+              ステージの結果が確定するとここに累計が表示されます。
             </p>
           ) : (
             <div className="space-y-2">

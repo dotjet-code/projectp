@@ -37,7 +37,7 @@ export default async function ResultsPage({
             <div className="relative">
               <p className="text-5xl mb-3">🏆</p>
               <h1 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-[#f59e0b] via-[#ef4444] to-[#8b5cf6] bg-clip-text text-transparent">
-                Stage 結果
+                結果発表
               </h1>
             </div>
           </section>
@@ -46,10 +46,10 @@ export default async function ResultsPage({
             <div className="rounded-2xl border border-[rgba(254,243,198,0.6)] bg-gradient-to-r from-[rgba(254,249,195,0.6)] to-[rgba(254,243,198,0.6)] p-8 text-center">
               <p className="text-4xl mb-3">⏳</p>
               <h2 className="text-lg font-bold text-foreground">
-                確定済みの Stage がまだありません
+                まだ結果が確定していません
               </h2>
               <p className="mt-3 text-sm text-muted leading-relaxed">
-                月末特番後に Stage が確定すると、ここに結果が表示されます。
+                特番が終わり順位が確定すると、ここに最終結果が表示されます。
               </p>
               <Link
                 href="/ranking"
@@ -84,10 +84,9 @@ export default async function ResultsPage({
           <div className="relative">
             <p className="text-5xl mb-3">🏆</p>
             <p className="text-xs font-bold tracking-wider text-amber-700 mb-1">
-              {seriesN !== null ? `SERIES ${seriesN} / ` : ""}
               {targetStage.stageNumber !== null
-                ? `STAGE ${targetStage.stageNumber}`
-                : "STAGE"}
+                ? `ステージ ${targetStage.stageNumber}`
+                : "ステージ"}
             </p>
             <h1 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-[#f59e0b] via-[#ef4444] to-[#8b5cf6] bg-clip-text text-transparent">
               {targetStage.title ?? targetStage.name}
@@ -114,7 +113,7 @@ export default async function ResultsPage({
         {closedStages.length > 1 && (
           <section className="mx-auto max-w-[964px] px-4 mt-4">
             <p className="text-[10px] font-semibold text-muted tracking-wider mb-2">
-              過去の Stage を選択
+              過去のステージを見る
             </p>
             <div className="flex flex-wrap items-center gap-2">
               {closedStages.map((s) => {
@@ -130,7 +129,7 @@ export default async function ResultsPage({
                     }`}
                   >
                     {s.stageNumber !== null
-                      ? `S${s.seriesNumber ?? "?"}-${s.stageNumber}`
+                      ? `ステージ ${s.stageNumber}`
                       : ""}
                     {s.title ? ` ${s.title}` : s.name}
                   </Link>
