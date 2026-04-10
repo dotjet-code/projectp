@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Member } from "@/lib/supabase/types";
 
@@ -146,7 +147,9 @@ export function MemberRow({ member }: { member: Member }) {
   return (
     <li className="flex items-center justify-between p-4">
       <div className="min-w-0">
-        <p className="font-medium truncate">{member.name}</p>
+        <Link href={`/admin/members/${member.id}`} className="font-medium truncate hover:text-primary-dark transition-colors">
+          {member.name}
+        </Link>
         <p className="text-xs text-gray-500 truncate">
           {member.handle ?? "—"} / channel: {member.youtube_channel_id ?? "—"}
         </p>
