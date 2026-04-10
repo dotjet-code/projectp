@@ -66,16 +66,24 @@ export async function getRankingContext(): Promise<RankingContext> {
   const supabase = createAdminClient();
   const activeStage = await getActiveStage();
 
-  // 1. 連携済み members を取得
+  // 1. 連携済み members を取得（boat_color も含む）
   const { data: rows } = await supabase
     .from("members")
-    .select("id, name")
+    .select("id, name, boat_color")
     .eq("is_active", true)
     .not("google_refresh_token", "is", null);
 
-  const connectedMembers = rows ?? [];
+  const connectedMembers = (rows ?? []) as Array<{
+    id: string;
+    name: string;
+    boat_color: number | null;
+  }>;
   const nameToMemberId = new Map<string, string>();
-  for (const r of connectedMembers) nameToMemberId.set(r.name, r.id);
+  const nameToBoatColor = new Map<string, number | null>();
+  for (const r of connectedMembers) {
+    nameToMemberId.set(r.name, r.id);
+    nameToBoatColor.set(r.name, r.boat_color);
+  }
 
   // 2. 最新スナップショットを一括取得（Stage があれば期間内のものだけ）
   const snapshotsByMemberId = new Map<
@@ -129,6 +137,9 @@ export async function getRankingContext(): Promise<RankingContext> {
     // 合計は buzz + concurrent + revenue。special は別レイヤーなので含めない
     const total = buzz + concurrent + revenue;
 
+    // Supabase に boat_color があればそれを優先、無ければ data.ts の値
+    const bc = nameToBoatColor.get(m.name) ?? m.boatColor ?? null;
+
     return {
       ...m,
       detail: {
@@ -139,6 +150,7 @@ export async function getRankingContext(): Promise<RankingContext> {
       effectivePoints: total,
       specialPoints: special,
       points: total,
+      boatColor: bc as 1 | 2 | 3 | 4 | 5 | 6 | null,
       isTrending: false,
       isLive: false,
     };

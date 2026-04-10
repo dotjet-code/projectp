@@ -5,6 +5,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import "./animations.css";
 import { LiveStatusProvider } from "@/lib/projectp/live-status-client";
+import { OshiProvider } from "@/lib/projectp/oshi-context";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -55,7 +56,9 @@ export default function RootLayout({
   return (
     <html lang="ja" className={`${outfit.variable} ${notoSansJP.variable} antialiased`}>
       <body className="min-h-screen overflow-x-hidden">
-        <LiveStatusProvider>{children}</LiveStatusProvider>
+        <OshiProvider>
+          <LiveStatusProvider>{children}</LiveStatusProvider>
+        </OshiProvider>
         <Analytics />
         <SpeedInsights />
       </body>

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Member } from "@/lib/data";
 import { getRankedMembers } from "@/lib/projectp/live-stats";
+import { getBoatColor } from "@/lib/projectp/boat-colors";
 import { FloatingLiveBadge } from "./live-badge";
 
 function RoleBadge({ role }: { role: Member["role"] }) {
@@ -20,6 +21,7 @@ function RoleBadge({ role }: { role: Member["role"] }) {
 }
 
 function MemberCard({ member }: { member: Member }) {
+  const bc = getBoatColor(member.boatColor);
   return (
     <Link
       href={`/members/${member.slug}`}
@@ -27,7 +29,12 @@ function MemberCard({ member }: { member: Member }) {
     >
       {/* Avatar */}
       <div className="relative">
-        <div className="size-[72px] overflow-hidden rounded-full bg-gray-200 shadow-md ring-2 ring-white">
+        <div
+          className="size-[72px] overflow-hidden rounded-full bg-gray-200 shadow-md"
+          style={{
+            boxShadow: bc ? `0 0 0 3px ${bc.main}` : undefined,
+          }}
+        >
           <Image
             src={member.avatarUrl}
             alt={member.name}

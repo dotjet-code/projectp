@@ -39,3 +39,31 @@ body {
   min-height: 100vh;
 }
 
+/* 推しカラー適用時の全体アクセント */
+html.oshi-active body {
+  background: linear-gradient(
+    180deg,
+    var(--oshi-bg, #ecfeff) 0%,
+    color-mix(in srgb, var(--oshi-bg, #f0f9ff) 30%, #f8fafc) 30%,
+    #f8fafc 100%
+  );
+}
+
+html.oshi-active.oshi-light-text body {
+  background: linear-gradient(
+    180deg,
+    var(--oshi-gradient-from, #1F2937) 0%,
+    var(--oshi-gradient-to, #374151) 30%,
+    #1a1a2e 100%
+  );
+  color: #e5e7eb;
+}
+
+html.oshi-active.oshi-light-text .text-foreground {
+  color: #f3f4f6;
+}
+
+html.oshi-active.oshi-light-text .text-muted {
+  color: #9ca3af;
+}
+

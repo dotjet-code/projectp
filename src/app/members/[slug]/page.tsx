@@ -11,6 +11,7 @@ import { ShareButtons } from "@/components/share-buttons";
 import { StageTrendChart } from "@/components/stage-trend-chart";
 import { members } from "@/lib/data";
 import { getRankedMembers } from "@/lib/projectp/live-stats";
+import { getBoatColor } from "@/lib/projectp/boat-colors";
 
 export const dynamic = "force-dynamic";
 
@@ -61,12 +62,34 @@ export default async function MemberDetailPage({
   const isPlayer = me.role === "PLAYER";
   const maxStat = Math.max(buzz, concurrent, revenue, 1) * 1.2;
 
+  // ボートカラーテーマ（未割り当ての場合はデフォルト水色）
+  const bc = getBoatColor(me.boatColor);
+  const heroGradientFrom = bc?.bg ?? "#e0f7fa";
+  const heroGradientVia = bc
+    ? bc.lightText
+      ? `${bc.gradientFrom}40`
+      : `${bc.bg}`
+    : "#b2ebf2";
+  const barColor1 = bc
+    ? `linear-gradient(90deg, ${bc.gradientFrom}, ${bc.gradientTo})`
+    : "linear-gradient(90deg, #00d3f3, #2b7fff)";
+  const barColor2 = bc
+    ? `linear-gradient(90deg, ${bc.main}CC, ${bc.gradientTo}CC)`
+    : "linear-gradient(90deg, #00bcff, #2b7fff)";
+  const accentText = bc?.dark ?? "#0092b8";
+  const avatarRing = bc ? `3px solid ${bc.main}` : "3px solid transparent";
+
   return (
     <>
       <Header />
-      <main className="pb-10">
+      <main className={`pb-10 ${bc?.lightText ? "text-white" : ""}`}>
         {/* Hero */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-[#e0f7fa] via-[#b2ebf2] to-transparent pb-10 pt-8">
+        <section
+          className="relative overflow-hidden pb-10 pt-8"
+          style={{
+            background: `linear-gradient(to bottom, ${heroGradientFrom}, ${heroGradientVia}, transparent)`,
+          }}
+        >
           <div className="mx-auto flex flex-col sm:flex-row max-w-[996px] items-center sm:items-start gap-6 sm:gap-10 px-4">
             {/* Avatar */}
             <div className="relative shrink-0">
@@ -76,8 +99,17 @@ export default async function MemberDetailPage({
                 width={180}
                 height={180}
                 className="size-[140px] sm:size-[180px] rounded-[24px] object-cover object-top shadow-lg"
+                style={{ border: avatarRing }}
               />
               <FloatingLiveBadge slug={base.slug} />
+              {bc && (
+                <span
+                  className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full px-2 py-0.5 text-[9px] font-bold tracking-wider text-white shadow-md"
+                  style={{ background: bc.main }}
+                >
+                  {bc.label}
+                </span>
+              )}
             </div>
 
             {/* Info */}
@@ -96,7 +128,10 @@ export default async function MemberDetailPage({
                 {base.name}
               </h1>
 
-              <p className="mt-1 font-[family-name:var(--font-outfit)] text-xl font-extrabold text-[#0092b8]">
+              <p
+                className="mt-1 font-[family-name:var(--font-outfit)] text-xl font-extrabold"
+                style={{ color: accentText }}
+              >
                 #{me.rank}
               </p>
 
@@ -122,13 +157,13 @@ export default async function MemberDetailPage({
                   label="バズ"
                   value={buzz}
                   max={maxStat}
-                  color="linear-gradient(90deg, #00d3f3, #2b7fff)"
+                  color={barColor1}
                 />
                 <StatBar
                   label="配信"
                   value={concurrent}
                   max={maxStat}
-                  color="linear-gradient(90deg, #00bcff, #2b7fff)"
+                  color={barColor2}
                 />
                 <StatBar
                   label="収支"

@@ -32,6 +32,7 @@ export interface Member {
   avatarUrl: string;
   isLive?: boolean;
   isTrending?: boolean;
+  boatColor?: 1 | 2 | 3 | 4 | 5 | 6 | null;
   detail: MemberDetail;
 }
 
