@@ -59,7 +59,8 @@ export async function GET() {
       members.map((m) => m.id)
     );
 
-  const statusByMember = new Map<string, (typeof existingStatus)[number]>();
+  type StatusRowDB = NonNullable<typeof existingStatus>[number];
+  const statusByMember = new Map<string, StatusRowDB>();
   for (const s of existingStatus ?? []) {
     statusByMember.set(s.member_id, s);
   }
