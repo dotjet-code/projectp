@@ -87,7 +87,7 @@ export default async function SeriesPage({
                     )}
 
                     <Link
-                      href={r.slug ? `/members/${r.slug}` : "#"}
+                      href={r.slug ? `/members/${r.slug}` : "/members"}
                       className="flex items-center gap-3 rounded-2xl bg-white/70 border border-white/80 px-4 py-3 shadow-sm hover:shadow-md transition-all group"
                     >
                       <div className="w-8 shrink-0 text-center">

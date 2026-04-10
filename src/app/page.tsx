@@ -6,16 +6,22 @@ import { ReorgLine } from "@/components/reorg-line";
 import { Rankings } from "@/components/rankings";
 import { TodaysLive } from "@/components/todays-live";
 import { Footer } from "@/components/footer";
+import { getActiveStage } from "@/lib/projectp/stage";
 
 // 実データ反映のためプリレンダリング無効化
 export const dynamic = "force-dynamic";
 
-export default function Home() {
+export default async function Home() {
+  const stage = await getActiveStage().catch(() => null);
+  const stageLabel = stage
+    ? `${stage.stageNumber ? `ステージ ${stage.stageNumber}` : ""}${stage.title ? ` 「${stage.title}」` : ""} 開催中`
+    : "次のステージは近日開始";
+
   return (
     <>
       <Header />
       <main>
-        <Hero />
+        <Hero stageLabel={stageLabel} />
         <CountdownStatus />
         <MemberGrid />
         <ReorgLine />

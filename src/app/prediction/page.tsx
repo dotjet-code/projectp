@@ -7,6 +7,11 @@ import { PredictionClient } from "./prediction-client";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = {
+  title: "順位予想",
+  description: "Project P の最終順位を予想しよう。的中すればランキング入り。",
+};
+
 async function listMembersWithMeta() {
   const supabase = createAdminClient();
   const { data } = await supabase

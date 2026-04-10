@@ -15,6 +15,20 @@ import { getBoatColor } from "@/lib/projectp/boat-colors";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const base = members.find((m) => m.slug === slug);
+  if (!base) return {};
+  return {
+    title: base.name,
+    description: `${base.name} の Project P プロフィール・ポイント・配信データ`,
+  };
+}
+
 function StatBar({
   label,
   value,

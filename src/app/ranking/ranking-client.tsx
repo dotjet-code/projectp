@@ -36,7 +36,13 @@ function StatMiniBar({
   );
 }
 
-export function RankingClient({ members }: { members: RankedMember[] }) {
+export function RankingClient({
+  members,
+  stageLabel,
+}: {
+  members: RankedMember[];
+  stageLabel?: string;
+}) {
   const [tab, setTab] = useState<TabType>("all");
 
   const sortedMembers = [...members].sort((a, b) => a.rank - b.rank);
@@ -60,7 +66,7 @@ export function RankingClient({ members }: { members: RankedMember[] }) {
           総合ランキング
         </h1>
         <p className="mt-2 text-sm text-muted">
-          2026年4月クール — バズ / 配信 / 収支 の3指標合算
+          {stageLabel ?? "バズ / 配信 / 収支 の3指標合算"}
         </p>
       </section>
 

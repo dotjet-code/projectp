@@ -11,7 +11,7 @@ const windStreaks = [
   { top: "38%", height: 1.5, duration: "5s", delay: "2.5s", opacity: 0.09, width: "32%" },
 ];
 
-export function Hero() {
+export function Hero({ stageLabel }: { stageLabel?: string }) {
   return (
     <section className="relative overflow-hidden pb-24 pt-8" style={{
       background: "linear-gradient(180deg, #dff6fd 0%, #c4ecf8 25%, #a8e0f4 45%, #8dd4ef 60%, #b2ebf2 75%, #e0f7fa 100%)",
@@ -115,7 +115,7 @@ export function Hero() {
       <div className="relative mx-auto max-w-[996px] px-4">
         <div className="mx-auto mb-6 flex w-fit items-center gap-3 rounded-full bg-white/60 px-5 py-2 shadow-sm border border-white/60">
           <span className="text-sm font-bold text-primary-dark font-[family-name:var(--font-outfit)]">
-            2026年4月クール 開催中
+            {stageLabel}
           </span>
           <span className="size-2 rounded-full bg-primary opacity-90 animate-pulse" />
         </div>

@@ -11,6 +11,11 @@ import { getTopPredictors } from "@/lib/projectp/prediction";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = {
+  title: "結果発表",
+  description: "確定済みステージの最終順位と的中者ランキング。",
+};
+
 const medals = ["🥇", "🥈", "🥉"];
 
 export default async function ResultsPage({
@@ -168,7 +173,7 @@ export default async function ResultsPage({
                     )}
 
                     <Link
-                      href={r.slug ? `/members/${r.slug}` : "#"}
+                      href={r.slug ? `/members/${r.slug}` : "/members"}
                       className="flex items-center gap-3 rounded-2xl bg-white/70 border border-white/80 px-4 py-3 shadow-sm hover:shadow-md transition-all group"
                     >
                       <div className="w-8 shrink-0 text-center">
