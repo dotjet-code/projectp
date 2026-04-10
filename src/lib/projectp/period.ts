@@ -43,3 +43,30 @@ export function currentPeriod(now: Date = new Date()): Period {
 function formatJstDate(year: number, month0: number, day: number): string {
   return `${year}-${String(month0 + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
+
+/**
+ * DB の Stage から集計用の Period に変換。
+ * startDate / endDate は JST の暦日として解釈し、UTC 時刻で start/end を算出する。
+ * end は exclusive（翌日 00:00 JST）として扱う。
+ */
+export function stageToPeriod(stage: {
+  name: string;
+  startDate: string;
+  endDate: string;
+}): Period {
+  const [sy, sm, sd] = stage.startDate.split("-").map(Number);
+  const [ey, em, ed] = stage.endDate.split("-").map(Number);
+
+  // JST 00:00 = UTC -9:00
+  const start = new Date(Date.UTC(sy, sm - 1, sd, -9, 0, 0));
+  // endDate は inclusive なので +1 日して exclusive に
+  const end = new Date(Date.UTC(ey, em - 1, ed + 1, -9, 0, 0));
+
+  return {
+    name: stage.name,
+    start,
+    end,
+    startDate: stage.startDate,
+    endDate: stage.endDate,
+  };
+}

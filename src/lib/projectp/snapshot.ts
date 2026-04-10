@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { currentPeriod } from "./period";
+import { currentPeriod, stageToPeriod } from "./period";
+import { getActiveStage } from "./stage";
 import {
   fetchLiveAggregate,
   fetchMyChannel,
@@ -30,7 +31,9 @@ export async function takeSnapshotForMember(
     throw new Error("member is not connected to Google");
   }
 
-  const period = currentPeriod();
+  // active Stage があればそれを期間として使う。無ければ暦上の当月にフォールバック
+  const activeStage = await getActiveStage();
+  const period = activeStage ? stageToPeriod(activeStage) : currentPeriod();
   const channel = await fetchMyChannel(member.google_refresh_token);
   const [topVideo, live, recentVideoIds] = await Promise.all([
     fetchTopVideoInPeriod(
@@ -60,6 +63,7 @@ export async function takeSnapshotForMember(
       {
         member_id: member.id,
         snapshot_date: today,
+        period_id: activeStage?.id ?? null,
         top_video_id: topVideo?.videoId ?? null,
         top_video_title: topVideo?.title ?? null,
         top_video_views: topVideo?.viewCount ?? null,

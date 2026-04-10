@@ -56,10 +56,16 @@ export default async function AdminConnectPage({
         <h1 className="text-2xl font-bold">Project P / Admin: Google 連携</h1>
         <div className="flex items-center gap-4">
           <a
+            href="/admin/stages"
+            className="text-xs text-gray-500 hover:text-gray-900 underline"
+          >
+            Stage 管理
+          </a>
+          <a
             href="/admin/stats"
             className="text-xs text-gray-500 hover:text-gray-900 underline"
           >
-            ポイント状況を見る →
+            ポイント状況
           </a>
           <LogoutButton />
         </div>

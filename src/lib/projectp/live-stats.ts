@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { members as dummyMembers, type Member } from "@/lib/data";
+import { getActiveStage, type Stage } from "./stage";
 
 /**
  * メンバー紹介ページ用の「最新実データ」取得ヘルパー。
@@ -29,6 +30,11 @@ export type RankedMember = Member & {
   effectivePoints: number;
 };
 
+export type RankingContext = {
+  stage: Stage | null;
+  members: RankedMember[];
+};
+
 /**
  * 全メンバーの最新実データを一括取得し、data.ts とマージして返す。
  *
@@ -40,7 +46,17 @@ export type RankedMember = Member & {
  * 上位6名を PLAYER、残り6名を PIT に自動振り分け。
  */
 export async function getRankedMembers(): Promise<RankedMember[]> {
+  const ctx = await getRankingContext();
+  return ctx.members;
+}
+
+/**
+ * active Stage を含むランキング取得。
+ * Stage が無い時は全期間の最新スナップショットを使うフォールバック。
+ */
+export async function getRankingContext(): Promise<RankingContext> {
   const supabase = createAdminClient();
+  const activeStage = await getActiveStage();
 
   // 1. 連携済み members を取得
   const { data: rows } = await supabase
@@ -53,14 +69,14 @@ export async function getRankedMembers(): Promise<RankedMember[]> {
   const nameToMemberId = new Map<string, string>();
   for (const r of connectedMembers) nameToMemberId.set(r.name, r.id);
 
-  // 2. 最新スナップショットを一括取得
+  // 2. 最新スナップショットを一括取得（Stage があれば期間内のものだけ）
   const snapshotsByMemberId = new Map<
     string,
     { top_video_views: number | null; live_view_total: number | null }
   >();
 
   if (connectedMembers.length > 0) {
-    const { data: snaps } = await supabase
+    let query = supabase
       .from("daily_snapshots")
       .select("member_id, snapshot_date, top_video_views, live_view_total")
       .in(
@@ -68,6 +84,12 @@ export async function getRankedMembers(): Promise<RankedMember[]> {
         connectedMembers.map((m) => m.id)
       )
       .order("snapshot_date", { ascending: false });
+
+    if (activeStage) {
+      query = query.eq("period_id", activeStage.id);
+    }
+
+    const { data: snaps } = await query;
 
     for (const s of snaps ?? []) {
       if (!snapshotsByMemberId.has(s.member_id)) {
@@ -110,11 +132,13 @@ export async function getRankedMembers(): Promise<RankedMember[]> {
     }
     return a.name.localeCompare(b.name, "ja");
   });
-  return merged.map((m, i) => ({
+  const ranked = merged.map((m, i) => ({
     ...m,
     rank: i + 1,
-    role: i < 6 ? "PLAYER" : "PIT",
+    role: i < 6 ? ("PLAYER" as const) : ("PIT" as const),
   }));
+
+  return { stage: activeStage, members: ranked };
 }
 
 export async function getLiveStatsByName(
