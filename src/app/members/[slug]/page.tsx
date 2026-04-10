@@ -5,7 +5,9 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { FloatingLiveBadge } from "@/components/live-badge";
 import { LiveNowIndicator } from "@/components/live-now-indicator";
+import { MemberStageHistory } from "@/components/member-stage-history";
 import { RecentActivities } from "@/components/recent-activities";
+import { ShareButtons } from "@/components/share-buttons";
 import { StageTrendChart } from "@/components/stage-trend-chart";
 import { members } from "@/lib/data";
 import { getRankedMembers } from "@/lib/projectp/live-stats";
@@ -169,6 +171,9 @@ export default async function MemberDetailPage({
         {/* Stage 推移 */}
         <StageTrendChart memberName={base.name} />
 
+        {/* 過去 Stage の成績 */}
+        <MemberStageHistory memberName={base.name} />
+
         {/* 最近の動き（自動生成） */}
         <RecentActivities memberName={base.name} />
 
@@ -274,6 +279,17 @@ export default async function MemberDetailPage({
           >
             💖 応援する →
           </Link>
+        </section>
+
+        {/* Share */}
+        <section className="mx-auto max-w-[964px] px-4 mt-8">
+          <p className="text-center text-[10px] font-bold text-muted tracking-wider mb-3">
+            SHARE
+          </p>
+          <ShareButtons
+            text={`#ProjectP ${base.name} を応援中！`}
+            path={`/members/${base.slug}`}
+          />
         </section>
       </main>
       <Footer />

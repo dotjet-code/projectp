@@ -307,6 +307,79 @@ export async function getSeriesTotals(
   return { series: seriesNumber, stages, rows };
 }
 
+/**
+ * 指定メンバーの過去 Stage 成績（closed のみ）を新しい順で返す。
+ */
+export type MemberStageHistoryRow = {
+  stageId: string;
+  stageName: string;
+  stageTitle: string | null;
+  seriesNumber: number | null;
+  stageNumber: number | null;
+  startDate: string;
+  endDate: string;
+  rank: number | null;
+  position: "PLAYER" | "PIT" | null;
+  totalPoints: number;
+};
+
+export async function getMemberStageHistory(
+  memberName: string
+): Promise<MemberStageHistoryRow[]> {
+  const supabase = createAdminClient();
+
+  // まず名前から member_id を引く
+  const { data: m } = await supabase
+    .from("members")
+    .select("id")
+    .eq("name", memberName)
+    .maybeSingle();
+  if (!m) return [];
+
+  // その member の period_points を join して periods 情報も取得
+  const { data, error } = await supabase
+    .from("period_points")
+    .select(
+      "rank, position, total_points, periods:period_id (id, name, title, series_number, stage_number, start_date, end_date, status)"
+    )
+    .eq("member_id", m.id);
+  if (error) return [];
+
+  type Row = {
+    rank: number | null;
+    position: "PLAYER" | "PIT" | null;
+    total_points: number;
+    periods: {
+      id: string;
+      name: string;
+      title: string | null;
+      series_number: number | null;
+      stage_number: number | null;
+      start_date: string;
+      end_date: string;
+      status: string;
+    } | null;
+  };
+
+  const rows = (data ?? []) as unknown as Row[];
+
+  return rows
+    .filter((r) => r.periods && r.periods.status === "closed")
+    .map((r) => ({
+      stageId: r.periods!.id,
+      stageName: r.periods!.name,
+      stageTitle: r.periods!.title,
+      seriesNumber: r.periods!.series_number,
+      stageNumber: r.periods!.stage_number,
+      startDate: r.periods!.start_date,
+      endDate: r.periods!.end_date,
+      rank: r.rank,
+      position: r.position,
+      totalPoints: Number(r.total_points),
+    }))
+    .sort((a, b) => b.endDate.localeCompare(a.endDate));
+}
+
 export async function getStageResults(
   stageId: string
 ): Promise<StageResultRow[]> {
