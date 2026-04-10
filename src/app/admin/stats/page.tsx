@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { currentPeriod } from "@/lib/projectp/period";
 import { LogoutButton } from "../logout-button";
+import { RunBatchButton } from "./run-batch-button";
 
 export const dynamic = "force-dynamic";
 
@@ -87,13 +88,22 @@ export default async function AdminStatsPage() {
         <h1 className="text-2xl font-bold">Project P / Admin: ポイント状況</h1>
         <div className="flex items-center gap-4">
           <Link
+            href="/admin/stages"
+            className="text-xs text-gray-500 hover:text-gray-900 underline"
+          >
+            Stage 管理
+          </Link>
+          <Link
             href="/admin/connect"
             className="text-xs text-gray-500 hover:text-gray-900 underline"
           >
-            ← メンバー管理へ
+            メンバー管理
           </Link>
           <LogoutButton />
         </div>
+      </div>
+      <div className="mb-4 flex items-center justify-end">
+        <RunBatchButton />
       </div>
       <p className="text-sm text-gray-600 mb-2">
         集計期間: <span className="font-mono">{period.name}</span> （
