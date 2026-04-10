@@ -5,6 +5,8 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { FloatingLiveBadge } from "@/components/live-badge";
 import { LiveNowIndicator } from "@/components/live-now-indicator";
+import { RecentActivities } from "@/components/recent-activities";
+import { StageTrendChart } from "@/components/stage-trend-chart";
 import { members } from "@/lib/data";
 import { getRankedMembers } from "@/lib/projectp/live-stats";
 
@@ -163,6 +165,12 @@ export default async function MemberDetailPage({
             </div>
           </div>
         </section>
+
+        {/* Stage 推移 */}
+        <StageTrendChart memberName={base.name} />
+
+        {/* 最近の動き（自動生成） */}
+        <RecentActivities memberName={base.name} />
 
         {/* SNS */}
         <section className="mx-auto max-w-[964px] px-4 mt-10">
