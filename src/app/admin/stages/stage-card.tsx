@@ -207,6 +207,18 @@ export function StageCard({
             >
               ⭐ 特別
             </Link>
+            <Link
+              href={`/admin/stages/${stage.id}/predictions`}
+              className="rounded-full border border-blue-300 px-3 py-1.5 text-xs font-bold text-blue-700 hover:bg-blue-50"
+            >
+              🎯 予想
+            </Link>
+            <Link
+              href={`/admin/stages/${stage.id}/votes`}
+              className="rounded-full border border-pink-300 px-3 py-1.5 text-xs font-bold text-pink-700 hover:bg-pink-50"
+            >
+              💖 投票
+            </Link>
             <button
               type="button"
               onClick={() => setMode("edit")}
