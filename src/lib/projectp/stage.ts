@@ -158,3 +158,68 @@ export async function deleteStage(id: string): Promise<void> {
   const { error } = await supabase.from("periods").delete().eq("id", id);
   if (error) throw new Error(error.message);
 }
+
+/**
+ * 確定済み Stage の period_points を data.ts のメンバー情報と
+ * マージして公開ページ用に整形する。
+ */
+export type StageResultRow = {
+  rank: number;
+  position: "PLAYER" | "PIT";
+  memberId: string;
+  memberName: string;
+  slug: string | null;
+  avatarUrl: string | null;
+  buzzPoints: number;
+  livePoints: number;
+  balancePoints: number;
+  specialPoints: number;
+  totalPoints: number;
+};
+
+export async function getStageResults(
+  stageId: string
+): Promise<StageResultRow[]> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("period_points")
+    .select(
+      "rank, position, member_id, buzz_points, live_points, balance_points, special_points, total_points, members:member_id (name)"
+    )
+    .eq("period_id", stageId)
+    .order("rank", { ascending: true });
+  if (error) throw new Error(error.message);
+
+  // data.ts の slug/avatar と紐付け
+  const { members: dummyMembers } = await import("@/lib/data");
+  const dummyByName = new Map(dummyMembers.map((d) => [d.name, d]));
+
+  return (data ?? []).map((r) => {
+    const row = r as unknown as {
+      rank: number | null;
+      position: "PLAYER" | "PIT" | null;
+      member_id: string;
+      buzz_points: number;
+      live_points: number;
+      balance_points: number;
+      special_points: number;
+      total_points: number;
+      members: { name: string } | null;
+    };
+    const name = row.members?.name ?? "(unknown)";
+    const dummy = dummyByName.get(name);
+    return {
+      rank: row.rank ?? 0,
+      position: row.position ?? "PIT",
+      memberId: row.member_id,
+      memberName: name,
+      slug: dummy?.slug ?? null,
+      avatarUrl: dummy?.avatarUrl ?? null,
+      buzzPoints: Number(row.buzz_points),
+      livePoints: Number(row.live_points),
+      balancePoints: Number(row.balance_points),
+      specialPoints: Number(row.special_points),
+      totalPoints: Number(row.total_points),
+    };
+  });
+}
