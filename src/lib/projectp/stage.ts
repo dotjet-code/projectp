@@ -117,3 +117,44 @@ export async function updateStageStatus(
     .eq("id", id);
   if (error) throw new Error(error.message);
 }
+
+export async function updateStage(
+  id: string,
+  patch: {
+    name?: string;
+    seriesNumber?: number | null;
+    stageNumber?: number | null;
+    title?: string | null;
+    subtitle?: string | null;
+    startDate?: string;
+    endDate?: string;
+    status?: "active" | "closed";
+  }
+): Promise<Stage> {
+  const supabase = createAdminClient();
+  const update: Record<string, unknown> = {};
+  if (patch.name !== undefined) update.name = patch.name;
+  if (patch.seriesNumber !== undefined)
+    update.series_number = patch.seriesNumber;
+  if (patch.stageNumber !== undefined) update.stage_number = patch.stageNumber;
+  if (patch.title !== undefined) update.title = patch.title;
+  if (patch.subtitle !== undefined) update.subtitle = patch.subtitle;
+  if (patch.startDate !== undefined) update.start_date = patch.startDate;
+  if (patch.endDate !== undefined) update.end_date = patch.endDate;
+  if (patch.status !== undefined) update.status = patch.status;
+
+  const { data, error } = await supabase
+    .from("periods")
+    .update(update)
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) throw new Error(error.message);
+  return mapRow(data as Record<string, unknown>);
+}
+
+export async function deleteStage(id: string): Promise<void> {
+  const supabase = createAdminClient();
+  const { error } = await supabase.from("periods").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+}
