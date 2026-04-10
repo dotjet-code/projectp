@@ -3,6 +3,7 @@ import { getActiveStage } from "@/lib/projectp/stage";
 import {
   countPredictionsForPeriod,
   getMyPrediction,
+  getPredictionSummary,
   upsertPrediction,
 } from "@/lib/projectp/prediction";
 import {
@@ -46,9 +47,10 @@ export async function GET(req: NextRequest) {
     return withCookie(res, cookieId, created);
   }
 
-  const [myPrediction, totalCount] = await Promise.all([
+  const [myPrediction, totalCount, summary] = await Promise.all([
     created ? null : getMyPrediction(cookieId, stage.id).catch(() => null),
     countPredictionsForPeriod(stage.id).catch(() => 0),
+    getPredictionSummary(stage.id).catch(() => null),
   ]);
 
   const res = NextResponse.json({
@@ -64,6 +66,7 @@ export async function GET(req: NextRequest) {
     },
     myPrediction,
     totalCount,
+    summary,
   });
   return withCookie(res, cookieId, created);
 }

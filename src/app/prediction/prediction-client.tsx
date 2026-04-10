@@ -32,6 +32,21 @@ type Prediction = {
   pitTri: string[];
 };
 
+type SummarySlotTally = {
+  positionIndex: number;
+  rows: { memberId: string; count: number }[];
+};
+
+type Summary = {
+  totalCount: number;
+  bySlot: {
+    playerWin: SummarySlotTally[];
+    playerTri: SummarySlotTally[];
+    pitWin: SummarySlotTally[];
+    pitTri: SummarySlotTally[];
+  };
+} | null;
+
 function SlotCard({
   member,
   label,
@@ -207,12 +222,13 @@ export function PredictionClient({
   const [pitTri, setPitTri] = useState<SlotSelection>([null, null, null]);
 
   const [totalCount, setTotalCount] = useState(0);
+  const [summary, setSummary] = useState<Summary>(null);
   const [loaded, setLoaded] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [flash, setFlash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // 初期ロード：既存予想 + 提出数
+  // 初期ロード：既存予想 + 提出数 + 集計
   useEffect(() => {
     (async () => {
       try {
@@ -221,6 +237,7 @@ export function PredictionClient({
         });
         const j = await res.json();
         setTotalCount(j.totalCount ?? 0);
+        setSummary(j.summary ?? null);
         const p: Prediction | null = j.myPrediction;
         if (p) {
           setEntryType(p.entryType);
@@ -294,11 +311,12 @@ export function PredictionClient({
       const j = await res.json();
       if (!res.ok) throw new Error(j.error ?? `HTTP ${res.status}`);
       setFlash("予想を提出しました ✓");
-      // 再フェッチして総数を更新
+      // 再フェッチして総数・集計を更新
       const g = await fetch("/api/public/prediction", { cache: "no-store" });
       if (g.ok) {
         const data = await g.json();
         setTotalCount(data.totalCount ?? 0);
+        setSummary(data.summary ?? null);
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -440,6 +458,132 @@ export function PredictionClient({
           ※ 匿名Cookieで1Stage1予想 / 何度でも上書き可
         </p>
       </section>
+
+      {/* Summary: みんなの予想 */}
+      {summary && summary.totalCount > 0 && (
+        <SummarySection summary={summary} members={members} />
+      )}
     </>
+  );
+}
+
+// =====================================================================
+// Summary UI
+// =====================================================================
+function SummarySection({
+  summary,
+  members,
+}: {
+  summary: NonNullable<Summary>;
+  members: PublicMember[];
+}) {
+  const memberById = new Map(members.map((m) => [m.id, m]));
+
+  const slotGroups: {
+    key: "playerWin" | "playerTri" | "pitWin" | "pitTri";
+    title: string;
+    color: string;
+    labels: string[];
+  }[] = [
+    {
+      key: "playerWin",
+      title: "PLAYER 連単",
+      color: "#007595",
+      labels: ["1着", "2着"],
+    },
+    {
+      key: "playerTri",
+      title: "PLAYER 3連単",
+      color: "#007595",
+      labels: ["1着", "2着", "3着"],
+    },
+    {
+      key: "pitWin",
+      title: "PIT 連単",
+      color: "#bb4d00",
+      labels: ["1着", "2着"],
+    },
+    {
+      key: "pitTri",
+      title: "PIT 3連単",
+      color: "#bb4d00",
+      labels: ["1着", "2着", "3着"],
+    },
+  ];
+
+  return (
+    <section className="mx-auto max-w-[964px] px-4 mt-14">
+      <div className="flex items-center gap-3 mb-5">
+        <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-purple to-[#c27aff]" />
+        <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-[#7008e7] tracking-tight">
+          📊 みんなの予想（{summary.totalCount.toLocaleString()} 件）
+        </h2>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {slotGroups.map((g) => {
+          const tallies = summary.bySlot[g.key];
+          return (
+            <div
+              key={g.key}
+              className="rounded-2xl bg-white/70 border border-white/80 p-5 shadow-sm"
+            >
+              <h3
+                className="font-[family-name:var(--font-outfit)] text-sm font-extrabold mb-3"
+                style={{ color: g.color }}
+              >
+                {g.title}
+              </h3>
+
+              <div className="space-y-3">
+                {tallies.map((t) => {
+                  const maxCount = Math.max(
+                    ...t.rows.map((r) => r.count),
+                    1
+                  );
+                  const top = t.rows.slice(0, 3);
+                  return (
+                    <div key={t.positionIndex}>
+                      <p className="text-[10px] font-bold text-muted mb-1">
+                        {g.labels[t.positionIndex]}
+                      </p>
+                      {top.length === 0 ? (
+                        <p className="text-[11px] text-muted">—</p>
+                      ) : (
+                        <ul className="space-y-1">
+                          {top.map((r) => {
+                            const member = memberById.get(r.memberId);
+                            const pct = (r.count / maxCount) * 100;
+                            return (
+                              <li
+                                key={r.memberId}
+                                className="flex items-center gap-2"
+                              >
+                                <span className="text-[11px] font-bold text-foreground w-20 truncate">
+                                  {member?.name ?? "(不明)"}
+                                </span>
+                                <div className="flex-1 h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                                  <div
+                                    className="h-full rounded-full bg-gradient-to-r from-purple to-[#c27aff]"
+                                    style={{ width: `${pct}%` }}
+                                  />
+                                </div>
+                                <span className="text-[10px] font-[family-name:var(--font-outfit)] font-bold text-[#7008e7] w-8 text-right">
+                                  {r.count}
+                                </span>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }

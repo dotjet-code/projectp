@@ -112,3 +112,78 @@ export async function countPredictionsForPeriod(
     .eq("period_id", periodId);
   return count ?? 0;
 }
+
+// =====================================================================
+// 集計
+// =====================================================================
+
+export type SlotKey = "playerWin" | "playerTri" | "pitWin" | "pitTri";
+
+/**
+ * 各スロット×順位×メンバーの投票数。
+ * 例: playerWin[0] = 1着の集計 {memberId, count}[]
+ */
+export type SummarySlotTally = {
+  positionIndex: number; // 0 = 1着, 1 = 2着, 2 = 3着
+  rows: { memberId: string; count: number }[];
+};
+
+export type PredictionSummary = {
+  totalCount: number;
+  bySlot: Record<SlotKey, SummarySlotTally[]>;
+};
+
+export async function getPredictionSummary(
+  periodId: string
+): Promise<PredictionSummary> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("predictions")
+    .select("player_win, player_tri, pit_win, pit_tri")
+    .eq("period_id", periodId);
+  if (error) throw new Error(error.message);
+
+  type PredRow = {
+    player_win: unknown;
+    player_tri: unknown;
+    pit_win: unknown;
+    pit_tri: unknown;
+  };
+  const rows = (data ?? []) as PredRow[];
+
+  function buildTally(
+    extract: (r: PredRow) => unknown,
+    size: number
+  ): SummarySlotTally[] {
+    // position -> memberId -> count
+    const perPos: Map<string, number>[] = Array.from(
+      { length: size },
+      () => new Map()
+    );
+    for (const r of rows) {
+      const arr = extract(r);
+      if (!Array.isArray(arr)) continue;
+      for (let i = 0; i < size; i++) {
+        const v = arr[i];
+        if (typeof v !== "string" || !v) continue;
+        perPos[i].set(v, (perPos[i].get(v) ?? 0) + 1);
+      }
+    }
+    return perPos.map((m, i) => ({
+      positionIndex: i,
+      rows: [...m.entries()]
+        .map(([memberId, count]) => ({ memberId, count }))
+        .sort((a, b) => b.count - a.count),
+    }));
+  }
+
+  return {
+    totalCount: rows.length,
+    bySlot: {
+      playerWin: buildTally((r) => r.player_win, 2),
+      playerTri: buildTally((r) => r.player_tri, 3),
+      pitWin: buildTally((r) => r.pit_win, 2),
+      pitTri: buildTally((r) => r.pit_tri, 3),
+    },
+  };
+}
