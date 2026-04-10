@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getActiveStage } from "@/lib/projectp/stage";
+import {
+  getActiveStage,
+  getStageById,
+  getStageResults,
+  listStages,
+  type Stage,
+} from "@/lib/projectp/stage";
 import { AdminNav } from "../admin-nav";
 import { RunBatchButton } from "./run-batch-button";
 
@@ -14,14 +20,17 @@ type Row = {
   top_video_views: number | null;
   live_view_total: number | null;
   live_broadcast_count: number | null;
-  live_peak_concurrent_max: number | null;
-  fetched_at: string;
+  buzzPoints: number;
+  livePoints: number;
+  balancePoints: number;
+  specialPoints: number;
+  totalPoints: number;
+  isFinalized: boolean;
 };
 
-async function getLatestSnapshots(): Promise<Row[]> {
+async function getLiveRowsForStage(stage: Stage): Promise<Row[]> {
   const supabase = createAdminClient();
 
-  // 連携済みメンバーを取得
   const { data: members, error: mErr } = await supabase
     .from("members")
     .select("id, name")
@@ -29,21 +38,55 @@ async function getLatestSnapshots(): Promise<Row[]> {
     .not("google_refresh_token", "is", null)
     .order("created_at", { ascending: true });
   if (mErr) throw new Error(mErr.message);
-
   if (!members || members.length === 0) return [];
 
-  // 各メンバーの最新スナップショット
-  const rows: Row[] = [];
-  for (const m of members) {
-    const { data: snap } = await supabase
-      .from("daily_snapshots")
-      .select("*")
-      .eq("member_id", m.id)
-      .order("snapshot_date", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+  const memberIds = members.map((m) => m.id);
 
-    rows.push({
+  // 各メンバーの期間内最新スナップショット
+  const { data: snaps } = await supabase
+    .from("daily_snapshots")
+    .select(
+      "member_id, snapshot_date, top_video_title, top_video_views, live_view_total, live_broadcast_count"
+    )
+    .in("member_id", memberIds)
+    .eq("period_id", stage.id)
+    .order("snapshot_date", { ascending: false });
+
+  const latestByMember = new Map<string, NonNullable<typeof snaps>[number]>();
+  for (const s of snaps ?? []) {
+    if (!latestByMember.has(s.member_id)) latestByMember.set(s.member_id, s);
+  }
+
+  // balance / special を取得
+  const [{ data: balances }, { data: specials }] = await Promise.all([
+    supabase
+      .from("balance_entries")
+      .select("member_id, amount")
+      .eq("period_id", stage.id),
+    supabase
+      .from("special_point_entries")
+      .select("member_id, points")
+      .eq("period_id", stage.id),
+  ]);
+
+  const balanceMap = new Map<string, number>();
+  for (const b of balances ?? []) balanceMap.set(b.member_id, Number(b.amount));
+
+  const specialMap = new Map<string, number>();
+  for (const s of specials ?? []) {
+    specialMap.set(
+      s.member_id,
+      (specialMap.get(s.member_id) ?? 0) + Number(s.points)
+    );
+  }
+
+  return members.map((m) => {
+    const snap = latestByMember.get(m.id);
+    const buzz = snap?.top_video_views ?? 0;
+    const live = (snap?.live_view_total ?? 0) * 10;
+    const balance = balanceMap.get(m.id) ?? 0;
+    const special = specialMap.get(m.id) ?? 0;
+    return {
       member_id: m.id,
       member_name: m.name,
       snapshot_date: snap?.snapshot_date ?? "—",
@@ -51,11 +94,33 @@ async function getLatestSnapshots(): Promise<Row[]> {
       top_video_views: snap?.top_video_views ?? null,
       live_view_total: snap?.live_view_total ?? null,
       live_broadcast_count: snap?.live_broadcast_count ?? null,
-      live_peak_concurrent_max: snap?.live_peak_concurrent_max ?? null,
-      fetched_at: snap?.fetched_at ?? "—",
-    });
-  }
-  return rows;
+      buzzPoints: buzz,
+      livePoints: live,
+      balancePoints: balance,
+      specialPoints: special,
+      totalPoints: buzz + live + balance,
+      isFinalized: false,
+    };
+  });
+}
+
+async function getClosedRowsForStage(stage: Stage): Promise<Row[]> {
+  const results = await getStageResults(stage.id);
+  return results.map((r) => ({
+    member_id: r.memberId,
+    member_name: r.memberName,
+    snapshot_date: "—",
+    top_video_title: null,
+    top_video_views: null,
+    live_view_total: null,
+    live_broadcast_count: null,
+    buzzPoints: r.buzzPoints,
+    livePoints: r.livePoints,
+    balancePoints: r.balancePoints,
+    specialPoints: r.specialPoints,
+    totalPoints: r.totalPoints,
+    isFinalized: true,
+  }));
 }
 
 function formatNumber(n: number | null | undefined): string {
@@ -63,24 +128,52 @@ function formatNumber(n: number | null | undefined): string {
   return n.toLocaleString("ja-JP");
 }
 
-export default async function AdminStatsPage() {
-  const stage = await getActiveStage();
-  const rows = await getLatestSnapshots();
+type BatchRunRow = {
+  id: number;
+  source: string;
+  started_at: string;
+  finished_at: string | null;
+  total: number;
+  succeeded_count: number;
+  failed_count: number;
+  failed_summary: string | null;
+};
 
-  // ポイント計算（Project P ルール）
-  const enriched = rows.map((r) => {
-    const buzzPoints = r.top_video_views ?? 0;
-    const livePoints = (r.live_view_total ?? 0) * 10;
-    return {
-      ...r,
-      buzzPoints,
-      livePoints,
-      totalPoints: buzzPoints + livePoints,
-    };
-  });
+async function listRecentBatchRuns(): Promise<BatchRunRow[]> {
+  const supabase = createAdminClient();
+  const { data } = await supabase
+    .from("batch_runs")
+    .select("*")
+    .order("started_at", { ascending: false })
+    .limit(10);
+  return (data ?? []) as BatchRunRow[];
+}
 
-  // 合計ポイントで降順ソート
-  enriched.sort((a, b) => b.totalPoints - a.totalPoints);
+export default async function AdminStatsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ stage?: string }>;
+}) {
+  const { stage: stageParam } = await searchParams;
+  const stages = await listStages();
+  const active = await getActiveStage();
+  const batchRuns = await listRecentBatchRuns().catch(() => []);
+
+  // 表示対象 Stage: クエリがあればそれ、無ければ active
+  const selected = stageParam
+    ? await getStageById(stageParam)
+    : active;
+
+  let rows: Row[] = [];
+  if (selected) {
+    if (selected.status === "closed") {
+      rows = await getClosedRowsForStage(selected);
+    } else {
+      rows = await getLiveRowsForStage(selected);
+    }
+    // 合計で降順（closed は rank を尊重、でも active も同じ並び順で OK）
+    rows.sort((a, b) => b.totalPoints - a.totalPoints);
+  }
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-12">
@@ -89,33 +182,69 @@ export default async function AdminStatsPage() {
         <h1 className="text-2xl font-bold">ポイント状況</h1>
         <RunBatchButton />
       </div>
+
+      {/* Stage selector */}
+      {stages.length > 0 && (
+        <div className="mb-2 flex flex-wrap items-center gap-2">
+          {stages.map((s) => {
+            const isSelected = s.id === selected?.id;
+            const href = s.id === active?.id ? "/admin/stats" : `/admin/stats?stage=${s.id}`;
+            return (
+              <Link
+                key={s.id}
+                href={href}
+                className={`rounded-full border px-3 py-1 text-xs font-bold transition-colors ${
+                  isSelected
+                    ? "bg-black text-white border-black"
+                    : s.status === "active"
+                    ? "border-emerald-300 text-emerald-700 bg-emerald-50 hover:bg-emerald-100"
+                    : "border-gray-300 text-gray-600 bg-white hover:bg-gray-50"
+                }`}
+              >
+                {s.status === "active" && "● "}
+                {s.stageNumber !== null ? `S${s.seriesNumber ?? "?"}-${s.stageNumber}` : ""}
+                {s.title ? ` ${s.title}` : s.name}
+                {s.status === "closed" && " · closed"}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+
       <p className="text-sm text-gray-600 mb-2">
-        {stage ? (
+        {selected ? (
           <>
-            Stage:{" "}
+            {selected.status === "closed" ? "確定済み" : "進行中"}:{" "}
             <span className="font-bold text-foreground">
-              {stage.title ?? stage.name}
+              {selected.title ?? selected.name}
             </span>{" "}
-            （{stage.startDate} 〜 {stage.endDate}）</>
+            （{selected.startDate} 〜 {selected.endDate}）
+          </>
         ) : (
           <span className="text-gray-500">active な Stage はありません</span>
         )}
       </p>
       <p className="text-xs text-gray-500 mb-8">
-        ※ 各メンバーの最新スナップショットを表示します。バッチで毎日更新されます。
+        {selected?.status === "closed"
+          ? "※ 確定済み period_points の値を表示しています"
+          : "※ 期間内の最新スナップショットを表示します。バッチで毎日更新されます。"}
       </p>
 
-      {enriched.length === 0 ? (
+      {rows.length === 0 ? (
         <p className="text-sm text-gray-500">
-          連携済みメンバーがいません。
+          表示するデータがありません。
           <Link href="/admin/connect" className="underline">
             メンバー管理
           </Link>
-          で追加してください。
+          で追加、
+          <Link href="/admin/stages" className="underline ml-1">
+            Stage 管理
+          </Link>
+          で Stage を作成してください。
         </p>
       ) : (
         <div className="space-y-4">
-          {enriched.map((r, i) => {
+          {rows.map((r, i) => {
             const rank = i + 1;
             const isPlayer = rank <= 6;
             return (
@@ -138,9 +267,16 @@ export default async function AdminStatsPage() {
                     </span>
                     <div>
                       <h2 className="text-lg font-bold">{r.member_name}</h2>
-                      <p className="text-xs text-gray-500">
-                        snapshot: {r.snapshot_date}
-                      </p>
+                      {!r.isFinalized && (
+                        <p className="text-xs text-gray-500">
+                          snapshot: {r.snapshot_date}
+                        </p>
+                      )}
+                      {r.isFinalized && (
+                        <p className="text-xs text-gray-500">
+                          確定済み
+                        </p>
+                      )}
                     </div>
                   </div>
                   <span
@@ -154,46 +290,45 @@ export default async function AdminStatsPage() {
                   </span>
                 </header>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="rounded-xl border border-orange-200 bg-orange-50 p-4">
-                    <p className="text-xs font-bold text-orange-700">
-                      🔥 バズポイント
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                  <div className="rounded-xl border border-orange-200 bg-orange-50 p-3">
+                    <p className="text-[10px] font-bold text-orange-700">
+                      🔥 バズ
                     </p>
-                    <p className="mt-1 text-2xl font-extrabold text-orange-900">
+                    <p className="mt-0.5 text-lg font-extrabold text-orange-900">
                       {formatNumber(r.buzzPoints)}
                     </p>
-                    <p className="mt-2 text-xs text-orange-700/80 line-clamp-1">
-                      {r.top_video_title ?? "（期間内動画なし）"}
-                    </p>
-                    <p className="text-[10px] text-orange-700/60">
-                      最大再生 1本: {formatNumber(r.top_video_views)} views
-                    </p>
                   </div>
-
-                  <div className="rounded-xl border border-cyan-200 bg-cyan-50 p-4">
-                    <p className="text-xs font-bold text-cyan-700">
-                      📡 配信（ライブ視聴）
+                  <div className="rounded-xl border border-cyan-200 bg-cyan-50 p-3">
+                    <p className="text-[10px] font-bold text-cyan-700">
+                      📡 配信
                     </p>
-                    <p className="mt-1 text-2xl font-extrabold text-cyan-900">
+                    <p className="mt-0.5 text-lg font-extrabold text-cyan-900">
                       {formatNumber(r.livePoints)}
                     </p>
-                    <p className="mt-2 text-xs text-cyan-700/80">
-                      ライブ {formatNumber(r.live_broadcast_count)} 配信
+                  </div>
+                  <div className="rounded-xl border border-violet-200 bg-violet-50 p-3">
+                    <p className="text-[10px] font-bold text-violet-700">
+                      💰 収支
                     </p>
-                    <p className="text-[10px] text-cyan-700/60">
-                      ライブ視聴合計: {formatNumber(r.live_view_total)} × 10
+                    <p className="mt-0.5 text-lg font-extrabold text-violet-900">
+                      {formatNumber(r.balancePoints)}
                     </p>
                   </div>
-
-                  <div className="rounded-xl border border-purple-200 bg-purple-50 p-4">
-                    <p className="text-xs font-bold text-purple-700">
-                      ⭐️ 合計ポイント
+                  <div className="rounded-xl border border-purple-200 bg-purple-50 p-3">
+                    <p className="text-[10px] font-bold text-purple-700">
+                      ⭐️ 合計
                     </p>
-                    <p className="mt-1 text-2xl font-extrabold text-purple-900">
+                    <p className="mt-0.5 text-lg font-extrabold text-purple-900">
                       {formatNumber(r.totalPoints)}
                     </p>
-                    <p className="mt-2 text-[10px] text-purple-700/60">
-                      ※ 収支ポイントは未反映
+                  </div>
+                  <div className="rounded-xl border border-pink-200 bg-pink-50 p-3">
+                    <p className="text-[10px] font-bold text-pink-700">
+                      SPECIAL
+                    </p>
+                    <p className="mt-0.5 text-lg font-extrabold text-pink-900">
+                      +{formatNumber(r.specialPoints)}
                     </p>
                   </div>
                 </div>
@@ -203,16 +338,55 @@ export default async function AdminStatsPage() {
         </div>
       )}
 
-      <section className="mt-10 rounded-xl border border-dashed border-gray-300 p-5 text-xs text-gray-600">
-        <p className="font-bold mb-2">手動でデータを更新する</p>
-        <p>
-          バッチを手動で叩いて最新化したい場合（dev 時）：
-        </p>
-        <pre className="mt-2 overflow-x-auto rounded bg-gray-900 p-3 text-[11px] text-green-300">
-          curl -H &quot;Authorization: Bearer dev-local-cron-secret&quot;
-          {"  \\\n"}
-          {"  "}http://localhost:3000/api/batch/snapshot
-        </pre>
+      {/* Batch run history */}
+      <section className="mt-12">
+        <h2 className="text-sm font-bold text-gray-700 mb-3">
+          バッチ実行履歴（直近10件）
+        </h2>
+        {batchRuns.length === 0 ? (
+          <p className="text-xs text-gray-500">
+            まだ実行履歴がありません。
+          </p>
+        ) : (
+          <ul className="divide-y divide-gray-200 rounded-2xl border border-gray-200 overflow-hidden bg-white">
+            {batchRuns.map((r) => {
+              const ok = r.failed_count === 0;
+              return (
+                <li key={r.id} className="p-3 text-xs">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-[9px] font-bold tracking-wider ${
+                            ok
+                              ? "bg-emerald-100 text-emerald-700"
+                              : "bg-red-100 text-red-700"
+                          }`}
+                        >
+                          {ok ? "OK" : `FAIL ${r.failed_count}`}
+                        </span>
+                        <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[9px] font-bold text-gray-700 tracking-wider">
+                          {r.source}
+                        </span>
+                        <span className="text-gray-700">
+                          {new Date(r.started_at).toLocaleString("ja-JP")}
+                        </span>
+                      </div>
+                      {r.failed_summary && (
+                        <p className="mt-1 text-[10px] text-red-700 truncate">
+                          {r.failed_summary}
+                        </p>
+                      )}
+                    </div>
+                    <div className="text-right shrink-0 text-gray-500">
+                      {r.succeeded_count}/{r.total}
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </section>
     </main>
   );
