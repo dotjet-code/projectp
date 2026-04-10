@@ -11,7 +11,6 @@ const navItems = [
   { label: "ランキング", href: "/ranking" },
   { label: "ライブ応援", href: "/live/vote" },
   { label: "結果発表", href: "/results" },
-  { label: "管理", href: "/admin" },
 ];
 
 export function Header() {

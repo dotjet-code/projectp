@@ -17,8 +17,32 @@ const notoSansJP = Noto_Sans_JP({
 });
 
 export const metadata: Metadata = {
-  title: "Project P",
-  description: "12人の現在地を、いま見届けよう。",
+  metadataBase: new URL("https://projectp-six.vercel.app"),
+  title: {
+    default: "Project P",
+    template: "%s | Project P",
+  },
+  description:
+    "12人が数字で競い、主役の座を勝ち取る。Project P は、かけっこ！のメインメンバー6名を決める競争型エンタメプロジェクトです。",
+  openGraph: {
+    title: "Project P",
+    description:
+      "12人が数字で競い、主役の座を勝ち取る競争型エンタメプロジェクト。",
+    url: "https://projectp-six.vercel.app",
+    siteName: "Project P",
+    locale: "ja_JP",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Project P",
+    description:
+      "12人が数字で競い、主役の座を勝ち取る競争型エンタメプロジェクト。",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
