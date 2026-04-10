@@ -2,18 +2,32 @@ import Image from "next/image";
 import Link from "next/link";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { getStageResults, listStages } from "@/lib/projectp/stage";
+import {
+  getStageById,
+  getStageResults,
+  listStages,
+} from "@/lib/projectp/stage";
 
 export const dynamic = "force-dynamic";
 
 const medals = ["🥇", "🥈", "🥉"];
 
-export default async function ResultsPage() {
+export default async function ResultsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ stage?: string }>;
+}) {
+  const { stage: stageParam } = await searchParams;
+
   const stages = await listStages();
   const closedStages = stages.filter((s) => s.status === "closed");
-  const latest = closedStages[0] ?? null; // listStages は start_date desc
 
-  if (!latest) {
+  // 表示対象の Stage を決定
+  const targetStage = stageParam
+    ? await getStageById(stageParam)
+    : closedStages[0] ?? null;
+
+  if (!targetStage || targetStage.status !== "closed") {
     return (
       <>
         <Header />
@@ -50,7 +64,8 @@ export default async function ResultsPage() {
     );
   }
 
-  const results = await getStageResults(latest.id);
+  const results = await getStageResults(targetStage.id);
+  const seriesN = targetStage.seriesNumber;
 
   return (
     <>
@@ -65,24 +80,61 @@ export default async function ResultsPage() {
           <div className="relative">
             <p className="text-5xl mb-3">🏆</p>
             <p className="text-xs font-bold tracking-wider text-amber-700 mb-1">
-              {latest.seriesNumber !== null
-                ? `SERIES ${latest.seriesNumber} / `
-                : ""}
-              {latest.stageNumber !== null
-                ? `STAGE ${latest.stageNumber}`
+              {seriesN !== null ? `SERIES ${seriesN} / ` : ""}
+              {targetStage.stageNumber !== null
+                ? `STAGE ${targetStage.stageNumber}`
                 : "STAGE"}
             </p>
             <h1 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-[#f59e0b] via-[#ef4444] to-[#8b5cf6] bg-clip-text text-transparent">
-              {latest.title ?? latest.name}
+              {targetStage.title ?? targetStage.name}
             </h1>
-            {latest.subtitle && (
-              <p className="mt-1 text-sm text-muted">{latest.subtitle}</p>
+            {targetStage.subtitle && (
+              <p className="mt-1 text-sm text-muted">{targetStage.subtitle}</p>
             )}
             <p className="mt-2 text-xs text-muted">
-              {latest.startDate} 〜 {latest.endDate}
+              {targetStage.startDate} 〜 {targetStage.endDate}
             </p>
+
+            {seriesN !== null && (
+              <Link
+                href={`/series/${seriesN}`}
+                className="mt-3 inline-block text-[11px] underline text-primary-dark"
+              >
+                Series {seriesN} 累計を見る →
+              </Link>
+            )}
           </div>
         </section>
+
+        {/* Stage selector */}
+        {closedStages.length > 1 && (
+          <section className="mx-auto max-w-[964px] px-4 mt-4">
+            <p className="text-[10px] font-semibold text-muted tracking-wider mb-2">
+              過去の Stage を選択
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              {closedStages.map((s) => {
+                const isSelected = s.id === targetStage.id;
+                return (
+                  <Link
+                    key={s.id}
+                    href={`/results?stage=${s.id}`}
+                    className={`rounded-full border px-3 py-1 text-[11px] font-bold transition-colors ${
+                      isSelected
+                        ? "bg-black text-white border-black"
+                        : "border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
+                    }`}
+                  >
+                    {s.stageNumber !== null
+                      ? `S${s.seriesNumber ?? "?"}-${s.stageNumber}`
+                      : ""}
+                    {s.title ? ` ${s.title}` : s.name}
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         {/* Final Ranking */}
         <section className="mx-auto max-w-[964px] px-4 mt-6">
@@ -194,39 +246,6 @@ export default async function ResultsPage() {
             </div>
           )}
         </section>
-
-        {/* Past stages list */}
-        {closedStages.length > 1 && (
-          <section className="mx-auto max-w-[964px] px-4 mt-12">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-primary to-primary-cyan" />
-              <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-primary-dark tracking-tight">
-                📚 過去の Stage
-              </h2>
-            </div>
-            <ul className="space-y-2">
-              {closedStages.slice(1).map((s) => (
-                <li
-                  key={s.id}
-                  className="rounded-2xl bg-white/70 border border-white/80 px-4 py-3"
-                >
-                  <p className="text-[10px] font-bold text-gray-500 tracking-wider">
-                    {s.seriesNumber !== null
-                      ? `SERIES ${s.seriesNumber} / `
-                      : ""}
-                    {s.stageNumber !== null ? `STAGE ${s.stageNumber}` : "STAGE"}
-                  </p>
-                  <p className="font-bold text-foreground">
-                    {s.title ?? s.name}
-                  </p>
-                  <p className="text-xs text-muted">
-                    {s.startDate} 〜 {s.endDate}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
       </main>
       <Footer />
     </>
