@@ -3,22 +3,23 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-/**
- * 審査ボタン。
- * /api/admin/stages/:id/submissions/:subId は Stage ID が必要だが、
- * ここでは Stage をまたいで表示するため、汎用的な API を使う。
- */
 export function SubmissionReviewButton({
   submissionId,
+  mode,
 }: {
   submissionId: number;
+  mode: "review" | "revoke";
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
 
-  async function review(status: "approved" | "rejected") {
-    const label = status === "approved" ? "承認" : "却下";
-    if (!confirm(`この提出を${label}しますか？`)) return;
+  async function send(status: "approved" | "rejected" | "revoked") {
+    const labels: Record<string, string> = {
+      approved: "承認",
+      rejected: "却下",
+      revoked: "取り消し",
+    };
+    if (!confirm(`この提出を${labels[status]}しますか？`)) return;
 
     setBusy(true);
     try {
@@ -39,11 +40,24 @@ export function SubmissionReviewButton({
     }
   }
 
+  if (mode === "revoke") {
+    return (
+      <button
+        type="button"
+        onClick={() => send("revoked")}
+        disabled={busy}
+        className="rounded-full border border-gray-300 px-3 py-1.5 text-[10px] font-bold text-gray-600 hover:bg-gray-50 disabled:opacity-40 shrink-0"
+      >
+        {busy ? "..." : "↩ 取り消し"}
+      </button>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-1.5 shrink-0">
       <button
         type="button"
-        onClick={() => review("approved")}
+        onClick={() => send("approved")}
         disabled={busy}
         className="rounded-full bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 text-xs font-bold text-white disabled:opacity-40"
       >
@@ -51,7 +65,7 @@ export function SubmissionReviewButton({
       </button>
       <button
         type="button"
-        onClick={() => review("rejected")}
+        onClick={() => send("rejected")}
         disabled={busy}
         className="rounded-full border border-red-300 px-3 py-1.5 text-xs font-bold text-red-700 hover:bg-red-50 disabled:opacity-40"
       >

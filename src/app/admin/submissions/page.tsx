@@ -207,8 +207,10 @@ export default async function AdminSubmissionsPage() {
                           )}
                         </div>
 
-                        {isPending && (
-                          <SubmissionReviewButton submissionId={s.id} />
+                        {isPending ? (
+                          <SubmissionReviewButton submissionId={s.id} mode="review" />
+                        ) : (
+                          <SubmissionReviewButton submissionId={s.id} mode="revoke" />
                         )}
                       </div>
                     </div>
