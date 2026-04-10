@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getRankedMembers, type RankedMember } from "@/lib/projectp/live-stats";
+import { getBoatColor } from "@/lib/projectp/boat-colors";
 import { LiveBadge } from "./live-badge";
 
 const medals = ["🥇", "🥈", "🥉"];
@@ -41,7 +42,23 @@ function RankingCard({
             style={{ borderColor }}
           >
             <span className="text-xl">{medals[i]}</span>
-            <Image src={member.avatarUrl} alt={member.name} width={44} height={44} className="size-11 rounded-full object-cover object-top shadow-sm" />
+            {(() => {
+              const mbc = getBoatColor(member.boatColor);
+              return (
+                <Image
+                  src={member.avatarUrl}
+                  alt={member.name}
+                  width={44}
+                  height={44}
+                  className="size-11 rounded-full object-cover object-top"
+                  style={{
+                    boxShadow: mbc
+                      ? `0 0 0 2.5px ${mbc.main}, 0 1px 3px rgba(0,0,0,0.1)`
+                      : "0 1px 3px rgba(0,0,0,0.1)",
+                  }}
+                />
+              );
+            })()}
             <div className="flex-1">
               <div className="flex items-center gap-1.5">
                 <p className="text-sm font-bold text-foreground group-hover:text-primary-dark transition-colors">

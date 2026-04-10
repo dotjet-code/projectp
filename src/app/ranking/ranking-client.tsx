@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { RankedMember } from "@/lib/projectp/live-stats";
+import { getBoatColor } from "@/lib/projectp/boat-colors";
 import { LiveBadge } from "@/components/live-badge";
 
 type TabType = "all" | "player" | "pit";
@@ -122,13 +123,23 @@ export function RankingClient({ members }: { members: RankedMember[] }) {
                   </div>
 
                   {/* Avatar */}
-                  <Image
-                    src={member.avatarUrl}
-                    alt={member.name}
-                    width={44}
-                    height={44}
-                    className="size-11 shrink-0 rounded-full object-cover object-top shadow-sm"
-                  />
+                  {(() => {
+                    const mbc = getBoatColor(member.boatColor);
+                    return (
+                      <Image
+                        src={member.avatarUrl}
+                        alt={member.name}
+                        width={44}
+                        height={44}
+                        className="size-11 shrink-0 rounded-full object-cover object-top"
+                        style={{
+                          boxShadow: mbc
+                            ? `0 0 0 2.5px ${mbc.main}, 0 1px 3px rgba(0,0,0,0.1)`
+                            : "0 1px 3px rgba(0,0,0,0.1)",
+                        }}
+                      />
+                    );
+                  })()}
 
                   {/* Name + Role */}
                   <div className="flex-1 md:flex-none md:w-32 min-w-0">

@@ -93,6 +93,10 @@ export function Header() {
               </Link>
             );
           })}
+          <div className="mt-2 pt-2 border-t border-gray-100 flex items-center gap-2 px-4">
+            <span className="text-[10px] font-bold text-muted tracking-wider">推しカラー</span>
+            <OshiColorPicker />
+          </div>
         </nav>
       )}
     </header>

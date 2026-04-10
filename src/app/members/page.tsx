@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { FloatingLiveBadge } from "@/components/live-badge";
+import { getBoatColor } from "@/lib/projectp/boat-colors";
 import {
   getRankedMembers,
   type RankedMember,
@@ -75,16 +76,26 @@ function MemberCard({ member }: { member: Member }) {
       </div>
 
       {/* Image */}
-      <div className="relative mx-2 sm:mx-4 mt-2 sm:mt-4 aspect-square">
-        <Image
-          src={member.avatarUrl}
-          alt={member.name}
-          width={195}
-          height={195}
-          className="absolute inset-0 size-full rounded-[20px] object-cover object-top shadow-sm"
-        />
-        <FloatingLiveBadge slug={member.slug} />
-      </div>
+      {(() => {
+        const mbc = getBoatColor(member.boatColor);
+        return (
+          <div className="relative mx-2 sm:mx-4 mt-2 sm:mt-4 aspect-square">
+            <Image
+              src={member.avatarUrl}
+              alt={member.name}
+              width={195}
+              height={195}
+              className="absolute inset-0 size-full rounded-[20px] object-cover object-top"
+              style={{
+                boxShadow: mbc
+                  ? `0 0 0 3px ${mbc.main}, 0 2px 8px rgba(0,0,0,0.1)`
+                  : "0 2px 8px rgba(0,0,0,0.08)",
+              }}
+            />
+            <FloatingLiveBadge slug={member.slug} />
+          </div>
+        );
+      })()}
 
       {/* Info */}
       <div className="px-4 pt-3">
