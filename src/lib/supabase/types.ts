@@ -10,6 +10,7 @@ export type Member = {
   google_refresh_token: string | null;
   google_scopes: string | null;
   google_connected_at: string | null;
+  boat_color: number | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;

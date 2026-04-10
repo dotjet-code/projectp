@@ -30,6 +30,8 @@ export async function PATCH(req: NextRequest) {
   if ("handle" in body) patch.handle = body.handle;
   if ("youtube_channel_id" in body)
     patch.youtube_channel_id = body.youtube_channel_id;
+  if ("boat_color" in body)
+    patch.boat_color = body.boat_color;
 
   const supabase = createAdminClient();
   const { data, error } = await supabase

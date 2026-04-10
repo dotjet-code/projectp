@@ -4,8 +4,17 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Member } from "@/lib/supabase/types";
+import { BOAT_COLORS } from "@/lib/projectp/boat-colors";
 
 type Mode = "view" | "edit";
+
+const boatColorOptions = [
+  { value: "", label: "未設定" },
+  ...Object.values(BOAT_COLORS).map((c) => ({
+    value: String(c.number),
+    label: `${c.label} (${c.name})`,
+  })),
+];
 
 export function MemberRow({ member }: { member: Member }) {
   const router = useRouter();
@@ -16,6 +25,9 @@ export function MemberRow({ member }: { member: Member }) {
   const [name, setName] = useState(member.name);
   const [handle, setHandle] = useState(member.handle ?? "");
   const [channelId, setChannelId] = useState(member.youtube_channel_id ?? "");
+  const [boatColor, setBoatColor] = useState(
+    member.boat_color !== null ? String(member.boat_color) : ""
+  );
 
   const connected = Boolean(member.google_refresh_token);
 
@@ -58,6 +70,7 @@ export function MemberRow({ member }: { member: Member }) {
           name,
           handle: handle || null,
           youtube_channel_id: channelId || null,
+          boat_color: boatColor ? Number(boatColor) : null,
         }),
       });
       if (!res.ok) {
@@ -77,14 +90,18 @@ export function MemberRow({ member }: { member: Member }) {
     setName(member.name);
     setHandle(member.handle ?? "");
     setChannelId(member.youtube_channel_id ?? "");
+    setBoatColor(member.boat_color !== null ? String(member.boat_color) : "");
     setError(null);
     setMode("view");
   }
 
   if (mode === "edit") {
+    const selectedBc = boatColor
+      ? BOAT_COLORS[Number(boatColor) as 1 | 2 | 3 | 4 | 5 | 6]
+      : null;
     return (
       <li className="p-4 space-y-2">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
           <div>
             <label className="block text-[10px] font-semibold text-gray-500 mb-0.5">
               名前
@@ -120,6 +137,33 @@ export function MemberRow({ member }: { member: Member }) {
               className="w-full rounded border border-gray-300 px-3 py-1.5 text-sm"
             />
           </div>
+          <div>
+            <label className="block text-[10px] font-semibold text-gray-500 mb-0.5">
+              号艇カラー
+            </label>
+            <div className="flex items-center gap-2">
+              <select
+                value={boatColor}
+                onChange={(e) => setBoatColor(e.target.value)}
+                className="w-full rounded border border-gray-300 px-3 py-1.5 text-sm"
+              >
+                {boatColorOptions.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+              {selectedBc && (
+                <span
+                  className="size-5 shrink-0 rounded-full border border-gray-300"
+                  style={{
+                    background:
+                      selectedBc.number === 1 ? "#E5E7EB" : selectedBc.main,
+                  }}
+                />
+              )}
+            </div>
+          </div>
         </div>
         {error && <p className="text-xs text-red-600">エラー: {error}</p>}
         <div className="flex items-center gap-2">
@@ -144,12 +188,27 @@ export function MemberRow({ member }: { member: Member }) {
     );
   }
 
+  const viewBc = member.boat_color
+    ? BOAT_COLORS[member.boat_color as 1 | 2 | 3 | 4 | 5 | 6]
+    : null;
+
   return (
     <li className="flex items-center justify-between p-4">
       <div className="min-w-0">
-        <Link href={`/admin/members/${member.id}`} className="font-medium truncate hover:text-primary-dark transition-colors">
-          {member.name}
-        </Link>
+        <div className="flex items-center gap-2">
+          {viewBc && (
+            <span
+              className="size-4 shrink-0 rounded-full border border-gray-200"
+              style={{
+                background: viewBc.number === 1 ? "#E5E7EB" : viewBc.main,
+              }}
+              title={`${viewBc.label} ${viewBc.name}`}
+            />
+          )}
+          <Link href={`/admin/members/${member.id}`} className="font-medium truncate hover:text-primary-dark transition-colors">
+            {member.name}
+          </Link>
+        </div>
         <p className="text-xs text-gray-500 truncate">
           {member.handle ?? "—"} / channel: {member.youtube_channel_id ?? "—"}
         </p>
