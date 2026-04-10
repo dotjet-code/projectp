@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { takeSnapshotForMember } from "@/lib/projectp/snapshot";
+import { notifyDiscord } from "@/lib/projectp/notify";
 
 /**
  * 日次バッチ：連携済みメンバー全員のスナップショットを取得して保存。
@@ -81,6 +82,13 @@ export async function GET(req: NextRequest) {
         error: e instanceof Error ? e.message : String(e),
       });
     }
+  }
+
+  if (failed.length > 0) {
+    const lines = failed.map((f) => `- ${f.name}: ${f.error}`).join("\n");
+    await notifyDiscord(
+      `🛑 **Project P バッチ失敗**\n${failed.length}/${list.length} 件で失敗しました。\n\`\`\`\n${lines}\n\`\`\``
+    );
   }
 
   return NextResponse.json({

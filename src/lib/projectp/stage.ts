@@ -177,6 +177,136 @@ export type StageResultRow = {
   totalPoints: number;
 };
 
+/**
+ * Series（半年）の累計集計。
+ * 同じ series_number を持つ closed Stage の period_points を全部足し込む。
+ */
+export type SeriesTotalRow = {
+  rank: number;
+  position: "PLAYER" | "PIT";
+  memberId: string;
+  memberName: string;
+  slug: string | null;
+  avatarUrl: string | null;
+  buzzPoints: number;
+  livePoints: number;
+  balancePoints: number;
+  specialPoints: number;
+  totalPoints: number;
+  stagesCounted: number;
+};
+
+export async function getSeriesTotals(
+  seriesNumber: number
+): Promise<{
+  series: number;
+  stages: Stage[];
+  rows: SeriesTotalRow[];
+}> {
+  const supabase = createAdminClient();
+
+  // 該当 series の Stage を取得（closed のみ集計対象、active は途中経過なので除外）
+  const { data: stageRows, error: stagesErr } = await supabase
+    .from("periods")
+    .select("*")
+    .eq("series_number", seriesNumber)
+    .eq("status", "closed")
+    .order("stage_number", { ascending: true });
+  if (stagesErr) throw new Error(stagesErr.message);
+  const stages = (stageRows ?? []).map((r) =>
+    mapRow(r as Record<string, unknown>)
+  );
+
+  if (stages.length === 0) {
+    return { series: seriesNumber, stages: [], rows: [] };
+  }
+
+  // それらの period_points を一括取得
+  const { data: pps, error: ppsErr } = await supabase
+    .from("period_points")
+    .select(
+      "member_id, buzz_points, live_points, balance_points, special_points, total_points, members:member_id (name)"
+    )
+    .in(
+      "period_id",
+      stages.map((s) => s.id)
+    );
+  if (ppsErr) throw new Error(ppsErr.message);
+
+  // メンバーごとに集計
+  type Acc = {
+    memberId: string;
+    memberName: string;
+    buzz: number;
+    live: number;
+    balance: number;
+    special: number;
+    total: number;
+    count: number;
+  };
+  const accByMember = new Map<string, Acc>();
+  for (const r of pps ?? []) {
+    const row = r as unknown as {
+      member_id: string;
+      buzz_points: number;
+      live_points: number;
+      balance_points: number;
+      special_points: number;
+      total_points: number;
+      members: { name: string } | null;
+    };
+    const key = row.member_id;
+    const cur = accByMember.get(key) ?? {
+      memberId: key,
+      memberName: row.members?.name ?? "(unknown)",
+      buzz: 0,
+      live: 0,
+      balance: 0,
+      special: 0,
+      total: 0,
+      count: 0,
+    };
+    cur.buzz += Number(row.buzz_points);
+    cur.live += Number(row.live_points);
+    cur.balance += Number(row.balance_points);
+    cur.special += Number(row.special_points);
+    cur.total += Number(row.total_points);
+    cur.count += 1;
+    accByMember.set(key, cur);
+  }
+
+  // data.ts と紐付け
+  const { members: dummyMembers } = await import("@/lib/data");
+  const dummyByName = new Map(dummyMembers.map((d) => [d.name, d]));
+
+  const rows: SeriesTotalRow[] = [...accByMember.values()]
+    .map((a) => {
+      const dummy = dummyByName.get(a.memberName);
+      return {
+        rank: 0, // あとで埋める
+        position: "PIT" as "PLAYER" | "PIT",
+        memberId: a.memberId,
+        memberName: a.memberName,
+        slug: dummy?.slug ?? null,
+        avatarUrl: dummy?.avatarUrl ?? null,
+        buzzPoints: a.buzz,
+        livePoints: a.live,
+        balancePoints: a.balance,
+        specialPoints: a.special,
+        totalPoints: a.total,
+        stagesCounted: a.count,
+      };
+    })
+    .sort((x, y) => y.totalPoints - x.totalPoints)
+    .map((r, i) => ({
+      ...r,
+      rank: i + 1,
+      position: i < 6 ? "PLAYER" : "PIT",
+    }));
+
+  return { series: seriesNumber, stages, rows };
+}
+
 export async function getStageResults(
   stageId: string
 ): Promise<StageResultRow[]> {
