@@ -5,6 +5,7 @@ import {
   getBalanceTotalsByStage,
   getSpecialTotalsByStage,
 } from "@/lib/projectp/balance-special";
+import { scoreStagePredictions } from "@/lib/projectp/prediction";
 
 /**
  * POST /api/admin/stages/:id/finalize
@@ -134,8 +135,18 @@ export async function POST(
   // 6) Stage を closed に
   await updateStageStatus(stage.id, "closed");
 
+  // 7) 予想の的中を自動採点（失敗しても finalize 自体は成功扱い）
+  let predictionScoring: { scored: number } = { scored: 0 };
+  try {
+    const s = await scoreStagePredictions(stage.id);
+    predictionScoring = { scored: s.scored };
+  } catch (e) {
+    console.error("scoreStagePredictions failed:", e);
+  }
+
   return NextResponse.json({
     ok: true,
+    predictionScoring,
     stage: { ...stage, status: "closed" },
     finalized: enriched,
   });

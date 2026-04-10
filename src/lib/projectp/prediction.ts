@@ -133,6 +133,168 @@ export type PredictionSummary = {
   bySlot: Record<SlotKey, SummarySlotTally[]>;
 };
 
+// =====================================================================
+// 的中判定
+// =====================================================================
+
+export type PredictionScore = {
+  predictionId: number;
+  cookieId: string;
+  entryType: PredictionEntryType;
+  totalScore: number;
+  slotScores: {
+    playerWin: number[]; // 0 or 1 × 2
+    playerTri: number[]; // 0 or 1 × 3
+    pitWin: number[];
+    pitTri: number[];
+  };
+};
+
+/**
+ * Stage 確定後、その Stage の全予想を採点して predictions に保存する。
+ *
+ * スコアリングルール:
+ *   PLAYER 連単:  player_win[0] が確定 rank 1 と一致なら +1、[1] が rank 2 と一致なら +1
+ *   PLAYER 3連単: player_tri[i] が確定 rank i+1 と一致なら +1 ずつ
+ *   PIT 連単:     pit_win[0] が確定 rank 7、[1] が rank 8
+ *   PIT 3連単:    pit_tri[i] が確定 rank i+7
+ *   total は全部の合計（最大 10 点）
+ */
+export async function scoreStagePredictions(
+  periodId: string
+): Promise<{ scored: number; scores: PredictionScore[] }> {
+  const supabase = createAdminClient();
+
+  // 1) period_points から確定順位の member_id を取得
+  const { data: pps, error: ppsErr } = await supabase
+    .from("period_points")
+    .select("member_id, rank")
+    .eq("period_id", periodId)
+    .order("rank", { ascending: true });
+  if (ppsErr) throw new Error(ppsErr.message);
+
+  const rankToMember = new Map<number, string>();
+  for (const r of pps ?? []) {
+    const row = r as unknown as { member_id: string; rank: number | null };
+    if (row.rank !== null) rankToMember.set(row.rank, row.member_id);
+  }
+
+  // 確定 rank が存在しない Stage（= finalize 未実行）はスコア付け不可
+  if (rankToMember.size === 0) {
+    return { scored: 0, scores: [] };
+  }
+
+  // 2) 全予想を取得
+  const { data: preds, error: predsErr } = await supabase
+    .from("predictions")
+    .select("id, cookie_id, entry_type, player_win, player_tri, pit_win, pit_tri")
+    .eq("period_id", periodId);
+  if (predsErr) throw new Error(predsErr.message);
+
+  const rows = (preds ?? []) as Array<{
+    id: number;
+    cookie_id: string;
+    entry_type: string;
+    player_win: unknown;
+    player_tri: unknown;
+    pit_win: unknown;
+    pit_tri: unknown;
+  }>;
+
+  function scoreArr(
+    arr: unknown,
+    expectedRanks: number[]
+  ): number[] {
+    const out: number[] = [];
+    const list = Array.isArray(arr) ? arr : [];
+    for (let i = 0; i < expectedRanks.length; i++) {
+      const picked = typeof list[i] === "string" ? (list[i] as string) : null;
+      const expected = rankToMember.get(expectedRanks[i]);
+      out.push(picked && expected && picked === expected ? 1 : 0);
+    }
+    return out;
+  }
+
+  const scores: PredictionScore[] = [];
+  const nowIso = new Date().toISOString();
+
+  // バッチ更新
+  for (const r of rows) {
+    const playerWin = scoreArr(r.player_win, [1, 2]);
+    const playerTri = scoreArr(r.player_tri, [1, 2, 3]);
+    const pitWin = scoreArr(r.pit_win, [7, 8]);
+    const pitTri = scoreArr(r.pit_tri, [7, 8, 9]);
+    const total =
+      playerWin.reduce((s, v) => s + v, 0) +
+      playerTri.reduce((s, v) => s + v, 0) +
+      pitWin.reduce((s, v) => s + v, 0) +
+      pitTri.reduce((s, v) => s + v, 0);
+
+    const slot = { playerWin, playerTri, pitWin, pitTri };
+    scores.push({
+      predictionId: r.id,
+      cookieId: r.cookie_id,
+      entryType: r.entry_type === "welcome" ? "welcome" : "normal",
+      totalScore: total,
+      slotScores: slot,
+    });
+
+    const { error: upErr } = await supabase
+      .from("predictions")
+      .update({
+        total_score: total,
+        slot_scores: slot,
+        scored_at: nowIso,
+      })
+      .eq("id", r.id);
+    if (upErr) {
+      // 1件失敗しても他を続行する
+      console.error("score update failed:", upErr.message);
+    }
+  }
+
+  return { scored: scores.length, scores };
+}
+
+export type TopPredictor = {
+  rank: number;
+  cookieIdMasked: string; // 表示用にマスクした Cookie ID
+  totalScore: number;
+  entryType: PredictionEntryType;
+};
+
+/**
+ * Stage の的中スコアランキング（上位N件）。
+ * cookie_id は表示用にマスク。
+ */
+export async function getTopPredictors(
+  periodId: string,
+  limit = 10
+): Promise<TopPredictor[]> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("predictions")
+    .select("cookie_id, entry_type, total_score")
+    .eq("period_id", periodId)
+    .not("total_score", "is", null)
+    .order("total_score", { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(error.message);
+
+  const rows = (data ?? []) as Array<{
+    cookie_id: string;
+    entry_type: string;
+    total_score: number | null;
+  }>;
+
+  return rows.map((r, i) => ({
+    rank: i + 1,
+    cookieIdMasked: `${r.cookie_id.slice(0, 4)}…${r.cookie_id.slice(-2)}`,
+    totalScore: r.total_score ?? 0,
+    entryType: r.entry_type === "welcome" ? "welcome" : "normal",
+  }));
+}
+
 export async function getPredictionSummary(
   periodId: string
 ): Promise<PredictionSummary> {

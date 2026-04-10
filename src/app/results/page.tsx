@@ -7,6 +7,7 @@ import {
   getStageResults,
   listStages,
 } from "@/lib/projectp/stage";
+import { getTopPredictors } from "@/lib/projectp/prediction";
 
 export const dynamic = "force-dynamic";
 
@@ -64,7 +65,10 @@ export default async function ResultsPage({
     );
   }
 
-  const results = await getStageResults(targetStage.id);
+  const [results, topPredictors] = await Promise.all([
+    getStageResults(targetStage.id),
+    getTopPredictors(targetStage.id, 10).catch(() => []),
+  ]);
   const seriesN = targetStage.seriesNumber;
 
   return (
@@ -246,6 +250,51 @@ export default async function ResultsPage({
             </div>
           )}
         </section>
+
+        {/* Top predictors */}
+        {topPredictors.length > 0 && (
+          <section className="mx-auto max-w-[720px] px-4 mt-12">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-purple to-[#c27aff]" />
+              <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-[#7008e7] tracking-tight">
+                🎯 的中者ランキング
+              </h2>
+            </div>
+            <p className="text-[10px] text-muted mb-3">
+              Stage 確定順位と予想を突合して自動採点（最大 10点）
+            </p>
+            <ul className="rounded-2xl bg-white/70 border border-white/80 divide-y divide-gray-100 overflow-hidden">
+              {topPredictors.map((p) => (
+                <li
+                  key={p.rank}
+                  className="flex items-center justify-between px-4 py-2.5 text-xs"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="w-6 text-center font-[family-name:var(--font-outfit)] font-extrabold text-[#7008e7]">
+                      {p.rank <= 3
+                        ? ["🥇", "🥈", "🥉"][p.rank - 1]
+                        : `#${p.rank}`}
+                    </span>
+                    <span className="font-mono text-muted">
+                      {p.cookieIdMasked}
+                    </span>
+                    {p.entryType === "welcome" && (
+                      <span className="rounded-full bg-pink-100 border border-pink-200 px-1.5 py-0.5 text-[9px] font-bold text-pink-700">
+                        WELCOME
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <span className="font-[family-name:var(--font-outfit)] text-sm font-black text-foreground">
+                      {p.totalScore}
+                    </span>
+                    <span className="text-[9px] text-muted ml-0.5">/10</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </main>
       <Footer />
     </>
