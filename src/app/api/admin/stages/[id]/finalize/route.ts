@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStageById, updateStageStatus } from "@/lib/projectp/stage";
+import {
+  getBalanceTotalsByStage,
+  getSpecialTotalsByStage,
+} from "@/lib/projectp/balance-special";
 
 /**
  * POST /api/admin/stages/:id/finalize
@@ -66,7 +70,10 @@ export async function POST(
     }
   }
 
-  // 3) 各メンバーのポイントを算出
+  // 3) 収支・特別ポイントを集計（DB から取得）
+  const balanceMap = await getBalanceTotalsByStage(stage.id);
+  const specialMap = await getSpecialTotalsByStage(stage.id);
+
   type Row = {
     member_id: string;
     buzz_points: number;
@@ -82,8 +89,8 @@ export async function POST(
       member_id: m.id,
       buzz_points: buzz,
       live_points: livePts,
-      balance_points: 0, // TODO: balance_entries から算出
-      special_points: 0, // TODO: special_point_entries から算出
+      balance_points: balanceMap.get(m.id) ?? 0,
+      special_points: specialMap.get(m.id) ?? 0,
     };
   });
 

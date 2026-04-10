@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Stage } from "@/lib/projectp/stage";
 
@@ -194,6 +195,18 @@ export function StageCard({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href={`/admin/stages/${stage.id}/balance`}
+              className="rounded-full border border-gray-300 px-3 py-1.5 text-xs font-bold text-gray-700 hover:bg-gray-50"
+            >
+              💰 収支
+            </Link>
+            <Link
+              href={`/admin/stages/${stage.id}/special`}
+              className="rounded-full border border-purple-300 px-3 py-1.5 text-xs font-bold text-purple-700 hover:bg-purple-50"
+            >
+              ⭐ 特別
+            </Link>
             <button
               type="button"
               onClick={() => setMode("edit")}
