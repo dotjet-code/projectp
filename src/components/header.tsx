@@ -3,8 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { OshiColorPicker } from "./oshi-color-picker";
-
 const navItems = [
   { label: "トップ", href: "/" },
   { label: "メンバー", href: "/members" },
@@ -50,9 +48,6 @@ export function Header() {
               </Link>
             );
           })}
-          <div className="ml-2 pl-2 border-l border-gray-200">
-            <OshiColorPicker />
-          </div>
         </nav>
 
         {/* Mobile hamburger */}
@@ -93,10 +88,6 @@ export function Header() {
               </Link>
             );
           })}
-          <div className="mt-2 pt-2 border-t border-gray-100 flex items-center gap-2 px-4">
-            <span className="text-[10px] font-bold text-muted tracking-wider">推しカラー</span>
-            <OshiColorPicker />
-          </div>
         </nav>
       )}
     </header>
