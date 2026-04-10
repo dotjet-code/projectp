@@ -28,6 +28,8 @@ export async function POST(req: NextRequest) {
   const manualPurchase = formData.get("purchase") as string | null;
   const manualPayout = formData.get("payout") as string | null;
   const note = formData.get("note") as string | null;
+  const broadcastDate = formData.get("broadcast_date") as string | null;
+  const venue = formData.get("venue") as string | null;
 
   if (!memberId) {
     return NextResponse.json({ error: "member_id is required" }, { status: 400 });
@@ -123,6 +125,8 @@ export async function POST(req: NextRequest) {
       race_date: ocrResult.raceDate,
       raw_ocr: ocrResult.raw,
       note: note ?? null,
+      venue: venue ?? null,
+      broadcast_date: broadcastDate ?? null,
       status: "pending",
     })
     .select()

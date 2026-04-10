@@ -5,11 +5,12 @@ import { LogoutButton } from "./logout-button";
  * 管理画面共通ヘッダー。各 /admin ページの上部に置く。
  * 現状ページは active ハイライト付きで表示する。
  */
-type NavKey = "stages" | "connect" | "stats" | "settings";
+type NavKey = "stages" | "connect" | "submissions" | "stats" | "settings";
 
 const items: { key: NavKey; label: string; href: string }[] = [
   { key: "stages", label: "Stage", href: "/admin/stages" },
   { key: "connect", label: "メンバー", href: "/admin/connect" },
+  { key: "submissions", label: "配信収支", href: "/admin/submissions" },
   { key: "stats", label: "ポイント", href: "/admin/stats" },
   { key: "settings", label: "設定", href: "/admin/settings" },
 ];

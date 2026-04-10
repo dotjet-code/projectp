@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { BOAT_VENUES } from "@/lib/projectp/venues";
 
 type OcrResult = {
   purchase: number;
@@ -23,12 +24,16 @@ export function SubmitForm({
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
 
+  const today = new Date().toISOString().slice(0, 10);
+
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [ocr, setOcr] = useState<OcrResult | null>(null);
 
+  const [broadcastDate, setBroadcastDate] = useState(today);
+  const [venue, setVenue] = useState("");
   const [purchase, setPurchase] = useState("");
   const [payout, setPayout] = useState("");
   const [note, setNote] = useState("");
@@ -94,6 +99,8 @@ export function SubmitForm({
       fd.append("member_id", memberId);
       fd.append("purchase", purchase);
       fd.append("payout", payout);
+      fd.append("broadcast_date", broadcastDate);
+      if (venue) fd.append("venue", venue);
       if (note) fd.append("note", note);
 
       const res = await fetch("/api/public/submit-balance", {
@@ -109,6 +116,7 @@ export function SubmitForm({
       setOcr(null);
       setPurchase("");
       setPayout("");
+      setVenue("");
       setNote("");
       if (fileRef.current) fileRef.current.value = "";
       router.refresh();
@@ -125,6 +133,37 @@ export function SubmitForm({
         onSubmit={onSubmit}
         className="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 space-y-4"
       >
+        {/* Broadcast info */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">
+              配信日 *
+            </label>
+            <input
+              type="date"
+              required
+              value={broadcastDate}
+              onChange={(e) => setBroadcastDate(e.target.value)}
+              className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">
+              会場
+            </label>
+            <select
+              value={venue}
+              onChange={(e) => setVenue(e.target.value)}
+              className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
+            >
+              <option value="">選択してください</option>
+              {BOAT_VENUES.map((v) => (
+                <option key={v} value={v}>{v}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
         {/* Image upload */}
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-2">
