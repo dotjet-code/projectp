@@ -1,8 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
+function FanAuthLink({ onNavigate }: { onNavigate?: () => void }) {
+  const [state, setState] = useState<"loading" | "out" | "in">("loading");
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/auth/fan/me", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((j) => {
+        if (cancelled) return;
+        setState(j.loggedIn ? "in" : "out");
+      })
+      .catch(() => !cancelled && setState("out"));
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (state === "loading") return null;
+  if (state === "in") {
+    return (
+      <Link
+        href="/fan/me"
+        onClick={onNavigate}
+        className="rounded-full bg-gradient-to-r from-primary to-primary-blue px-4 py-1.5 text-xs font-bold text-white shadow-sm"
+      >
+        🎟️ マイページ
+      </Link>
+    );
+  }
+  return (
+    <Link
+      href="/fan/login"
+      onClick={onNavigate}
+      className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-xs font-bold text-gray-700 hover:bg-gray-50"
+    >
+      会員ログイン
+    </Link>
+  );
+}
 const navItems = [
   { label: "トップ", href: "/" },
   { label: "メンバー", href: "/members" },
@@ -48,6 +87,9 @@ export function Header() {
               </Link>
             );
           })}
+          <div className="ml-2">
+            <FanAuthLink />
+          </div>
         </nav>
 
         {/* Mobile hamburger */}
@@ -88,6 +130,9 @@ export function Header() {
               </Link>
             );
           })}
+          <div className="pt-2 mt-1 border-t border-gray-100">
+            <FanAuthLink onNavigate={() => setOpen(false)} />
+          </div>
         </nav>
       )}
     </header>

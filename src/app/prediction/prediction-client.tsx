@@ -223,6 +223,7 @@ export function PredictionClient({
 
   const [totalCount, setTotalCount] = useState(0);
   const [summary, setSummary] = useState<Summary>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [flash, setFlash] = useState<string | null>(null);
@@ -238,6 +239,7 @@ export function PredictionClient({
         const j = await res.json();
         setTotalCount(j.totalCount ?? 0);
         setSummary(j.summary ?? null);
+        setIsLoggedIn(Boolean(j.isLoggedIn));
         const p: Prediction | null = j.myPrediction;
         if (p) {
           setEntryType(p.entryType);
@@ -385,6 +387,18 @@ export function PredictionClient({
           これまでの予想提出数: <b>{totalCount.toLocaleString()}</b>
         </p>
       </section>
+
+      {/* Reward banner（未ログイン時のみ） */}
+      {loaded && !isLoggedIn && (
+        <section className="mx-auto max-w-[964px] px-4 mt-4">
+          <a
+            href="/fan/login"
+            className="block rounded-xl border border-[rgba(255,208,120,0.6)] bg-gradient-to-r from-[#fff7e6] to-[#ffe9c8] px-4 py-3 text-xs text-[#7a4a00] hover:shadow-sm transition-shadow"
+          >
+            🎁 <b>会員登録すると景品対象に</b> ── 的中するとライブ会場投票のボーナス票やチェキ券プレゼント。メールアドレスだけで登録できます →
+          </a>
+        </section>
+      )}
 
       {/* Info banner */}
       <section className="mx-auto max-w-[964px] px-4 mt-4">

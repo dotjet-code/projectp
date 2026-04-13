@@ -21,7 +21,9 @@ export async function middleware(req: NextRequest) {
   // 公開パス
   if (
     pathname.startsWith("/api/auth/google") ||
+    pathname.startsWith("/api/auth/fan") ||
     pathname === "/api/batch/snapshot" ||
+    pathname === "/api/batch/cleanup" ||
     pathname === "/login" ||
     pathname.startsWith("/api/auth/login") ||
     pathname.startsWith("/api/auth/logout")
@@ -73,6 +75,16 @@ export async function middleware(req: NextRequest) {
     loginUrl.pathname = "/login";
     loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);
+  }
+
+  // 管理者ロール必須（ファン会員が /admin に入れないようにする）
+  const role =
+    (user.app_metadata as { role?: string } | null | undefined)?.role ?? null;
+  if (role !== "admin") {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    }
+    return new NextResponse("Forbidden", { status: 403 });
   }
 
   return res;

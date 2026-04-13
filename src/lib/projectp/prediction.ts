@@ -10,6 +10,7 @@ export type PredictionEntryType = "normal" | "welcome";
 export type Prediction = {
   id: number;
   cookieId: string;
+  userId: string | null;
   periodId: string;
   entryType: PredictionEntryType;
   playerWin: string[]; // member uuid x2
@@ -23,6 +24,7 @@ export type Prediction = {
 type Row = {
   id: number;
   cookie_id: string;
+  user_id: string | null;
   period_id: string;
   entry_type: string;
   player_win: unknown;
@@ -42,6 +44,7 @@ function mapRow(r: Row): Prediction {
   return {
     id: r.id,
     cookieId: r.cookie_id,
+    userId: r.user_id,
     periodId: r.period_id,
     entryType: (r.entry_type === "welcome" ? "welcome" : "normal"),
     playerWin: asIdArray(r.player_win),
@@ -55,9 +58,20 @@ function mapRow(r: Row): Prediction {
 
 export async function getMyPrediction(
   cookieId: string,
-  periodId: string
+  periodId: string,
+  userId?: string | null
 ): Promise<Prediction | null> {
   const supabase = createAdminClient();
+  // ログイン済なら user_id で引く（Cookie がクリアされても追跡可能）
+  if (userId) {
+    const { data } = await supabase
+      .from("predictions")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("period_id", periodId)
+      .maybeSingle();
+    if (data) return mapRow(data as Row);
+  }
   const { data, error } = await supabase
     .from("predictions")
     .select("*")
@@ -70,6 +84,7 @@ export async function getMyPrediction(
 
 export async function upsertPrediction(input: {
   cookieId: string;
+  userId?: string | null;
   periodId: string;
   entryType: PredictionEntryType;
   playerWin: string[];
@@ -78,11 +93,45 @@ export async function upsertPrediction(input: {
   pitTri: string[];
 }): Promise<Prediction> {
   const supabase = createAdminClient();
+
+  // ログイン済の場合は user_id を identity として扱い、
+  // 同一ユーザーが複数 Cookie から重複予想しないようにする。
+  // - 既に (user_id, period_id) の行があればそれを更新。
+  // - 無ければ (cookie_id, period_id) で upsert し、user_id を紐付ける。
+  if (input.userId) {
+    const { data: existing } = await supabase
+      .from("predictions")
+      .select("id")
+      .eq("user_id", input.userId)
+      .eq("period_id", input.periodId)
+      .maybeSingle();
+
+    if (existing) {
+      const { data, error } = await supabase
+        .from("predictions")
+        .update({
+          cookie_id: input.cookieId,
+          entry_type: input.entryType,
+          player_win: input.playerWin,
+          player_tri: input.playerTri,
+          pit_win: input.pitWin,
+          pit_tri: input.pitTri,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", (existing as { id: number }).id)
+        .select()
+        .single();
+      if (error) throw new Error(error.message);
+      return mapRow(data as Row);
+    }
+  }
+
   const { data, error } = await supabase
     .from("predictions")
     .upsert(
       {
         cookie_id: input.cookieId,
+        user_id: input.userId ?? null,
         period_id: input.periodId,
         entry_type: input.entryType,
         player_win: input.playerWin,
@@ -254,6 +303,51 @@ export async function scoreStagePredictions(
   }
 
   return { scored: scores.length, scores };
+}
+
+export type UserPredictionHistory = {
+  predictionId: number;
+  periodId: string;
+  periodName: string | null;
+  periodStartDate: string | null;
+  periodEndDate: string | null;
+  totalScore: number | null;
+  scoredAt: string | null;
+  createdAt: string;
+};
+
+export async function listPredictionsForUser(
+  userId: string
+): Promise<UserPredictionHistory[]> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("predictions")
+    .select(
+      "id, period_id, total_score, scored_at, created_at, periods(name, start_date, end_date)"
+    )
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  if (error || !data) return [];
+  type Joined = {
+    id: number;
+    period_id: string;
+    total_score: number | null;
+    scored_at: string | null;
+    created_at: string;
+    periods:
+      | { name: string | null; start_date: string | null; end_date: string | null }
+      | null;
+  };
+  return (data as unknown as Joined[]).map((r) => ({
+    predictionId: r.id,
+    periodId: r.period_id,
+    periodName: r.periods?.name ?? null,
+    periodStartDate: r.periods?.start_date ?? null,
+    periodEndDate: r.periods?.end_date ?? null,
+    totalScore: r.total_score,
+    scoredAt: r.scored_at,
+    createdAt: r.created_at,
+  }));
 }
 
 export type TopPredictor = {

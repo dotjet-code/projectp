@@ -11,6 +11,24 @@ import {
   VOTE_COOKIE,
   VOTE_COOKIE_MAX_AGE,
 } from "@/lib/projectp/vote-cookie";
+import { createServerSupabase } from "@/lib/supabase/server";
+
+async function getFanUserId(): Promise<string | null> {
+  try {
+    const supabase = await createServerSupabase();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return null;
+    const role =
+      (user.app_metadata as { role?: string } | null | undefined)?.role ?? null;
+    // admin は景品対象外。通常のファンのみ紐付ける。
+    if (role === "admin") return null;
+    return user.id;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * GET  /api/public/prediction
@@ -47,8 +65,12 @@ export async function GET(req: NextRequest) {
     return withCookie(res, cookieId, created);
   }
 
+  const userId = await getFanUserId();
+
   const [myPrediction, totalCount, summary] = await Promise.all([
-    created ? null : getMyPrediction(cookieId, stage.id).catch(() => null),
+    created && !userId
+      ? null
+      : getMyPrediction(cookieId, stage.id, userId).catch(() => null),
     countPredictionsForPeriod(stage.id).catch(() => 0),
     getPredictionSummary(stage.id).catch(() => null),
   ]);
@@ -64,6 +86,7 @@ export async function GET(req: NextRequest) {
       startDate: stage.startDate,
       endDate: stage.endDate,
     },
+    isLoggedIn: !!userId,
     myPrediction,
     totalCount,
     summary,
@@ -115,10 +138,12 @@ export async function POST(req: NextRequest) {
   }
 
   const { cookieId, created } = readOrCreateVoteCookie(req);
+  const userId = await getFanUserId();
 
   try {
     const prediction = await upsertPrediction({
       cookieId,
+      userId,
       periodId: stage.id,
       entryType,
       playerWin,
