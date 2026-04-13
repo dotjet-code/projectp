@@ -5,7 +5,7 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { getFanProfile } from "@/lib/projectp/fan-profile";
 import { listRewardsForUser, REWARD_LABELS } from "@/lib/projectp/reward";
 import { listPredictionsForUser } from "@/lib/projectp/prediction";
-import { FanMeActions } from "./actions";
+import { DisplayNameForm, FanMeActions } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +63,7 @@ export default async function FanMePage() {
                 {profile?.status ?? "active"}
               </p>
             </div>
+            <DisplayNameForm initial={profile?.displayName ?? null} />
             <div className="rounded-xl bg-[#ecfeff]/60 border border-[rgba(206,250,254,0.5)] px-4 py-3 text-xs text-muted">
               🎁 順位予想を提出すると景品（ライブ会場投票ボーナス / チェキ券）の対象になります。景品の受取りは会場限定です。
             </div>

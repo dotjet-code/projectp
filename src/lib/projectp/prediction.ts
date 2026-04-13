@@ -355,6 +355,9 @@ export type TopPredictor = {
   cookieIdMasked: string; // 表示用にマスクした Cookie ID
   totalScore: number;
   entryType: PredictionEntryType;
+  isFan: boolean;            // ログイン済ファンの予想か
+  displayName: string | null; // ファンユーザーの表示名
+  hasReward: boolean;        // この Stage で景品を獲得したか
 };
 
 /**
@@ -368,7 +371,7 @@ export async function getTopPredictors(
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("predictions")
-    .select("cookie_id, entry_type, total_score")
+    .select("cookie_id, user_id, entry_type, total_score")
     .eq("period_id", periodId)
     .not("total_score", "is", null)
     .order("total_score", { ascending: false })
@@ -377,16 +380,55 @@ export async function getTopPredictors(
 
   const rows = (data ?? []) as Array<{
     cookie_id: string;
+    user_id: string | null;
     entry_type: string;
     total_score: number | null;
   }>;
 
-  return rows.map((r, i) => ({
-    rank: i + 1,
-    cookieIdMasked: `${r.cookie_id.slice(0, 4)}…${r.cookie_id.slice(-2)}`,
-    totalScore: r.total_score ?? 0,
-    entryType: r.entry_type === "welcome" ? "welcome" : "normal",
-  }));
+  // ファンの表示名を取得
+  const fanIds = rows
+    .map((r) => r.user_id)
+    .filter((x): x is string => !!x);
+  const nameByUserId = new Map<string, string | null>();
+  if (fanIds.length > 0) {
+    const { data: fans } = await supabase
+      .from("fan_profiles")
+      .select("user_id, display_name")
+      .in("user_id", fanIds);
+    for (const f of (fans ?? []) as {
+      user_id: string;
+      display_name: string | null;
+    }[]) {
+      nameByUserId.set(f.user_id, f.display_name);
+    }
+  }
+
+  // この Stage で景品を獲得したユーザー
+  const rewardedUserIds = new Set<string>();
+  if (fanIds.length > 0) {
+    const { data: rs } = await supabase
+      .from("prediction_rewards")
+      .select("user_id")
+      .eq("period_id", periodId)
+      .in("user_id", fanIds);
+    for (const r of (rs ?? []) as { user_id: string }[]) {
+      rewardedUserIds.add(r.user_id);
+    }
+  }
+
+  return rows.map((r, i) => {
+    const isFan = !!r.user_id;
+    const displayName = isFan ? nameByUserId.get(r.user_id!) ?? null : null;
+    return {
+      rank: i + 1,
+      cookieIdMasked: `${r.cookie_id.slice(0, 4)}…${r.cookie_id.slice(-2)}`,
+      totalScore: r.total_score ?? 0,
+      entryType: r.entry_type === "welcome" ? "welcome" : "normal",
+      isFan,
+      displayName,
+      hasReward: isFan && rewardedUserIds.has(r.user_id!),
+    };
+  });
 }
 
 export async function getPredictionSummary(

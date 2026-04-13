@@ -273,22 +273,33 @@ export default async function ResultsPage({
                   key={p.rank}
                   className="flex items-center justify-between px-4 py-2.5 text-xs"
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="w-6 text-center font-[family-name:var(--font-outfit)] font-extrabold text-[#7008e7]">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="w-6 text-center font-[family-name:var(--font-outfit)] font-extrabold text-[#7008e7] shrink-0">
                       {p.rank <= 3
                         ? ["🥇", "🥈", "🥉"][p.rank - 1]
                         : `#${p.rank}`}
                     </span>
-                    <span className="font-mono text-muted">
-                      {p.cookieIdMasked}
-                    </span>
+                    {p.isFan ? (
+                      <span className="font-bold text-foreground truncate">
+                        {p.displayName ?? "ファン会員"}
+                      </span>
+                    ) : (
+                      <span className="font-mono text-muted">
+                        {p.cookieIdMasked}
+                      </span>
+                    )}
+                    {p.hasReward && (
+                      <span className="rounded-full bg-amber-100 border border-amber-200 px-1.5 py-0.5 text-[9px] font-bold text-amber-700 shrink-0">
+                        🎁 景品獲得
+                      </span>
+                    )}
                     {p.entryType === "welcome" && (
-                      <span className="rounded-full bg-pink-100 border border-pink-200 px-1.5 py-0.5 text-[9px] font-bold text-pink-700">
+                      <span className="rounded-full bg-pink-100 border border-pink-200 px-1.5 py-0.5 text-[9px] font-bold text-pink-700 shrink-0">
                         WELCOME
                       </span>
                     )}
                   </div>
-                  <div className="text-right">
+                  <div className="text-right shrink-0">
                     <span className="font-[family-name:var(--font-outfit)] text-sm font-black text-foreground">
                       {p.totalScore}
                     </span>
@@ -297,6 +308,9 @@ export default async function ResultsPage({
                 </li>
               ))}
             </ul>
+            <div className="mt-3 rounded-xl border border-[rgba(255,208,120,0.6)] bg-gradient-to-r from-[#fff7e6] to-[#ffe9c8] px-4 py-2.5 text-[11px] text-[#7a4a00]">
+              🎁 <b>会員登録すると景品対象に</b> ── 的中するとライブ会場投票のボーナス票やチェキ無料券。 <a href="/fan/login" className="underline font-bold">登録はこちら →</a>
+            </div>
           </section>
         )}
       </main>
