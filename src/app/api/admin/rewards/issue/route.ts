@@ -28,6 +28,17 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
+  let expiresAt: string | null = null;
+  if (typeof body.expiresAt === "string" && body.expiresAt) {
+    const d = new Date(body.expiresAt);
+    if (isNaN(d.getTime())) {
+      return NextResponse.json(
+        { error: "expiresAt の形式が不正" },
+        { status: 400 }
+      );
+    }
+    expiresAt = d.toISOString();
+  }
 
   const supabase = await createServerSupabase();
   const {
@@ -43,6 +54,7 @@ export async function POST(req: NextRequest) {
       rewardType,
       minScore,
       issuedBy: user.id,
+      expiresAt,
     });
     await logAudit({
       action: "reward.issue",

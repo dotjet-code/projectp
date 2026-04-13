@@ -18,6 +18,7 @@ export type Reward = {
   totalScore: number | null;
   issuedAt: string;
   redeemedAt: string | null;
+  expiresAt: string | null;
 };
 
 type Row = {
@@ -30,7 +31,13 @@ type Row = {
   total_score: number | null;
   issued_at: string;
   redeemed_at: string | null;
+  expires_at: string | null;
 };
+
+export function isExpired(reward: Reward, now = new Date()): boolean {
+  if (!reward.expiresAt) return false;
+  return new Date(reward.expiresAt).getTime() < now.getTime();
+}
 
 function asRewardType(s: string): RewardType {
   return s === "cheki_free" ? "cheki_free" : "live_vote_bonus";
@@ -47,6 +54,7 @@ function mapRow(r: Row): Reward {
     totalScore: r.total_score,
     issuedAt: r.issued_at,
     redeemedAt: r.redeemed_at,
+    expiresAt: r.expires_at,
   };
 }
 
@@ -72,6 +80,7 @@ export async function issueRewardsForPeriod(input: {
   rewardType: RewardType;
   minScore: number;
   issuedBy: string;
+  expiresAt?: string | null;
 }): Promise<{ issued: number; skipped: number; rewards: Reward[] }> {
   const supabase = createAdminClient();
 
@@ -123,6 +132,7 @@ export async function issueRewardsForPeriod(input: {
       reward_code: generateRewardCode(),
       total_score: r.total_score,
       issued_by: input.issuedBy,
+      expires_at: input.expiresAt ?? null,
     }));
 
   if (toInsert.length === 0) {
@@ -152,7 +162,7 @@ export async function redeemReward(input: {
   note?: string | null;
 }): Promise<
   | { ok: true; reward: Reward }
-  | { ok: false; reason: "not_found" | "already_redeemed" }
+  | { ok: false; reason: "not_found" | "already_redeemed" | "expired" }
 > {
   const supabase = createAdminClient();
   const code = input.rewardCode.trim().toUpperCase();
@@ -164,8 +174,12 @@ export async function redeemReward(input: {
     .eq("reward_code", code)
     .maybeSingle();
   if (!existing) return { ok: false, reason: "not_found" };
-  if ((existing as Row).redeemed_at) {
+  const row = existing as Row;
+  if (row.redeemed_at) {
     return { ok: false, reason: "already_redeemed" };
+  }
+  if (row.expires_at && new Date(row.expires_at).getTime() < Date.now()) {
+    return { ok: false, reason: "expired" };
   }
 
   const { data, error } = await supabase

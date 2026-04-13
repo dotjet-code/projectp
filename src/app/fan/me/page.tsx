@@ -3,7 +3,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { getFanProfile } from "@/lib/projectp/fan-profile";
-import { listRewardsForUser, REWARD_LABELS } from "@/lib/projectp/reward";
+import { listRewardsForUser, REWARD_LABELS, isExpired } from "@/lib/projectp/reward";
 import { listPredictionsForUser } from "@/lib/projectp/prediction";
 import { DisplayNameForm, FanMeActions } from "./actions";
 
@@ -127,31 +127,43 @@ export default async function FanMePage() {
             <ul className="space-y-3">
               {rewards.map((r) => {
                 const used = !!r.redeemedAt;
+                const expired = !used && isExpired(r);
+                const inactive = used || expired;
                 return (
                   <li
                     key={r.id}
                     className={`rounded-2xl border p-4 ${
-                      used
+                      inactive
                         ? "border-gray-200 bg-gray-50 opacity-60"
                         : "border-[rgba(255,208,120,0.6)] bg-gradient-to-r from-[#fff7e6] to-[#ffe9c8]"
                     }`}
                   >
                     <p className="text-[10px] font-semibold tracking-wider text-muted">
-                      {used ? "USED" : "AVAILABLE"}
+                      {used ? "USED" : expired ? "EXPIRED" : "AVAILABLE"}
                     </p>
                     <p className="text-sm font-bold text-foreground">
                       {REWARD_LABELS[r.rewardType]}
                     </p>
-                    <p className="mt-2 text-2xl font-mono font-extrabold tracking-[0.25em] text-[#7a4a00] select-all">
+                    <p
+                      className={`mt-2 text-2xl font-mono font-extrabold tracking-[0.25em] select-all ${
+                        inactive ? "text-gray-400 line-through" : "text-[#7a4a00]"
+                      }`}
+                    >
                       {r.rewardCode}
                     </p>
                     {used ? (
                       <p className="mt-1 text-[10px] text-muted">
                         {new Date(r.redeemedAt!).toLocaleString()} 消込済
                       </p>
+                    ) : expired ? (
+                      <p className="mt-1 text-[10px] text-red-600">
+                        {new Date(r.expiresAt!).toLocaleDateString()} に期限切れ
+                      </p>
                     ) : (
                       <p className="mt-1 text-[10px] text-muted">
-                        会場スタッフにこのコードを見せてください
+                        {r.expiresAt
+                          ? `${new Date(r.expiresAt).toLocaleDateString()} までに会場で使用`
+                          : "会場スタッフにこのコードを見せてください"}
                       </p>
                     )}
                   </li>

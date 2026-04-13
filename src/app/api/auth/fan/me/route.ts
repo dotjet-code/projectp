@@ -25,11 +25,13 @@ export async function GET() {
   }
 
   const admin = createAdminClient();
+  const nowIso = new Date().toISOString();
   const { count } = await admin
     .from("prediction_rewards")
     .select("*", { count: "exact", head: true })
     .eq("user_id", user.id)
-    .is("redeemed_at", null);
+    .is("redeemed_at", null)
+    .or(`expires_at.is.null,expires_at.gt.${nowIso}`);
 
   return NextResponse.json({
     loggedIn: true,

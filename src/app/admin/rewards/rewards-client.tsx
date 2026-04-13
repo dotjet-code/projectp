@@ -18,6 +18,7 @@ type RewardRow = {
   totalScore: number | null;
   issuedAt: string;
   redeemedAt: string | null;
+  expiresAt: string | null;
 };
 
 const REWARD_TYPES: { value: "live_vote_bonus" | "cheki_free"; label: string }[] = [
@@ -79,6 +80,7 @@ function IssueTab({
   const [rewardType, setRewardType] =
     useState<"live_vote_bonus" | "cheki_free">("live_vote_bonus");
   const [minScore, setMinScore] = useState(10);
+  const [expiresAt, setExpiresAt] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -105,7 +107,12 @@ function IssueTab({
       const res = await fetch("/api/admin/rewards/issue", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ periodId, rewardType, minScore }),
+        body: JSON.stringify({
+          periodId,
+          rewardType,
+          minScore,
+          expiresAt: expiresAt || null,
+        }),
       });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error ?? `HTTP ${res.status}`);
@@ -163,6 +170,17 @@ function IssueTab({
           />
         </label>
       </div>
+      <label className="block">
+        <span className="text-[10px] font-semibold text-muted">
+          有効期限（任意 — ライブ当日の日付を指定）
+        </span>
+        <input
+          type="date"
+          value={expiresAt}
+          onChange={(e) => setExpiresAt(e.target.value)}
+          className="mt-1 w-full max-w-xs rounded border border-gray-300 px-3 py-2 text-sm"
+        />
+      </label>
       <div className="flex items-center gap-3">
         <button
           type="button"
@@ -188,32 +206,44 @@ function IssueTab({
                 <th className="px-2 py-1.5">種別</th>
                 <th className="px-2 py-1.5">スコア</th>
                 <th className="px-2 py-1.5">発行</th>
+                <th className="px-2 py-1.5">期限</th>
                 <th className="px-2 py-1.5">消込</th>
               </tr>
             </thead>
             <tbody>
-              {rewards.map((r) => (
-                <tr key={r.id} className="border-t border-gray-100">
-                  <td className="px-2 py-1.5 font-mono">{r.rewardCode}</td>
-                  <td className="px-2 py-1.5">
-                    {r.rewardType === "cheki_free" ? "チェキ" : "投票"}
-                  </td>
-                  <td className="px-2 py-1.5">{r.totalScore ?? "-"}</td>
-                  <td className="px-2 py-1.5 text-muted">
-                    {new Date(r.issuedAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-2 py-1.5">
-                    {r.redeemedAt ? (
-                      <span className="text-emerald-700">✓</span>
-                    ) : (
-                      <span className="text-gray-400">未</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
+              {rewards.map((r) => {
+                const expired =
+                  r.expiresAt && new Date(r.expiresAt).getTime() < Date.now();
+                return (
+                  <tr key={r.id} className="border-t border-gray-100">
+                    <td className="px-2 py-1.5 font-mono">{r.rewardCode}</td>
+                    <td className="px-2 py-1.5">
+                      {r.rewardType === "cheki_free" ? "チェキ" : "投票"}
+                    </td>
+                    <td className="px-2 py-1.5">{r.totalScore ?? "-"}</td>
+                    <td className="px-2 py-1.5 text-muted">
+                      {new Date(r.issuedAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-2 py-1.5 text-muted">
+                      {r.expiresAt
+                        ? new Date(r.expiresAt).toLocaleDateString()
+                        : "—"}
+                    </td>
+                    <td className="px-2 py-1.5">
+                      {r.redeemedAt ? (
+                        <span className="text-emerald-700">✓</span>
+                      ) : expired ? (
+                        <span className="text-red-600">期限切れ</span>
+                      ) : (
+                        <span className="text-gray-400">未</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
               {rewards.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-2 py-3 text-center text-muted">
+                  <td colSpan={6} className="px-2 py-3 text-center text-muted">
                     まだ発行されていません
                   </td>
                 </tr>
@@ -259,6 +289,8 @@ function RedeemTab() {
             ? "コードが見つかりません"
             : j.error === "already_redeemed"
             ? "既に消込済"
+            : j.error === "expired"
+            ? "有効期限切れ"
             : `エラー: ${j.error}`;
         setHistory((h) => [{ code, status: "ng", message: msg }, ...h]);
       }

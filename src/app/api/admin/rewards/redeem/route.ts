@@ -30,7 +30,12 @@ export async function POST(req: NextRequest) {
   });
 
   if (!result.ok) {
-    const status = result.reason === "not_found" ? 404 : 409;
+    const status =
+      result.reason === "not_found"
+        ? 404
+        : result.reason === "expired"
+        ? 410
+        : 409;
     return NextResponse.json({ error: result.reason }, { status });
   }
   await logAudit({
