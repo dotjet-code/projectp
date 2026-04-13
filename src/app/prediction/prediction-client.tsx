@@ -224,6 +224,8 @@ export function PredictionClient({
   const [totalCount, setTotalCount] = useState(0);
   const [summary, setSummary] = useState<Summary>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isClosed, setIsClosed] = useState(false);
+  const [closeAt, setCloseAt] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [flash, setFlash] = useState<string | null>(null);
@@ -240,6 +242,8 @@ export function PredictionClient({
         setTotalCount(j.totalCount ?? 0);
         setSummary(j.summary ?? null);
         setIsLoggedIn(Boolean(j.isLoggedIn));
+        setIsClosed(Boolean(j.isClosed));
+        setCloseAt(j.stage?.predictionsCloseAt ?? null);
         const p: Prediction | null = j.myPrediction;
         if (p) {
           setEntryType(p.entryType);
@@ -417,7 +421,7 @@ export function PredictionClient({
         selections={playerWin}
         onSelect={makeSelect(playerWin, setPlayerWin)}
         onRemove={makeRemove(playerWin, setPlayerWin)}
-        isLocked={false}
+        isLocked={isClosed}
       />
       <PredictionSection
         title="PLAYER 3連単 (1着・2着・3着)"
@@ -427,7 +431,7 @@ export function PredictionClient({
         selections={playerTri}
         onSelect={makeSelect(playerTri, setPlayerTri)}
         onRemove={makeRemove(playerTri, setPlayerTri)}
-        isLocked={false}
+        isLocked={isClosed}
       />
 
       {/* PIT */}
@@ -439,7 +443,7 @@ export function PredictionClient({
         selections={pitWin}
         onSelect={makeSelect(pitWin, setPitWin)}
         onRemove={makeRemove(pitWin, setPitWin)}
-        isLocked={false}
+        isLocked={isClosed}
       />
       <PredictionSection
         title="PIT 3連単 (1着・2着・3着)"
@@ -449,7 +453,7 @@ export function PredictionClient({
         selections={pitTri}
         onSelect={makeSelect(pitTri, setPitTri)}
         onRemove={makeRemove(pitTri, setPitTri)}
-        isLocked={false}
+        isLocked={isClosed}
       />
 
       {/* Submit */}
@@ -460,14 +464,25 @@ export function PredictionClient({
         {flash && (
           <p className="mb-3 text-xs text-emerald-700">{flash}</p>
         )}
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={!loaded || submitting || !allFilled}
-          className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary-blue px-10 py-3.5 text-base font-bold text-white shadow-[0_10px_15px_rgba(83,234,253,0.4)] hover:shadow-[0_10px_20px_rgba(83,234,253,0.5)] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-        >
-          {submitting ? "提出中..." : allFilled ? "予想を提出する →" : "全て埋めてください"}
-        </button>
+        {isClosed ? (
+          <div className="inline-flex items-center gap-2 rounded-full bg-gray-200 px-10 py-3.5 text-base font-bold text-gray-500">
+            🔒 締切済み
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={!loaded || submitting || !allFilled}
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary-blue px-10 py-3.5 text-base font-bold text-white shadow-[0_10px_15px_rgba(83,234,253,0.4)] hover:shadow-[0_10px_20px_rgba(83,234,253,0.5)] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          >
+            {submitting ? "提出中..." : allFilled ? "予想を提出する →" : "全て埋めてください"}
+          </button>
+        )}
+        {closeAt && !isClosed && (
+          <p className="mt-3 text-[11px] text-amber-700">
+            ⏰ 締切: {new Date(closeAt).toLocaleString()}
+          </p>
+        )}
         <p className="mt-2 text-[10px] text-muted">
           ※ 匿名Cookieで1Stage1予想 / 何度でも上書き可
         </p>

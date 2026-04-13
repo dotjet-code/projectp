@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getActiveStage } from "@/lib/projectp/stage";
+import { getActiveStage, isPredictionClosed } from "@/lib/projectp/stage";
 import {
   countPredictionsForPeriod,
   getMyPrediction,
@@ -75,6 +75,7 @@ export async function GET(req: NextRequest) {
     getPredictionSummary(stage.id).catch(() => null),
   ]);
 
+  const closed = isPredictionClosed(stage);
   const res = NextResponse.json({
     stage: {
       id: stage.id,
@@ -85,8 +86,10 @@ export async function GET(req: NextRequest) {
       stageNumber: stage.stageNumber,
       startDate: stage.startDate,
       endDate: stage.endDate,
+      predictionsCloseAt: stage.predictionsCloseAt,
     },
     isLoggedIn: !!userId,
+    isClosed: closed,
     myPrediction,
     totalCount,
     summary,
@@ -104,6 +107,12 @@ export async function POST(req: NextRequest) {
   if (!stage) {
     return NextResponse.json(
       { error: "現在 active な Stage がありません" },
+      { status: 400 }
+    );
+  }
+  if (isPredictionClosed(stage)) {
+    return NextResponse.json(
+      { error: "この Stage の予想は締切済みです" },
       { status: 400 }
     );
   }

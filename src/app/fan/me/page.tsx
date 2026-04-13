@@ -81,36 +81,80 @@ export default async function FanMePage() {
             </div>
           ) : (
             <ul className="space-y-2">
-              {history.map((h) => (
-                <li
-                  key={h.predictionId}
-                  className="rounded-xl border border-gray-200 bg-white/80 p-3 flex items-center justify-between"
-                >
-                  <div>
-                    <p className="text-xs font-bold text-foreground">
-                      {h.periodName ?? "Stage"}
-                    </p>
-                    <p className="text-[10px] text-muted">
-                      {h.periodStartDate} 〜 {h.periodEndDate}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    {h.scoredAt ? (
-                      <>
-                        <p className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-primary-dark">
-                          {h.totalScore ?? 0}
-                          <span className="text-[10px] font-bold text-muted ml-0.5">
-                            /10
-                          </span>
+              {history.map((h) => {
+                const dot = (hit: number) =>
+                  hit === 1 ? "●" : "○";
+                const cls = (hit: number) =>
+                  hit === 1 ? "text-emerald-600" : "text-gray-300";
+                return (
+                  <li
+                    key={h.predictionId}
+                    className="rounded-xl border border-gray-200 bg-white/80 p-3"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-foreground truncate">
+                          {h.periodName ?? "Stage"}
                         </p>
-                        <p className="text-[9px] text-muted">採点済</p>
-                      </>
-                    ) : (
-                      <p className="text-[10px] text-muted">採点待ち</p>
+                        <p className="text-[10px] text-muted">
+                          {h.periodStartDate} 〜 {h.periodEndDate}
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        {h.scoredAt ? (
+                          <>
+                            <p className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-primary-dark">
+                              {h.totalScore ?? 0}
+                              <span className="text-[10px] font-bold text-muted ml-0.5">
+                                /10
+                              </span>
+                            </p>
+                            <p className="text-[9px] text-muted">採点済</p>
+                          </>
+                        ) : (
+                          <p className="text-[10px] text-muted">採点待ち</p>
+                        )}
+                      </div>
+                    </div>
+                    {h.slotScores && (
+                      <div className="mt-2 pt-2 border-t border-gray-100 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
+                        <div>
+                          <span className="text-muted mr-1">PLAYER 連単</span>
+                          {h.slotScores.playerWin.map((v, i) => (
+                            <span key={i} className={cls(v)}>
+                              {dot(v)}
+                            </span>
+                          ))}
+                        </div>
+                        <div>
+                          <span className="text-muted mr-1">PLAYER 3連単</span>
+                          {h.slotScores.playerTri.map((v, i) => (
+                            <span key={i} className={cls(v)}>
+                              {dot(v)}
+                            </span>
+                          ))}
+                        </div>
+                        <div>
+                          <span className="text-muted mr-1">PIT 連単</span>
+                          {h.slotScores.pitWin.map((v, i) => (
+                            <span key={i} className={cls(v)}>
+                              {dot(v)}
+                            </span>
+                          ))}
+                        </div>
+                        <div>
+                          <span className="text-muted mr-1">PIT 3連単</span>
+                          {h.slotScores.pitTri.map((v, i) => (
+                            <span key={i} className={cls(v)}>
+                              {dot(v)}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     )}
-                  </div>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </section>

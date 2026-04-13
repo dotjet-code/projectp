@@ -17,6 +17,7 @@ export type Stage = {
   startDate: string; // YYYY-MM-DD
   endDate: string;   // YYYY-MM-DD (inclusive)
   status: "active" | "closed";
+  predictionsCloseAt: string | null;
   createdAt: string;
 };
 
@@ -31,8 +32,18 @@ function mapRow(row: Record<string, unknown>): Stage {
     startDate: row.start_date as string,
     endDate: row.end_date as string,
     status: row.status as "active" | "closed",
+    predictionsCloseAt: (row.predictions_close_at as string | null) ?? null,
     createdAt: row.created_at as string,
   };
+}
+
+export function isPredictionClosed(
+  stage: Pick<Stage, "status" | "predictionsCloseAt">,
+  now = new Date()
+): boolean {
+  if (stage.status === "closed") return true;
+  if (!stage.predictionsCloseAt) return false;
+  return new Date(stage.predictionsCloseAt).getTime() <= now.getTime();
 }
 
 /**
@@ -129,6 +140,7 @@ export async function updateStage(
     startDate?: string;
     endDate?: string;
     status?: "active" | "closed";
+    predictionsCloseAt?: string | null;
   }
 ): Promise<Stage> {
   const supabase = createAdminClient();
@@ -142,6 +154,8 @@ export async function updateStage(
   if (patch.startDate !== undefined) update.start_date = patch.startDate;
   if (patch.endDate !== undefined) update.end_date = patch.endDate;
   if (patch.status !== undefined) update.status = patch.status;
+  if (patch.predictionsCloseAt !== undefined)
+    update.predictions_close_at = patch.predictionsCloseAt;
 
   const { data, error } = await supabase
     .from("periods")

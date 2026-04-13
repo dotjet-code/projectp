@@ -29,6 +29,11 @@ export function StageCard({
   const [subtitle, setSubtitle] = useState(stage.subtitle ?? "");
   const [startDate, setStartDate] = useState(stage.startDate);
   const [endDate, setEndDate] = useState(stage.endDate);
+  const [predictionsCloseAt, setPredictionsCloseAt] = useState(
+    stage.predictionsCloseAt
+      ? toLocalInputValue(stage.predictionsCloseAt)
+      : ""
+  );
 
   function resetForm() {
     setSeriesNumber(stage.seriesNumber?.toString() ?? "");
@@ -37,7 +42,20 @@ export function StageCard({
     setSubtitle(stage.subtitle ?? "");
     setStartDate(stage.startDate);
     setEndDate(stage.endDate);
+    setPredictionsCloseAt(
+      stage.predictionsCloseAt
+        ? toLocalInputValue(stage.predictionsCloseAt)
+        : ""
+    );
     setError(null);
+  }
+
+  function toLocalInputValue(iso: string): string {
+    const d = new Date(iso);
+    const pad = (n: number) => n.toString().padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(
+      d.getDate()
+    )}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
 
   async function onSave() {
@@ -62,6 +80,9 @@ export function StageCard({
           subtitle: subtitle || null,
           startDate,
           endDate,
+          predictionsCloseAt: predictionsCloseAt
+            ? new Date(predictionsCloseAt).toISOString()
+            : null,
         }),
       });
       if (!res.ok) {
@@ -356,6 +377,21 @@ export function StageCard({
                 className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
               />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">
+              予想締切日時（任意）
+            </label>
+            <input
+              type="datetime-local"
+              value={predictionsCloseAt}
+              onChange={(e) => setPredictionsCloseAt(e.target.value)}
+              className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
+            />
+            <p className="mt-1 text-[10px] text-muted">
+              特番開始直前の時刻を指定。これを過ぎるとファンは予想を変更できなくなります。
+            </p>
           </div>
 
           {error && <p className="text-xs text-red-600">エラー: {error}</p>}

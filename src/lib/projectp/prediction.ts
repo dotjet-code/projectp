@@ -305,6 +305,13 @@ export async function scoreStagePredictions(
   return { scored: scores.length, scores };
 }
 
+export type SlotScores = {
+  playerWin: number[];
+  playerTri: number[];
+  pitWin: number[];
+  pitTri: number[];
+};
+
 export type UserPredictionHistory = {
   predictionId: number;
   periodId: string;
@@ -312,9 +319,23 @@ export type UserPredictionHistory = {
   periodStartDate: string | null;
   periodEndDate: string | null;
   totalScore: number | null;
+  slotScores: SlotScores | null;
   scoredAt: string | null;
   createdAt: string;
 };
+
+function parseSlotScores(v: unknown): SlotScores | null {
+  if (!v || typeof v !== "object") return null;
+  const s = v as Record<string, unknown>;
+  const arr = (x: unknown): number[] =>
+    Array.isArray(x) ? x.map((y) => (y === 1 ? 1 : 0)) : [];
+  return {
+    playerWin: arr(s.playerWin),
+    playerTri: arr(s.playerTri),
+    pitWin: arr(s.pitWin),
+    pitTri: arr(s.pitTri),
+  };
+}
 
 export async function listPredictionsForUser(
   userId: string
@@ -323,7 +344,7 @@ export async function listPredictionsForUser(
   const { data, error } = await supabase
     .from("predictions")
     .select(
-      "id, period_id, total_score, scored_at, created_at, periods(name, start_date, end_date)"
+      "id, period_id, total_score, slot_scores, scored_at, created_at, periods(name, start_date, end_date)"
     )
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
@@ -332,6 +353,7 @@ export async function listPredictionsForUser(
     id: number;
     period_id: string;
     total_score: number | null;
+    slot_scores: unknown;
     scored_at: string | null;
     created_at: string;
     periods:
@@ -345,6 +367,7 @@ export async function listPredictionsForUser(
     periodStartDate: r.periods?.start_date ?? null,
     periodEndDate: r.periods?.end_date ?? null,
     totalScore: r.total_score,
+    slotScores: parseSlotScores(r.slot_scores),
     scoredAt: r.scored_at,
     createdAt: r.created_at,
   }));
