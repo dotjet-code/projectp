@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 
 function FanAuthLink({ onNavigate }: { onNavigate?: () => void }) {
   const [state, setState] = useState<"loading" | "out" | "in">("loading");
+  const [unredeemed, setUnredeemed] = useState(0);
   useEffect(() => {
     let cancelled = false;
     fetch("/api/auth/fan/me", { cache: "no-store" })
@@ -13,6 +14,7 @@ function FanAuthLink({ onNavigate }: { onNavigate?: () => void }) {
       .then((j) => {
         if (cancelled) return;
         setState(j.loggedIn ? "in" : "out");
+        setUnredeemed(j.unredeemedRewards ?? 0);
       })
       .catch(() => !cancelled && setState("out"));
     return () => {
@@ -26,9 +28,14 @@ function FanAuthLink({ onNavigate }: { onNavigate?: () => void }) {
       <Link
         href="/fan/me"
         onClick={onNavigate}
-        className="rounded-full bg-gradient-to-r from-primary to-primary-blue px-4 py-1.5 text-xs font-bold text-white shadow-sm"
+        className="relative rounded-full bg-gradient-to-r from-primary to-primary-blue px-4 py-1.5 text-xs font-bold text-white shadow-sm"
       >
         🎟️ マイページ
+        {unredeemed > 0 && (
+          <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-extrabold border-2 border-white shadow">
+            {unredeemed}
+          </span>
+        )}
       </Link>
     );
   }

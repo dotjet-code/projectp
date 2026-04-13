@@ -25,7 +25,13 @@ const REWARD_TYPES: { value: "live_vote_bonus" | "cheki_free"; label: string }[]
   { value: "cheki_free", label: "チェキ券1枚無料" },
 ];
 
-export function RewardsClient({ stages }: { stages: StageOption[] }) {
+export function RewardsClient({
+  stages,
+  initialPeriodId,
+}: {
+  stages: StageOption[];
+  initialPeriodId?: string | null;
+}) {
   const [tab, setTab] = useState<"issue" | "redeem">("issue");
 
   return (
@@ -51,13 +57,25 @@ export function RewardsClient({ stages }: { stages: StageOption[] }) {
         </button>
       </div>
 
-      {tab === "issue" ? <IssueTab stages={stages} /> : <RedeemTab />}
+      {tab === "issue" ? (
+        <IssueTab stages={stages} initialPeriodId={initialPeriodId ?? null} />
+      ) : (
+        <RedeemTab />
+      )}
     </div>
   );
 }
 
-function IssueTab({ stages }: { stages: StageOption[] }) {
-  const [periodId, setPeriodId] = useState(stages[0]?.id ?? "");
+function IssueTab({
+  stages,
+  initialPeriodId,
+}: {
+  stages: StageOption[];
+  initialPeriodId: string | null;
+}) {
+  const [periodId, setPeriodId] = useState(
+    initialPeriodId ?? stages[0]?.id ?? ""
+  );
   const [rewardType, setRewardType] =
     useState<"live_vote_bonus" | "cheki_free">("live_vote_bonus");
   const [minScore, setMinScore] = useState(10);

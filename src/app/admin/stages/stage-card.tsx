@@ -213,6 +213,14 @@ export function StageCard({
             >
               🎯 予想
             </Link>
+            {!isActive && (
+              <Link
+                href={`/admin/rewards?stage=${stage.id}`}
+                className="rounded-full border border-amber-400 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800 hover:bg-amber-100"
+              >
+                🎁 景品発行
+              </Link>
+            )}
             <Link
               href={`/admin/stages/${stage.id}/votes`}
               className="rounded-full border border-pink-300 px-3 py-1.5 text-xs font-bold text-pink-700 hover:bg-pink-50"

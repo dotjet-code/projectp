@@ -6,7 +6,12 @@ export const dynamic = "force-dynamic";
 
 export const metadata = { title: "景品管理" };
 
-export default async function AdminRewardsPage() {
+export default async function AdminRewardsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ stage?: string }>;
+}) {
+  const params = await searchParams;
   const stages = await listStages();
 
   return (
@@ -19,6 +24,7 @@ export default async function AdminRewardsPage() {
       </p>
 
       <RewardsClient
+        initialPeriodId={params.stage ?? null}
         stages={stages.map((s) => ({
           id: s.id,
           name: s.name,

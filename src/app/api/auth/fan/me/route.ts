@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { createServerSupabase } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
  * GET /api/auth/fan/me
  * 軽量なログイン状態確認エンドポイント。
  * admin はファンとしては扱わない。
+ * 未消込景品の件数も返してヘッダーバッジに使う。
  */
 export const dynamic = "force-dynamic";
 
@@ -21,8 +23,17 @@ export async function GET() {
   if (role === "admin") {
     return NextResponse.json({ loggedIn: false, isAdmin: true });
   }
+
+  const admin = createAdminClient();
+  const { count } = await admin
+    .from("prediction_rewards")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .is("redeemed_at", null);
+
   return NextResponse.json({
     loggedIn: true,
     email: user.email ?? null,
+    unredeemedRewards: count ?? 0,
   });
 }
