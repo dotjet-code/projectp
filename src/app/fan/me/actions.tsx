@@ -67,6 +67,8 @@ export function DisplayNameForm({
 export function FanMeActions() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   async function onLogout() {
     setLoading(true);
@@ -79,14 +81,66 @@ export function FanMeActions() {
     }
   }
 
+  async function onDelete() {
+    setDeleting(true);
+    try {
+      const res = await fetch("/api/auth/fan/delete", { method: "POST" });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        alert(j.error ?? "退会に失敗しました");
+        return;
+      }
+      router.push("/");
+      router.refresh();
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   return (
-    <button
-      type="button"
-      onClick={onLogout}
-      disabled={loading}
-      className="w-full rounded-full border border-gray-300 bg-white px-5 py-2.5 text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-40"
-    >
-      {loading ? "ログアウト中..." : "ログアウト"}
-    </button>
+    <div className="space-y-2">
+      <button
+        type="button"
+        onClick={onLogout}
+        disabled={loading}
+        className="w-full rounded-full border border-gray-300 bg-white px-5 py-2.5 text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-40"
+      >
+        {loading ? "ログアウト中..." : "ログアウト"}
+      </button>
+
+      {!confirmDelete ? (
+        <button
+          type="button"
+          onClick={() => setConfirmDelete(true)}
+          className="w-full text-[11px] text-gray-500 hover:text-red-600 py-1"
+        >
+          退会する
+        </button>
+      ) : (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-center space-y-2">
+          <p className="text-[11px] text-red-800 font-bold">
+            本当に退会しますか？予想履歴と未消込の景品はすべて失われます。
+          </p>
+          <div className="flex gap-2 justify-center">
+            <button
+              type="button"
+              onClick={() => setConfirmDelete(false)}
+              disabled={deleting}
+              className="rounded-full border border-gray-300 bg-white px-3 py-1 text-[11px] font-bold text-gray-700"
+            >
+              キャンセル
+            </button>
+            <button
+              type="button"
+              onClick={onDelete}
+              disabled={deleting}
+              className="rounded-full bg-red-600 px-3 py-1 text-[11px] font-bold text-white disabled:opacity-40"
+            >
+              {deleting ? "削除中..." : "退会する"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

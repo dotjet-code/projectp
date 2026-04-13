@@ -89,6 +89,89 @@ export async function listFans(query?: string): Promise<FanListEntry[]> {
   }));
 }
 
+export type FanDetail = {
+  profile: FanProfile;
+  email: string | null;
+  predictions: Array<{
+    predictionId: number;
+    periodName: string | null;
+    periodStartDate: string | null;
+    periodEndDate: string | null;
+    totalScore: number | null;
+    createdAt: string;
+  }>;
+  rewards: Array<{
+    id: number;
+    rewardType: string;
+    rewardCode: string;
+    totalScore: number | null;
+    issuedAt: string;
+    redeemedAt: string | null;
+  }>;
+};
+
+export async function getFanDetail(userId: string): Promise<FanDetail | null> {
+  const supabase = createAdminClient();
+  const { data: p } = await supabase
+    .from("fan_profiles")
+    .select("*")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (!p) return null;
+
+  const [preds, rewards, userRes] = await Promise.all([
+    supabase
+      .from("predictions")
+      .select("id, total_score, created_at, periods(name, start_date, end_date)")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("prediction_rewards")
+      .select("id, reward_type, reward_code, total_score, issued_at, redeemed_at")
+      .eq("user_id", userId)
+      .order("issued_at", { ascending: false }),
+    supabase.auth.admin.getUserById(userId),
+  ]);
+
+  type PredJoin = {
+    id: number;
+    total_score: number | null;
+    created_at: string;
+    periods:
+      | { name: string | null; start_date: string | null; end_date: string | null }
+      | null;
+  };
+  type RewardRow = {
+    id: number;
+    reward_type: string;
+    reward_code: string;
+    total_score: number | null;
+    issued_at: string;
+    redeemed_at: string | null;
+  };
+
+  return {
+    profile: mapRow(p as Row),
+    email: userRes.data.user?.email ?? null,
+    predictions: ((preds.data ?? []) as unknown as PredJoin[]).map((r) => ({
+      predictionId: r.id,
+      periodName: r.periods?.name ?? null,
+      periodStartDate: r.periods?.start_date ?? null,
+      periodEndDate: r.periods?.end_date ?? null,
+      totalScore: r.total_score,
+      createdAt: r.created_at,
+    })),
+    rewards: ((rewards.data ?? []) as RewardRow[]).map((r) => ({
+      id: r.id,
+      rewardType: r.reward_type,
+      rewardCode: r.reward_code,
+      totalScore: r.total_score,
+      issuedAt: r.issued_at,
+      redeemedAt: r.redeemed_at,
+    })),
+  };
+}
+
 export async function getFanProfile(userId: string): Promise<FanProfile | null> {
   const supabase = createAdminClient();
   const { data, error } = await supabase
