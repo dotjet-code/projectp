@@ -387,6 +387,120 @@ export type TopPredictor = {
  * Stage の的中スコアランキング（上位N件）。
  * cookie_id は表示用にマスク。
  */
+export type SeriesTopPredictor = {
+  rank: number;
+  userId: string;
+  displayName: string | null;
+  totalScore: number;
+  stageCount: number;
+  perfectCount: number;
+  rewardCount: number;
+};
+
+/**
+ * 指定 Series のファン会員の予想を通算して上位を返す。
+ * closed Stage かつ total_score が確定しているもののみ対象。
+ */
+export async function getSeriesTopPredictors(
+  seriesNumber: number,
+  limit = 10
+): Promise<SeriesTopPredictor[]> {
+  const supabase = createAdminClient();
+
+  // 1) 対象シリーズの Stage 一覧
+  const { data: stages } = await supabase
+    .from("periods")
+    .select("id")
+    .eq("series_number", seriesNumber)
+    .eq("status", "closed");
+  const stageIds = ((stages ?? []) as { id: string }[]).map((s) => s.id);
+  if (stageIds.length === 0) return [];
+
+  // 2) それら Stage のファン予想
+  const { data: preds } = await supabase
+    .from("predictions")
+    .select("user_id, total_score")
+    .in("period_id", stageIds)
+    .not("user_id", "is", null)
+    .not("total_score", "is", null);
+
+  type PredRow = { user_id: string; total_score: number | null };
+  const rows = (preds ?? []) as PredRow[];
+
+  // 3) ユーザーごとに累積
+  type Agg = {
+    totalScore: number;
+    stageCount: number;
+    perfectCount: number;
+  };
+  const byUser = new Map<string, Agg>();
+  for (const r of rows) {
+    const a = byUser.get(r.user_id) ?? {
+      totalScore: 0,
+      stageCount: 0,
+      perfectCount: 0,
+    };
+    const score = r.total_score ?? 0;
+    a.totalScore += score;
+    a.stageCount += 1;
+    if (score === 10) a.perfectCount += 1;
+    byUser.set(r.user_id, a);
+  }
+
+  const userIds = [...byUser.keys()];
+  if (userIds.length === 0) return [];
+
+  // 4) 表示名
+  const { data: profiles } = await supabase
+    .from("fan_profiles")
+    .select("user_id, display_name, status")
+    .in("user_id", userIds);
+  const nameByUser = new Map<string, string | null>();
+  const activeUsers = new Set<string>();
+  for (const p of (profiles ?? []) as {
+    user_id: string;
+    display_name: string | null;
+    status: string;
+  }[]) {
+    nameByUser.set(p.user_id, p.display_name);
+    if (p.status === "active") activeUsers.add(p.user_id);
+  }
+
+  // 5) 景品獲得数
+  const { data: rewards } = await supabase
+    .from("prediction_rewards")
+    .select("user_id")
+    .in("period_id", stageIds)
+    .in("user_id", userIds);
+  const rewardCountByUser = new Map<string, number>();
+  for (const r of (rewards ?? []) as { user_id: string }[]) {
+    rewardCountByUser.set(
+      r.user_id,
+      (rewardCountByUser.get(r.user_id) ?? 0) + 1
+    );
+  }
+
+  // 6) active なユーザーのみランキング化、通算スコア降順 → 完全的中数 → ステージ数
+  return [...byUser.entries()]
+    .filter(([uid]) => activeUsers.has(uid))
+    .map(([uid, a]) => ({
+      userId: uid,
+      displayName: nameByUser.get(uid) ?? null,
+      totalScore: a.totalScore,
+      stageCount: a.stageCount,
+      perfectCount: a.perfectCount,
+      rewardCount: rewardCountByUser.get(uid) ?? 0,
+    }))
+    .sort(
+      (a, b) =>
+        b.totalScore - a.totalScore ||
+        b.perfectCount - a.perfectCount ||
+        b.stageCount - a.stageCount
+    )
+    .slice(0, limit)
+    .map((x, i) => ({ rank: i + 1, ...x }));
+}
+
 export async function getTopPredictors(
   periodId: string,
   limit = 10

@@ -7,7 +7,10 @@ import {
   getStageResults,
   listStages,
 } from "@/lib/projectp/stage";
-import { getTopPredictors } from "@/lib/projectp/prediction";
+import {
+  getTopPredictors,
+  getSeriesTopPredictors,
+} from "@/lib/projectp/prediction";
 
 export const dynamic = "force-dynamic";
 
@@ -70,9 +73,12 @@ export default async function ResultsPage({
     );
   }
 
-  const [results, topPredictors] = await Promise.all([
+  const [results, topPredictors, seriesPredictors] = await Promise.all([
     getStageResults(targetStage.id),
     getTopPredictors(targetStage.id, 10).catch(() => []),
+    targetStage.seriesNumber
+      ? getSeriesTopPredictors(targetStage.seriesNumber, 10).catch(() => [])
+      : Promise.resolve([]),
   ]);
   const seriesN = targetStage.seriesNumber;
 
@@ -311,6 +317,58 @@ export default async function ResultsPage({
             <div className="mt-3 rounded-xl border border-[rgba(255,208,120,0.6)] bg-gradient-to-r from-[#fff7e6] to-[#ffe9c8] px-4 py-2.5 text-[11px] text-[#7a4a00]">
               🎁 <b>会員登録すると景品対象に</b> ── 的中するとライブ会場投票のボーナス票やチェキ無料券。 <a href="/fan/login" className="underline font-bold">登録はこちら →</a>
             </div>
+          </section>
+        )}
+
+        {/* Series 通算ランキング */}
+        {seriesN && seriesPredictors.length > 0 && (
+          <section className="mx-auto max-w-[720px] px-4 mt-12">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-amber-400 to-orange-500" />
+              <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-[#c2410c] tracking-tight">
+                👑 Series {seriesN} 通算ランキング
+              </h2>
+            </div>
+            <p className="text-[10px] text-muted mb-3">
+              Series {seriesN} の全 Stage の予想を合算した年間王者ランキング（ファン会員のみ）
+            </p>
+            <ul className="rounded-2xl bg-white/70 border border-white/80 divide-y divide-gray-100 overflow-hidden">
+              {seriesPredictors.map((p) => (
+                <li
+                  key={p.userId}
+                  className="flex items-center justify-between px-4 py-3 text-xs"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="w-6 text-center font-[family-name:var(--font-outfit)] font-extrabold text-[#c2410c] shrink-0">
+                      {p.rank <= 3
+                        ? ["🥇", "🥈", "🥉"][p.rank - 1]
+                        : `#${p.rank}`}
+                    </span>
+                    <span className="font-bold text-foreground truncate">
+                      {p.displayName ?? "ファン会員"}
+                    </span>
+                    {p.perfectCount > 0 && (
+                      <span className="rounded-full bg-amber-100 border border-amber-200 px-1.5 py-0.5 text-[9px] font-bold text-amber-700 shrink-0">
+                        完全的中 {p.perfectCount}
+                      </span>
+                    )}
+                    {p.rewardCount > 0 && (
+                      <span className="text-[10px] text-muted shrink-0">
+                        🎁×{p.rewardCount}
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-right shrink-0">
+                    <span className="font-[family-name:var(--font-outfit)] text-lg font-black text-foreground">
+                      {p.totalScore}
+                    </span>
+                    <span className="text-[9px] text-muted ml-0.5">
+                      pt / {p.stageCount}stage
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </section>
         )}
       </main>
