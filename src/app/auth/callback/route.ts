@@ -1,16 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import type { EmailOtpType } from "@supabase/supabase-js";
 import { ensureFanProfile } from "@/lib/projectp/fan-profile";
 
 /**
- * GET /auth/callback?code=...&next=/fan/me
+ * GET /auth/callback
  *
- * Supabase magic link からの戻り先。code を session に交換し、
- * ファンユーザーなら fan_profiles を作成してから next にリダイレクトする。
+ * Supabase magic link からの戻り先。2 種類のパターンを処理する:
+ *   1. PKCE (?code=...)       → exchangeCodeForSession
+ *   2. OTP   (?token_hash=...&type=magiclink) → verifyOtp
+ *
+ * session 確立後、ファンユーザーなら fan_profiles を作成して next にリダイレクト。
  */
 export async function GET(req: NextRequest) {
-  const code = req.nextUrl.searchParams.get("code");
-  const next = req.nextUrl.searchParams.get("next") || "/fan/me";
+  const params = req.nextUrl.searchParams;
+  const code = params.get("code");
+  const tokenHash = params.get("token_hash");
+  const type = params.get("type") as EmailOtpType | null;
+  const next = params.get("next") || "/fan/me";
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -18,7 +25,7 @@ export async function GET(req: NextRequest) {
     return new NextResponse("Server misconfigured", { status: 500 });
   }
 
-  if (!code) {
+  if (!code && !(tokenHash && type)) {
     return NextResponse.redirect(new URL("/fan/login?error=nocode", req.url));
   }
 
@@ -36,10 +43,20 @@ export async function GET(req: NextRequest) {
     },
   });
 
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
-  if (error) {
+  let authError: string | null = null;
+  if (code) {
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (error) authError = error.message;
+  } else if (tokenHash && type) {
+    const { error } = await supabase.auth.verifyOtp({
+      type,
+      token_hash: tokenHash,
+    });
+    if (error) authError = error.message;
+  }
+  if (authError) {
     return NextResponse.redirect(
-      new URL(`/fan/login?error=${encodeURIComponent(error.message)}`, req.url)
+      new URL(`/fan/login?error=${encodeURIComponent(authError)}`, req.url)
     );
   }
 

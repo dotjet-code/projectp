@@ -104,6 +104,13 @@ function IssueTab({
     setError(null);
     setResult(null);
     try {
+      // 日付入力 "YYYY-MM-DD" をそのローカル日の 23:59:59 に変換
+      let expiresAtIso: string | null = null;
+      if (expiresAt) {
+        const d = new Date(`${expiresAt}T23:59:59`);
+        if (!isNaN(d.getTime())) expiresAtIso = d.toISOString();
+      }
+
       const res = await fetch("/api/admin/rewards/issue", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -111,7 +118,7 @@ function IssueTab({
           periodId,
           rewardType,
           minScore,
-          expiresAt: expiresAt || null,
+          expiresAt: expiresAtIso,
         }),
       });
       const j = await res.json();

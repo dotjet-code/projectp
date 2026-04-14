@@ -24,18 +24,25 @@ export async function GET() {
     return NextResponse.json({ loggedIn: false, isAdmin: true });
   }
 
-  const admin = createAdminClient();
-  const nowIso = new Date().toISOString();
-  const { count } = await admin
-    .from("prediction_rewards")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", user.id)
-    .is("redeemed_at", null)
-    .or(`expires_at.is.null,expires_at.gt.${nowIso}`);
+  let unredeemed = 0;
+  try {
+    const admin = createAdminClient();
+    const { data } = await admin
+      .from("prediction_rewards")
+      .select("expires_at")
+      .eq("user_id", user.id)
+      .is("redeemed_at", null);
+    const now = Date.now();
+    unredeemed = ((data ?? []) as { expires_at: string | null }[]).filter(
+      (r) => !r.expires_at || new Date(r.expires_at).getTime() > now
+    ).length;
+  } catch {
+    // テーブル未作成等。ヘッダーバッジ起因で全機能を止めたくないので無視。
+  }
 
   return NextResponse.json({
     loggedIn: true,
     email: user.email ?? null,
-    unredeemedRewards: count ?? 0,
+    unredeemedRewards: unredeemed,
   });
 }
