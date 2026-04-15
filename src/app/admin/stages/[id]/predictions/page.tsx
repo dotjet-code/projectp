@@ -2,9 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getStageById } from "@/lib/projectp/stage";
 import {
+  BET_LABELS,
+  BET_SLOT_COUNTS,
   countPredictionsForPeriod,
   getPredictionSummary,
   getTopPredictors,
+  type BetKey,
 } from "@/lib/projectp/prediction";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { members as dummyMembers } from "@/lib/data";
@@ -37,18 +40,37 @@ export default async function AdminPredictionsPage({
   const memberById = new Map(
     (memberRows ?? []).map((m) => [m.id, m.name])
   );
-  const dummyByName = new Map(dummyMembers.map((d) => [d.name, d]));
+  void dummyMembers;
 
   function resolveName(memberId: string): string {
     return memberById.get(memberId) ?? "(不明)";
   }
 
-  const slotGroups = [
-    { key: "playerWin" as const, title: "PLAYER 連単", labels: ["1着", "2着"] },
-    { key: "playerTri" as const, title: "PLAYER 3連単", labels: ["1着", "2着", "3着"] },
-    { key: "pitWin" as const, title: "PIT 連単", labels: ["1着", "2着"] },
-    { key: "pitTri" as const, title: "PIT 3連単", labels: ["1着", "2着", "3着"] },
+  const slotGroups: {
+    key: BetKey;
+    title: string;
+    labels: string[];
+  }[] = [
+    { key: "fukusho", title: BET_LABELS.fukusho, labels: ["3着以内"] },
+    { key: "tansho", title: BET_LABELS.tansho, labels: ["1着"] },
+    {
+      key: "nirenpuku",
+      title: BET_LABELS.nirenpuku,
+      labels: ["選出"],
+    },
+    { key: "nirentan", title: BET_LABELS.nirentan, labels: ["1着", "2着"] },
+    {
+      key: "sanrenpuku",
+      title: BET_LABELS.sanrenpuku,
+      labels: ["選出"],
+    },
+    {
+      key: "sanrentan",
+      title: BET_LABELS.sanrentan,
+      labels: ["1着", "2着", "3着"],
+    },
   ];
+  void BET_SLOT_COUNTS;
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-12">
@@ -102,7 +124,7 @@ export default async function AdminPredictionsPage({
           <h2 className="text-lg font-semibold mb-3">スロット別集計</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {slotGroups.map((g) => {
-              const tallies = summary.bySlot[g.key];
+              const tallies = summary.bySlot[g.key] ?? [];
               return (
                 <div
                   key={g.key}
@@ -112,17 +134,17 @@ export default async function AdminPredictionsPage({
                     {g.title}
                   </h3>
                   <div className="space-y-2">
-                    {tallies.map((t) => {
+                    {tallies.map((t: { positionIndex: number; rows: { memberId: string; count: number }[] }) => {
                       const maxC = Math.max(
-                        ...t.rows.map((r) => r.count),
+                        ...t.rows.map((r: { count: number }) => r.count),
                         1
                       );
                       return (
                         <div key={t.positionIndex}>
                           <p className="text-[10px] font-bold text-muted mb-1">
-                            {g.labels[t.positionIndex]}
+                            {g.labels[t.positionIndex] ?? ""}
                           </p>
-                          {t.rows.slice(0, 5).map((r) => {
+                          {t.rows.slice(0, 5).map((r: { memberId: string; count: number }) => {
                             const pct = (r.count / maxC) * 100;
                             return (
                               <div

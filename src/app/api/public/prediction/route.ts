@@ -122,23 +122,28 @@ export async function POST(req: NextRequest) {
 
   function normalize(v: unknown, size: number): string[] {
     if (!Array.isArray(v)) return [];
-    const ids = v
+    return v
       .filter((x): x is string => typeof x === "string" && x.length > 0)
       .slice(0, size);
-    return ids;
   }
 
-  const playerWin = normalize(body.playerWin, 2);
-  const playerTri = normalize(body.playerTri, 3);
-  const pitWin = normalize(body.pitWin, 2);
-  const pitTri = normalize(body.pitTri, 3);
+  const bets = {
+    fukusho: normalize(body.fukusho, 1),
+    tansho: normalize(body.tansho, 1),
+    nirenpuku: normalize(body.nirenpuku, 2),
+    nirentan: normalize(body.nirentan, 2),
+    sanrenpuku: normalize(body.sanrenpuku, 3),
+    sanrentan: normalize(body.sanrentan, 3),
+  };
 
-  // 全スロット埋まっていることを期待
+  // 全枠埋まっていることを期待
   if (
-    playerWin.length !== 2 ||
-    playerTri.length !== 3 ||
-    pitWin.length !== 2 ||
-    pitTri.length !== 3
+    bets.fukusho.length !== 1 ||
+    bets.tansho.length !== 1 ||
+    bets.nirenpuku.length !== 2 ||
+    bets.nirentan.length !== 2 ||
+    bets.sanrenpuku.length !== 3 ||
+    bets.sanrentan.length !== 3
   ) {
     return NextResponse.json(
       { error: "全ての予想枠を埋めてください" },
@@ -146,8 +151,30 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // 順不同賭式は同一人物が2回以上選ばれていないか
+  if (new Set(bets.nirenpuku).size !== 2) {
+    return NextResponse.json(
+      { error: "二連複は異なる 2 名を選んでください" },
+      { status: 400 }
+    );
+  }
+  if (new Set(bets.sanrenpuku).size !== 3) {
+    return NextResponse.json(
+      { error: "三連複は異なる 3 名を選んでください" },
+      { status: 400 }
+    );
+  }
+
   const { cookieId, created } = readOrCreateVoteCookie(req);
   const userId = await getFanUserId();
+
+  // 予想はファン会員限定。未ログインや管理者は受け付けない。
+  if (!userId) {
+    return NextResponse.json(
+      { error: "予想の提出にはファン会員ログインが必要です", requiresLogin: true },
+      { status: 401 }
+    );
+  }
 
   try {
     const prediction = await upsertPrediction({
@@ -155,10 +182,7 @@ export async function POST(req: NextRequest) {
       userId,
       periodId: stage.id,
       entryType,
-      playerWin,
-      playerTri,
-      pitWin,
-      pitTri,
+      bets,
     });
     const res = NextResponse.json({ ok: true, prediction });
     return withCookie(res, cookieId, created);

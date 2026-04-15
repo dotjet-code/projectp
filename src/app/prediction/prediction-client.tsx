@@ -22,14 +22,26 @@ type PublicStage = {
   endDate: string;
 } | null;
 
+type BetKey =
+  | "fukusho"
+  | "tansho"
+  | "nirenpuku"
+  | "nirentan"
+  | "sanrenpuku"
+  | "sanrentan";
+
 type SlotSelection = (string | null)[];
+
+type Bets = Record<BetKey, SlotSelection>;
 
 type Prediction = {
   entryType: "normal" | "welcome";
-  playerWin: string[];
-  playerTri: string[];
-  pitWin: string[];
-  pitTri: string[];
+  tansho: string[];
+  fukusho: string[];
+  nirenpuku: string[];
+  nirentan: string[];
+  sanrenpuku: string[];
+  sanrentan: string[];
 };
 
 type SummarySlotTally = {
@@ -39,13 +51,96 @@ type SummarySlotTally = {
 
 type Summary = {
   totalCount: number;
-  bySlot: {
-    playerWin: SummarySlotTally[];
-    playerTri: SummarySlotTally[];
-    pitWin: SummarySlotTally[];
-    pitTri: SummarySlotTally[];
-  };
+  bySlot: Record<BetKey, SummarySlotTally[]>;
 } | null;
+
+// =====================================================================
+// 賭式の定義
+// =====================================================================
+
+type BetConfig = {
+  key: BetKey;
+  title: string;
+  slotCount: 1 | 2 | 3;
+  points: number;
+  ordered: boolean;
+  description: string;
+  labels: string[]; // スロットラベル（順通り用）
+};
+
+const BETS: BetConfig[] = [
+  {
+    key: "fukusho",
+    title: "複勝",
+    slotCount: 1,
+    points: 1,
+    ordered: false,
+    description: "3 着以内に入るメンバーを 1 名予想",
+    labels: ["選択"],
+  },
+  {
+    key: "tansho",
+    title: "単勝",
+    slotCount: 1,
+    points: 2,
+    ordered: true,
+    description: "1 着のメンバーを 1 名予想",
+    labels: ["1 着"],
+  },
+  {
+    key: "nirenpuku",
+    title: "二連複",
+    slotCount: 2,
+    points: 5,
+    ordered: false,
+    description: "1-2 着に入る 2 名を順不同で予想",
+    labels: ["選択 A", "選択 B"],
+  },
+  {
+    key: "nirentan",
+    title: "二連単",
+    slotCount: 2,
+    points: 10,
+    ordered: true,
+    description: "1 着・2 着を順番通りに予想",
+    labels: ["1 着", "2 着"],
+  },
+  {
+    key: "sanrenpuku",
+    title: "三連複",
+    slotCount: 3,
+    points: 15,
+    ordered: false,
+    description: "1-2-3 着に入る 3 名を順不同で予想",
+    labels: ["選択 A", "選択 B", "選択 C"],
+  },
+  {
+    key: "sanrentan",
+    title: "三連単",
+    slotCount: 3,
+    points: 30,
+    ordered: true,
+    description: "1 着・2 着・3 着を順番通りに予想",
+    labels: ["1 着", "2 着", "3 着"],
+  },
+];
+
+const MAX_SCORE = BETS.reduce((s, b) => s + b.points, 0);
+
+function emptyBets(): Bets {
+  return {
+    fukusho: [null],
+    tansho: [null],
+    nirenpuku: [null, null],
+    nirentan: [null, null],
+    sanrenpuku: [null, null, null],
+    sanrentan: [null, null, null],
+  };
+}
+
+// =====================================================================
+// UI 部品
+// =====================================================================
 
 function SlotCard({
   member,
@@ -58,35 +153,35 @@ function SlotCard({
 }) {
   if (!member) {
     return (
-      <div className="flex flex-col items-center gap-1.5 rounded-2xl border-2 border-dashed border-gray-200 bg-white/50 px-3 sm:px-6 py-3 sm:py-4 min-w-[90px] sm:min-w-[120px]">
-        <div className="flex size-12 items-center justify-center rounded-full bg-gray-100 text-gray-400 text-xl">
+      <div className="flex flex-col items-center gap-1.5 rounded-2xl border-2 border-dashed border-gray-200 bg-white/50 px-3 py-3 min-w-[84px]">
+        <div className="flex size-10 items-center justify-center rounded-full bg-gray-100 text-gray-400 text-lg">
           ?
         </div>
-        <span className="text-[10px] font-bold text-muted">{label}</span>
+        <span className="text-[9px] font-bold text-muted">{label}</span>
       </div>
     );
   }
   return (
-    <div className="flex flex-col items-center gap-1.5 rounded-2xl border-2 border-primary/30 bg-[#ecfeff]/50 px-3 sm:px-6 py-3 sm:py-4 min-w-[90px] sm:min-w-[120px]">
+    <div className="flex flex-col items-center gap-1.5 rounded-2xl border-2 border-primary/30 bg-[#ecfeff]/50 px-3 py-3 min-w-[84px]">
       <div className="relative">
         <Image
           src={member.avatarUrl}
           alt={member.name}
-          width={48}
-          height={48}
-          className="size-12 rounded-full object-cover object-top shadow-sm"
+          width={40}
+          height={40}
+          className="size-10 rounded-full object-cover object-top shadow-sm"
         />
         <button
           type="button"
           onClick={onRemove}
-          className="absolute -top-1 -right-1 flex size-5 items-center justify-center rounded-full bg-gray-700 text-white text-[10px] shadow hover:bg-gray-900"
+          className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-gray-700 text-white text-[9px] shadow hover:bg-gray-900"
           aria-label="remove"
         >
           ×
         </button>
       </div>
-      <span className="text-[10px] font-bold text-primary-dark">{label}</span>
-      <span className="text-[11px] font-bold text-foreground truncate max-w-[80px]">
+      <span className="text-[9px] font-bold text-primary-dark">{label}</span>
+      <span className="text-[10px] font-bold text-foreground truncate max-w-[72px]">
         {member.name}
       </span>
     </div>
@@ -107,7 +202,7 @@ function MemberCandidate({
       type="button"
       onClick={onSelect}
       disabled={selected}
-      className={`flex flex-col items-center gap-1 rounded-2xl p-2 transition-all ${
+      className={`flex flex-col items-center gap-1 rounded-xl p-1.5 w-[62px] shrink-0 transition-all ${
         selected
           ? "opacity-40 cursor-not-allowed"
           : "hover:bg-white/80 hover:shadow-sm cursor-pointer"
@@ -116,63 +211,61 @@ function MemberCandidate({
       <Image
         src={member.avatarUrl}
         alt={member.name}
-        width={44}
-        height={44}
-        className="size-11 rounded-full object-cover object-top shadow-sm"
+        width={40}
+        height={40}
+        className="size-10 rounded-full object-cover object-top shadow-sm"
       />
-      <p className="text-[10px] font-bold text-foreground text-center leading-tight truncate max-w-full">
+      <p className="text-[9px] font-bold text-foreground text-center leading-tight truncate max-w-full">
         {member.name}
       </p>
     </button>
   );
 }
 
-function PredictionSection({
-  title,
-  titleColor,
-  slotCount,
+function BetSection({
+  config,
   candidates,
   selections,
   onSelect,
   onRemove,
   isLocked,
 }: {
-  title: string;
-  titleColor: string;
-  slotCount: 2 | 3;
+  config: BetConfig;
   candidates: PublicMember[];
   selections: SlotSelection;
   onSelect: (member: PublicMember) => void;
   onRemove: (index: number) => void;
   isLocked: boolean;
 }) {
-  const slotLabels = slotCount === 2 ? ["1着", "2着"] : ["1着", "2着", "3着"];
   const memberById = new Map(candidates.map((c) => [c.id, c]));
   const selectedIds = selections.filter((x): x is string => Boolean(x));
 
   return (
-    <section className="mx-auto max-w-[964px] px-4 mt-8">
-      <h2
-        className="font-[family-name:var(--font-outfit)] text-base font-extrabold tracking-tight mb-3"
-        style={{ color: titleColor }}
-      >
-        {title}
-      </h2>
-
+    <section className="mx-auto max-w-[964px] px-4 mt-6">
       <div className="rounded-2xl bg-white/70 border border-white/80 p-5 shadow-sm">
+        <div className="flex items-baseline justify-between mb-1">
+          <h2 className="font-[family-name:var(--font-outfit)] text-base font-extrabold text-foreground tracking-tight">
+            {config.title}
+          </h2>
+          <span className="text-[11px] font-bold text-primary-dark">
+            +{config.points} pt
+          </span>
+        </div>
+        <p className="text-[10px] text-muted mb-3">{config.description}</p>
+
         {isLocked && (
-          <div className="mb-4 flex items-center gap-2 rounded-xl bg-gray-50 px-4 py-2.5 text-xs text-muted">
+          <div className="mb-3 flex items-center gap-2 rounded-xl bg-gray-50 px-4 py-2 text-[10px] text-muted">
             <span>🔒</span>
-            <span>締切済み — この予想は変更できません</span>
+            <span>締切済み</span>
           </div>
         )}
 
         <div
-          className={`flex flex-wrap items-center justify-center gap-2 sm:gap-4 mb-5 ${
+          className={`flex flex-wrap items-center justify-center gap-2 mb-4 ${
             isLocked ? "opacity-60 pointer-events-none" : ""
           }`}
         >
-          {slotLabels.map((label, i) => (
+          {config.labels.map((label, i) => (
             <SlotCard
               key={i}
               member={(selections[i] && memberById.get(selections[i]!)) || null}
@@ -183,7 +276,7 @@ function PredictionSection({
         </div>
 
         <div
-          className={`grid grid-cols-4 sm:grid-cols-6 gap-1 ${
+          className={`flex flex-wrap justify-center gap-1 ${
             isLocked ? "opacity-60 pointer-events-none" : ""
           }`}
         >
@@ -196,14 +289,14 @@ function PredictionSection({
             />
           ))}
         </div>
-
-        <p className="mt-4 text-center text-xs text-muted">
-          {slotCount === 2 ? "2名を選んでください" : "3名を選んでください"}
-        </p>
       </div>
     </section>
   );
 }
+
+// =====================================================================
+// Main
+// =====================================================================
 
 export function PredictionClient({
   members,
@@ -212,14 +305,8 @@ export function PredictionClient({
   members: PublicMember[];
   stage: PublicStage;
 }) {
-  const playerMembers = members.filter((m) => m.role === "PLAYER");
-  const pitMembers = members.filter((m) => m.role === "PIT");
-
   const [entryType, setEntryType] = useState<"normal" | "welcome">("normal");
-  const [playerWin, setPlayerWin] = useState<SlotSelection>([null, null]);
-  const [playerTri, setPlayerTri] = useState<SlotSelection>([null, null, null]);
-  const [pitWin, setPitWin] = useState<SlotSelection>([null, null]);
-  const [pitTri, setPitTri] = useState<SlotSelection>([null, null, null]);
+  const [bets, setBets] = useState<Bets>(emptyBets());
 
   const [totalCount, setTotalCount] = useState(0);
   const [summary, setSummary] = useState<Summary>(null);
@@ -231,13 +318,10 @@ export function PredictionClient({
   const [flash, setFlash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // 初期ロード：既存予想 + 提出数 + 集計
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("/api/public/prediction", {
-          cache: "no-store",
-        });
+        const res = await fetch("/api/public/prediction", { cache: "no-store" });
         const j = await res.json();
         setTotalCount(j.totalCount ?? 0);
         setSummary(j.summary ?? null);
@@ -247,18 +331,22 @@ export function PredictionClient({
         const p: Prediction | null = j.myPrediction;
         if (p) {
           setEntryType(p.entryType);
-          setPlayerWin([p.playerWin[0] ?? null, p.playerWin[1] ?? null]);
-          setPlayerTri([
-            p.playerTri[0] ?? null,
-            p.playerTri[1] ?? null,
-            p.playerTri[2] ?? null,
-          ]);
-          setPitWin([p.pitWin[0] ?? null, p.pitWin[1] ?? null]);
-          setPitTri([
-            p.pitTri[0] ?? null,
-            p.pitTri[1] ?? null,
-            p.pitTri[2] ?? null,
-          ]);
+          setBets({
+            fukusho: [p.fukusho[0] ?? null],
+            tansho: [p.tansho[0] ?? null],
+            nirenpuku: [p.nirenpuku[0] ?? null, p.nirenpuku[1] ?? null],
+            nirentan: [p.nirentan[0] ?? null, p.nirentan[1] ?? null],
+            sanrenpuku: [
+              p.sanrenpuku[0] ?? null,
+              p.sanrenpuku[1] ?? null,
+              p.sanrenpuku[2] ?? null,
+            ],
+            sanrentan: [
+              p.sanrentan[0] ?? null,
+              p.sanrentan[1] ?? null,
+              p.sanrentan[2] ?? null,
+            ],
+          });
         }
       } catch {
         // ignore
@@ -268,56 +356,54 @@ export function PredictionClient({
     })();
   }, []);
 
-  function makeSelect(
-    selections: SlotSelection,
-    setSelections: (s: SlotSelection) => void
-  ) {
+  function makeSelect(key: BetKey) {
     return (member: PublicMember) => {
-      const nextSlot = selections.findIndex((s) => s === null);
-      if (nextSlot === -1) return;
-      const next = [...selections];
-      next[nextSlot] = member.id;
-      setSelections(next);
+      setBets((prev) => {
+        const arr = [...prev[key]];
+        const nextSlot = arr.findIndex((s) => s === null);
+        if (nextSlot === -1) return prev;
+        arr[nextSlot] = member.id;
+        return { ...prev, [key]: arr };
+      });
     };
   }
 
-  function makeRemove(
-    selections: SlotSelection,
-    setSelections: (s: SlotSelection) => void
-  ) {
+  function makeRemove(key: BetKey) {
     return (index: number) => {
-      const next = [...selections];
-      next[index] = null;
-      setSelections(next);
+      setBets((prev) => {
+        const arr = [...prev[key]];
+        arr[index] = null;
+        return { ...prev, [key]: arr };
+      });
     };
   }
 
-  const allFilled =
-    playerWin.every(Boolean) &&
-    playerTri.every(Boolean) &&
-    pitWin.every(Boolean) &&
-    pitTri.every(Boolean);
+  const allFilled = BETS.every(
+    (b) => bets[b.key].every(Boolean) && bets[b.key].length === b.slotCount
+  );
 
   async function handleSubmit() {
     setSubmitting(true);
     setError(null);
     setFlash(null);
     try {
+      const payload = {
+        entryType,
+        fukusho: bets.fukusho.filter(Boolean),
+        tansho: bets.tansho.filter(Boolean),
+        nirenpuku: bets.nirenpuku.filter(Boolean),
+        nirentan: bets.nirentan.filter(Boolean),
+        sanrenpuku: bets.sanrenpuku.filter(Boolean),
+        sanrentan: bets.sanrentan.filter(Boolean),
+      };
       const res = await fetch("/api/public/prediction", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          entryType,
-          playerWin: playerWin.filter(Boolean),
-          playerTri: playerTri.filter(Boolean),
-          pitWin: pitWin.filter(Boolean),
-          pitTri: pitTri.filter(Boolean),
-        }),
+        body: JSON.stringify(payload),
       });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error ?? `HTTP ${res.status}`);
       setFlash("予想を提出しました ✓");
-      // 再フェッチして総数・集計を更新
       const g = await fetch("/api/public/prediction", { cache: "no-store" });
       if (g.ok) {
         const data = await g.json();
@@ -345,6 +431,8 @@ export function PredictionClient({
       </section>
     );
   }
+
+  const allMembers = members;
 
   return (
     <>
@@ -392,7 +480,7 @@ export function PredictionClient({
         </p>
       </section>
 
-      {/* Reward banner（未ログイン時のみ） */}
+      {/* Reward banner (unauth) */}
       {loaded && !isLoggedIn && (
         <section className="mx-auto max-w-[964px] px-4 mt-4">
           <a
@@ -407,75 +495,55 @@ export function PredictionClient({
       {/* Info banner */}
       <section className="mx-auto max-w-[964px] px-4 mt-4">
         <div className="rounded-xl border border-[rgba(206,250,254,0.5)] bg-white/70 px-4 py-3 text-xs text-muted">
-          🏁 PLAYER 6名 / PIT 6名 から <b>連単2名</b> と <b>3連単3名</b> を
-          選んで予想してください。全スロットを埋めると提出できます。
+          🏁 全 12 名から 6 種類の賭式を予想。最大スコア{" "}
+          <b>{MAX_SCORE} pt</b> (複勝 1 / 単勝 2 / 二連複 5 / 二連単 10 / 三連複 15 / 三連単 30)。ファン会員限定。
         </div>
       </section>
 
-      {/* PLAYER */}
-      <PredictionSection
-        title="PLAYER 連単 (1着・2着)"
-        titleColor="#007595"
-        slotCount={2}
-        candidates={playerMembers}
-        selections={playerWin}
-        onSelect={makeSelect(playerWin, setPlayerWin)}
-        onRemove={makeRemove(playerWin, setPlayerWin)}
-        isLocked={isClosed}
-      />
-      <PredictionSection
-        title="PLAYER 3連単 (1着・2着・3着)"
-        titleColor="#007595"
-        slotCount={3}
-        candidates={playerMembers}
-        selections={playerTri}
-        onSelect={makeSelect(playerTri, setPlayerTri)}
-        onRemove={makeRemove(playerTri, setPlayerTri)}
-        isLocked={isClosed}
-      />
-
-      {/* PIT */}
-      <PredictionSection
-        title="PIT 連単 (1着・2着)"
-        titleColor="#bb4d00"
-        slotCount={2}
-        candidates={pitMembers}
-        selections={pitWin}
-        onSelect={makeSelect(pitWin, setPitWin)}
-        onRemove={makeRemove(pitWin, setPitWin)}
-        isLocked={isClosed}
-      />
-      <PredictionSection
-        title="PIT 3連単 (1着・2着・3着)"
-        titleColor="#bb4d00"
-        slotCount={3}
-        candidates={pitMembers}
-        selections={pitTri}
-        onSelect={makeSelect(pitTri, setPitTri)}
-        onRemove={makeRemove(pitTri, setPitTri)}
-        isLocked={isClosed}
-      />
+      {/* Bet sections */}
+      {BETS.map((b) => (
+        <BetSection
+          key={b.key}
+          config={b}
+          candidates={allMembers}
+          selections={bets[b.key]}
+          onSelect={makeSelect(b.key)}
+          onRemove={makeRemove(b.key)}
+          isLocked={isClosed}
+        />
+      ))}
 
       {/* Submit */}
       <section className="mx-auto max-w-[964px] px-4 mt-10 text-center">
-        {error && (
-          <p className="mb-3 text-xs text-red-600">エラー: {error}</p>
-        )}
-        {flash && (
-          <p className="mb-3 text-xs text-emerald-700">{flash}</p>
-        )}
+        {error && <p className="mb-3 text-xs text-red-600">エラー: {error}</p>}
+        {flash && <p className="mb-3 text-xs text-emerald-700">{flash}</p>}
         {isClosed ? (
           <div className="inline-flex items-center gap-2 rounded-full bg-gray-200 px-10 py-3.5 text-base font-bold text-gray-500">
             🔒 締切済み
           </div>
+        ) : !loaded ? (
+          <div className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-10 py-3.5 text-base font-bold text-gray-400">
+            読み込み中...
+          </div>
+        ) : !isLoggedIn ? (
+          <a
+            href="/fan/login"
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#f59e0b] to-[#ef4444] px-10 py-3.5 text-base font-bold text-white shadow-lg hover:opacity-90 transition"
+          >
+            🎟️ 会員登録して予想する →
+          </a>
         ) : (
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={!loaded || submitting || !allFilled}
+            disabled={submitting || !allFilled}
             className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary-blue px-10 py-3.5 text-base font-bold text-white shadow-[0_10px_15px_rgba(83,234,253,0.4)] hover:shadow-[0_10px_20px_rgba(83,234,253,0.5)] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
           >
-            {submitting ? "提出中..." : allFilled ? "予想を提出する →" : "全て埋めてください"}
+            {submitting
+              ? "提出中..."
+              : allFilled
+              ? "予想を提出する →"
+              : "全ての賭式を埋めてください"}
           </button>
         )}
         {closeAt && !isClosed && (
@@ -484,11 +552,13 @@ export function PredictionClient({
           </p>
         )}
         <p className="mt-2 text-[10px] text-muted">
-          ※ 匿名Cookieで1Stage1予想 / 何度でも上書き可
+          {isLoggedIn
+            ? "ファン会員限定: 1 Stage 1 予想 / 何度でも上書き可 / 的中で景品対象"
+            : "予想の提出にはファン会員ログインが必要です"}
         </p>
       </section>
 
-      {/* Summary: みんなの予想 */}
+      {/* Summary */}
       {summary && summary.totalCount > 0 && (
         <SummarySection summary={summary} members={members} />
       )}
@@ -508,73 +578,37 @@ function SummarySection({
 }) {
   const memberById = new Map(members.map((m) => [m.id, m]));
 
-  const slotGroups: {
-    key: "playerWin" | "playerTri" | "pitWin" | "pitTri";
-    title: string;
-    color: string;
-    labels: string[];
-  }[] = [
-    {
-      key: "playerWin",
-      title: "PLAYER 連単",
-      color: "#007595",
-      labels: ["1着", "2着"],
-    },
-    {
-      key: "playerTri",
-      title: "PLAYER 3連単",
-      color: "#007595",
-      labels: ["1着", "2着", "3着"],
-    },
-    {
-      key: "pitWin",
-      title: "PIT 連単",
-      color: "#bb4d00",
-      labels: ["1着", "2着"],
-    },
-    {
-      key: "pitTri",
-      title: "PIT 3連単",
-      color: "#bb4d00",
-      labels: ["1着", "2着", "3着"],
-    },
-  ];
-
   return (
     <section className="mx-auto max-w-[964px] px-4 mt-14">
       <div className="flex items-center gap-3 mb-5">
         <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-purple to-[#c27aff]" />
         <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-[#7008e7] tracking-tight">
-          📊 みんなの予想（{summary.totalCount.toLocaleString()} 件）
+          📊 みんなの予想({summary.totalCount.toLocaleString()} 件)
         </h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {slotGroups.map((g) => {
-          const tallies = summary.bySlot[g.key];
+        {BETS.map((b) => {
+          const tallies = summary.bySlot[b.key] ?? [];
           return (
             <div
-              key={g.key}
+              key={b.key}
               className="rounded-2xl bg-white/70 border border-white/80 p-5 shadow-sm"
             >
-              <h3
-                className="font-[family-name:var(--font-outfit)] text-sm font-extrabold mb-3"
-                style={{ color: g.color }}
-              >
-                {g.title}
+              <h3 className="font-[family-name:var(--font-outfit)] text-sm font-extrabold mb-3 text-foreground">
+                {b.title}{" "}
+                <span className="text-[10px] font-bold text-primary-dark">
+                  +{b.points}
+                </span>
               </h3>
-
               <div className="space-y-3">
                 {tallies.map((t) => {
-                  const maxCount = Math.max(
-                    ...t.rows.map((r) => r.count),
-                    1
-                  );
+                  const maxCount = Math.max(...t.rows.map((r) => r.count), 1);
                   const top = t.rows.slice(0, 3);
                   return (
                     <div key={t.positionIndex}>
                       <p className="text-[10px] font-bold text-muted mb-1">
-                        {g.labels[t.positionIndex]}
+                        {b.ordered ? b.labels[t.positionIndex] : "選出数"}
                       </p>
                       {top.length === 0 ? (
                         <p className="text-[11px] text-muted">—</p>

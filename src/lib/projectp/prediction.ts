@@ -2,10 +2,59 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
  * Stage 順位予想ヘルパー。
- * 匿名 Cookie × Stage で1つの予想を upsert。
+ * 6 種類の賭式で予想し、Stage 確定後に採点する。
+ *
+ * 賭式                 枠   配点
+ *   fukusho     (複勝)   1   1
+ *   tansho      (単勝)   1   2
+ *   nirenpuku   (二連複) 2   5
+ *   nirentan    (二連単) 2  10
+ *   sanrenpuku  (三連複) 3  15
+ *   sanrentan   (三連単) 3  30
+ *                       ---- 最大 63
  */
 
 export type PredictionEntryType = "normal" | "welcome";
+
+export type BetKey =
+  | "tansho"
+  | "fukusho"
+  | "nirenpuku"
+  | "nirentan"
+  | "sanrenpuku"
+  | "sanrentan";
+
+export const BET_SLOT_COUNTS: Record<BetKey, number> = {
+  fukusho: 1,
+  tansho: 1,
+  nirenpuku: 2,
+  nirentan: 2,
+  sanrenpuku: 3,
+  sanrentan: 3,
+};
+
+export const BET_POINTS: Record<BetKey, number> = {
+  fukusho: 1,
+  tansho: 2,
+  nirenpuku: 5,
+  nirentan: 10,
+  sanrenpuku: 15,
+  sanrentan: 30,
+};
+
+export const BET_LABELS: Record<BetKey, string> = {
+  fukusho: "複勝",
+  tansho: "単勝",
+  nirenpuku: "二連複",
+  nirentan: "二連単",
+  sanrenpuku: "三連複",
+  sanrentan: "三連単",
+};
+
+export const MAX_PREDICTION_SCORE = Object.values(BET_POINTS).reduce(
+  (s, v) => s + v,
+  0
+);
 
 export type Prediction = {
   id: number;
@@ -13,10 +62,18 @@ export type Prediction = {
   userId: string | null;
   periodId: string;
   entryType: PredictionEntryType;
-  playerWin: string[]; // member uuid x2
-  playerTri: string[]; // member uuid x3
+  // 旧カラム(互換のため残す)
+  playerWin: string[];
+  playerTri: string[];
   pitWin: string[];
   pitTri: string[];
+  // 新カラム
+  tansho: string[];
+  fukusho: string[];
+  nirenpuku: string[];
+  nirentan: string[];
+  sanrenpuku: string[];
+  sanrentan: string[];
   createdAt: string;
   updatedAt: string;
 };
@@ -31,6 +88,12 @@ type Row = {
   player_tri: unknown;
   pit_win: unknown;
   pit_tri: unknown;
+  tansho: unknown;
+  fukusho: unknown;
+  nirenpuku: unknown;
+  nirentan: unknown;
+  sanrenpuku: unknown;
+  sanrentan: unknown;
   created_at: string;
   updated_at: string;
 };
@@ -51,6 +114,12 @@ function mapRow(r: Row): Prediction {
     playerTri: asIdArray(r.player_tri),
     pitWin: asIdArray(r.pit_win),
     pitTri: asIdArray(r.pit_tri),
+    tansho: asIdArray(r.tansho),
+    fukusho: asIdArray(r.fukusho),
+    nirenpuku: asIdArray(r.nirenpuku),
+    nirentan: asIdArray(r.nirentan),
+    sanrenpuku: asIdArray(r.sanrenpuku),
+    sanrentan: asIdArray(r.sanrentan),
     createdAt: r.created_at,
     updatedAt: r.updated_at,
   };
@@ -82,22 +151,40 @@ export async function getMyPrediction(
   return mapRow(data as Row);
 }
 
+export type PredictionBets = {
+  tansho: string[];
+  fukusho: string[];
+  nirenpuku: string[];
+  nirentan: string[];
+  sanrenpuku: string[];
+  sanrentan: string[];
+};
+
 export async function upsertPrediction(input: {
   cookieId: string;
   userId?: string | null;
   periodId: string;
   entryType: PredictionEntryType;
-  playerWin: string[];
-  playerTri: string[];
-  pitWin: string[];
-  pitTri: string[];
+  bets: PredictionBets;
 }): Promise<Prediction> {
   const supabase = createAdminClient();
 
+  const payload = {
+    cookie_id: input.cookieId,
+    user_id: input.userId ?? null,
+    period_id: input.periodId,
+    entry_type: input.entryType,
+    tansho: input.bets.tansho,
+    fukusho: input.bets.fukusho,
+    nirenpuku: input.bets.nirenpuku,
+    nirentan: input.bets.nirentan,
+    sanrenpuku: input.bets.sanrenpuku,
+    sanrentan: input.bets.sanrentan,
+    updated_at: new Date().toISOString(),
+  };
+
   // ログイン済の場合は user_id を identity として扱い、
   // 同一ユーザーが複数 Cookie から重複予想しないようにする。
-  // - 既に (user_id, period_id) の行があればそれを更新。
-  // - 無ければ (cookie_id, period_id) で upsert し、user_id を紐付ける。
   if (input.userId) {
     const { data: existing } = await supabase
       .from("predictions")
@@ -107,17 +194,14 @@ export async function upsertPrediction(input: {
       .maybeSingle();
 
     if (existing) {
+      const { cookie_id: _cookie, user_id: _u, period_id: _p, ...update } =
+        payload;
+      void _cookie;
+      void _u;
+      void _p;
       const { data, error } = await supabase
         .from("predictions")
-        .update({
-          cookie_id: input.cookieId,
-          entry_type: input.entryType,
-          player_win: input.playerWin,
-          player_tri: input.playerTri,
-          pit_win: input.pitWin,
-          pit_tri: input.pitTri,
-          updated_at: new Date().toISOString(),
-        })
+        .update({ ...update, cookie_id: input.cookieId })
         .eq("id", (existing as { id: number }).id)
         .select()
         .single();
@@ -128,20 +212,7 @@ export async function upsertPrediction(input: {
 
   const { data, error } = await supabase
     .from("predictions")
-    .upsert(
-      {
-        cookie_id: input.cookieId,
-        user_id: input.userId ?? null,
-        period_id: input.periodId,
-        entry_type: input.entryType,
-        player_win: input.playerWin,
-        player_tri: input.playerTri,
-        pit_win: input.pitWin,
-        pit_tri: input.pitTri,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "cookie_id,period_id" }
-    )
+    .upsert(payload, { onConflict: "cookie_id,period_id" })
     .select()
     .single();
   if (error) throw new Error(error.message);
@@ -149,7 +220,7 @@ export async function upsertPrediction(input: {
 }
 
 /**
- * Stage 内の予想数を返す（簡易集計）
+ * Stage 内の予想数を返す（ファン会員の予想のみカウント）。
  */
 export async function countPredictionsForPeriod(
   periodId: string
@@ -158,7 +229,8 @@ export async function countPredictionsForPeriod(
   const { count } = await supabase
     .from("predictions")
     .select("*", { count: "exact", head: true })
-    .eq("period_id", periodId);
+    .eq("period_id", periodId)
+    .not("user_id", "is", null);
   return count ?? 0;
 }
 
@@ -166,48 +238,48 @@ export async function countPredictionsForPeriod(
 // 集計
 // =====================================================================
 
-export type SlotKey = "playerWin" | "playerTri" | "pitWin" | "pitTri";
-
 /**
- * 各スロット×順位×メンバーの投票数。
- * 例: playerWin[0] = 1着の集計 {memberId, count}[]
+ * 賭式ごとの「この位置にこのメンバーが選ばれた件数」。
+ * 単勝/複勝は positionIndex=0 のみ。
  */
 export type SummarySlotTally = {
-  positionIndex: number; // 0 = 1着, 1 = 2着, 2 = 3着
+  positionIndex: number;
   rows: { memberId: string; count: number }[];
 };
 
 export type PredictionSummary = {
   totalCount: number;
-  bySlot: Record<SlotKey, SummarySlotTally[]>;
+  bySlot: Record<BetKey, SummarySlotTally[]>;
 };
 
 // =====================================================================
 // 的中判定
 // =====================================================================
 
+/** 賭式ごとの的中判定 (0 = 外れ / 1 = 的中) と獲得ポイント */
+export type BetResult = { hit: 0 | 1; points: number };
+
+export type SlotScores = Record<BetKey, BetResult>;
+
 export type PredictionScore = {
   predictionId: number;
   cookieId: string;
   entryType: PredictionEntryType;
   totalScore: number;
-  slotScores: {
-    playerWin: number[]; // 0 or 1 × 2
-    playerTri: number[]; // 0 or 1 × 3
-    pitWin: number[];
-    pitTri: number[];
-  };
+  slotScores: SlotScores;
 };
 
 /**
  * Stage 確定後、その Stage の全予想を採点して predictions に保存する。
  *
- * スコアリングルール:
- *   PLAYER 連単:  player_win[0] が確定 rank 1 と一致なら +1、[1] が rank 2 と一致なら +1
- *   PLAYER 3連単: player_tri[i] が確定 rank i+1 と一致なら +1 ずつ
- *   PIT 連単:     pit_win[0] が確定 rank 7、[1] が rank 8
- *   PIT 3連単:    pit_tri[i] が確定 rank i+7
- *   total は全部の合計（最大 10 点）
+ * ルール:
+ *   fukusho    : 選んだ 1 名が rank 1-3 に含まれれば 1 pt
+ *   tansho     : 選んだ 1 名が rank 1 なら 2 pt
+ *   nirenpuku  : 選んだ 2 名のセットが rank 1-2 と一致(順不同)なら 5 pt
+ *   nirentan   : 選んだ [1着,2着] が rank 1,2 と一致(順通り)なら 10 pt
+ *   sanrenpuku : 選んだ 3 名のセットが rank 1-3 と一致(順不同)なら 15 pt
+ *   sanrentan  : 選んだ [1着,2着,3着] が rank 1,2,3 と一致(順通り)なら 30 pt
+ *   最大 63 pt
  */
 export async function scoreStagePredictions(
   periodId: string
@@ -228,15 +300,23 @@ export async function scoreStagePredictions(
     if (row.rank !== null) rankToMember.set(row.rank, row.member_id);
   }
 
-  // 確定 rank が存在しない Stage（= finalize 未実行）はスコア付け不可
   if (rankToMember.size === 0) {
     return { scored: 0, scores: [] };
   }
 
+  const rank1 = rankToMember.get(1) ?? null;
+  const rank2 = rankToMember.get(2) ?? null;
+  const rank3 = rankToMember.get(3) ?? null;
+  const topSet = new Set<string>(
+    [rank1, rank2, rank3].filter((x): x is string => !!x)
+  );
+
   // 2) 全予想を取得
   const { data: preds, error: predsErr } = await supabase
     .from("predictions")
-    .select("id, cookie_id, entry_type, player_win, player_tri, pit_win, pit_tri")
+    .select(
+      "id, cookie_id, entry_type, tansho, fukusho, nirenpuku, nirentan, sanrenpuku, sanrentan"
+    )
     .eq("period_id", periodId);
   if (predsErr) throw new Error(predsErr.message);
 
@@ -244,42 +324,91 @@ export async function scoreStagePredictions(
     id: number;
     cookie_id: string;
     entry_type: string;
-    player_win: unknown;
-    player_tri: unknown;
-    pit_win: unknown;
-    pit_tri: unknown;
+    tansho: unknown;
+    fukusho: unknown;
+    nirenpuku: unknown;
+    nirentan: unknown;
+    sanrenpuku: unknown;
+    sanrentan: unknown;
   }>;
 
-  function scoreArr(
-    arr: unknown,
-    expectedRanks: number[]
-  ): number[] {
-    const out: number[] = [];
-    const list = Array.isArray(arr) ? arr : [];
-    for (let i = 0; i < expectedRanks.length; i++) {
-      const picked = typeof list[i] === "string" ? (list[i] as string) : null;
-      const expected = rankToMember.get(expectedRanks[i]);
-      out.push(picked && expected && picked === expected ? 1 : 0);
-    }
-    return out;
-  }
+  const ids = (v: unknown): string[] =>
+    Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [];
 
   const scores: PredictionScore[] = [];
   const nowIso = new Date().toISOString();
 
-  // バッチ更新
   for (const r of rows) {
-    const playerWin = scoreArr(r.player_win, [1, 2]);
-    const playerTri = scoreArr(r.player_tri, [1, 2, 3]);
-    const pitWin = scoreArr(r.pit_win, [7, 8]);
-    const pitTri = scoreArr(r.pit_tri, [7, 8, 9]);
-    const total =
-      playerWin.reduce((s, v) => s + v, 0) +
-      playerTri.reduce((s, v) => s + v, 0) +
-      pitWin.reduce((s, v) => s + v, 0) +
-      pitTri.reduce((s, v) => s + v, 0);
+    const tansho = ids(r.tansho);
+    const fukusho = ids(r.fukusho);
+    const nirenpuku = ids(r.nirenpuku);
+    const nirentan = ids(r.nirentan);
+    const sanrenpuku = ids(r.sanrenpuku);
+    const sanrentan = ids(r.sanrentan);
 
-    const slot = { playerWin, playerTri, pitWin, pitTri };
+    // 複勝: 1 人が rank 1-3 に含まれる
+    const fukushoHit: 0 | 1 =
+      fukusho[0] && topSet.has(fukusho[0]) ? 1 : 0;
+
+    // 単勝: 1 人が rank 1 と一致
+    const tanshoHit: 0 | 1 = tansho[0] && tansho[0] === rank1 ? 1 : 0;
+
+    // 二連複: 2 人のセットが {rank1, rank2} と一致
+    const nirenpukuHit: 0 | 1 =
+      nirenpuku.length === 2 &&
+      rank1 &&
+      rank2 &&
+      new Set(nirenpuku).size === 2 &&
+      nirenpuku.includes(rank1) &&
+      nirenpuku.includes(rank2)
+        ? 1
+        : 0;
+
+    // 二連単: [rank1, rank2] 順通り
+    const nirentanHit: 0 | 1 =
+      nirentan[0] === rank1 && nirentan[1] === rank2 ? 1 : 0;
+
+    // 三連複: 3 人のセットが {rank1, rank2, rank3} と一致
+    const sanrenpukuHit: 0 | 1 =
+      sanrenpuku.length === 3 &&
+      rank1 &&
+      rank2 &&
+      rank3 &&
+      new Set(sanrenpuku).size === 3 &&
+      sanrenpuku.includes(rank1) &&
+      sanrenpuku.includes(rank2) &&
+      sanrenpuku.includes(rank3)
+        ? 1
+        : 0;
+
+    // 三連単: [rank1, rank2, rank3] 順通り
+    const sanrentanHit: 0 | 1 =
+      sanrentan[0] === rank1 &&
+      sanrentan[1] === rank2 &&
+      sanrentan[2] === rank3
+        ? 1
+        : 0;
+
+    const slot: SlotScores = {
+      fukusho: { hit: fukushoHit, points: fukushoHit * BET_POINTS.fukusho },
+      tansho: { hit: tanshoHit, points: tanshoHit * BET_POINTS.tansho },
+      nirenpuku: {
+        hit: nirenpukuHit,
+        points: nirenpukuHit * BET_POINTS.nirenpuku,
+      },
+      nirentan: { hit: nirentanHit, points: nirentanHit * BET_POINTS.nirentan },
+      sanrenpuku: {
+        hit: sanrenpukuHit,
+        points: sanrenpukuHit * BET_POINTS.sanrenpuku,
+      },
+      sanrentan: {
+        hit: sanrentanHit,
+        points: sanrentanHit * BET_POINTS.sanrentan,
+      },
+    };
+
+    const total = Object.values(slot).reduce((s, b) => s + b.points, 0);
+
     scores.push({
       predictionId: r.id,
       cookieId: r.cookie_id,
@@ -297,20 +426,12 @@ export async function scoreStagePredictions(
       })
       .eq("id", r.id);
     if (upErr) {
-      // 1件失敗しても他を続行する
       console.error("score update failed:", upErr.message);
     }
   }
 
   return { scored: scores.length, scores };
 }
-
-export type SlotScores = {
-  playerWin: number[];
-  playerTri: number[];
-  pitWin: number[];
-  pitTri: number[];
-};
 
 export type UserPredictionHistory = {
   predictionId: number;
@@ -327,13 +448,24 @@ export type UserPredictionHistory = {
 function parseSlotScores(v: unknown): SlotScores | null {
   if (!v || typeof v !== "object") return null;
   const s = v as Record<string, unknown>;
-  const arr = (x: unknown): number[] =>
-    Array.isArray(x) ? x.map((y) => (y === 1 ? 1 : 0)) : [];
+  const bet = (key: BetKey): BetResult => {
+    const x = s[key];
+    if (x && typeof x === "object") {
+      const obj = x as { hit?: unknown; points?: unknown };
+      const hit: 0 | 1 = obj.hit === 1 ? 1 : 0;
+      const points =
+        typeof obj.points === "number" ? obj.points : hit * BET_POINTS[key];
+      return { hit, points };
+    }
+    return { hit: 0, points: 0 };
+  };
   return {
-    playerWin: arr(s.playerWin),
-    playerTri: arr(s.playerTri),
-    pitWin: arr(s.pitWin),
-    pitTri: arr(s.pitTri),
+    fukusho: bet("fukusho"),
+    tansho: bet("tansho"),
+    nirenpuku: bet("nirenpuku"),
+    nirentan: bet("nirentan"),
+    sanrenpuku: bet("sanrenpuku"),
+    sanrentan: bet("sanrentan"),
   };
 }
 
@@ -511,6 +643,7 @@ export async function getTopPredictors(
     .select("cookie_id, user_id, entry_type, total_score")
     .eq("period_id", periodId)
     .not("total_score", "is", null)
+    .not("user_id", "is", null)
     .order("total_score", { ascending: false })
     .limit(limit);
   if (error) throw new Error(error.message);
@@ -572,36 +705,43 @@ export async function getPredictionSummary(
   periodId: string
 ): Promise<PredictionSummary> {
   const supabase = createAdminClient();
+  // ファン会員の予想のみ集計（不正対策として匿名予想は除外）
   const { data, error } = await supabase
     .from("predictions")
-    .select("player_win, player_tri, pit_win, pit_tri")
-    .eq("period_id", periodId);
+    .select("tansho, fukusho, nirenpuku, nirentan, sanrenpuku, sanrentan")
+    .eq("period_id", periodId)
+    .not("user_id", "is", null);
   if (error) throw new Error(error.message);
 
-  type PredRow = {
-    player_win: unknown;
-    player_tri: unknown;
-    pit_win: unknown;
-    pit_tri: unknown;
-  };
+  type PredRow = Record<BetKey, unknown>;
   const rows = (data ?? []) as PredRow[];
 
   function buildTally(
-    extract: (r: PredRow) => unknown,
-    size: number
+    key: BetKey,
+    size: number,
+    orderless = false
   ): SummarySlotTally[] {
-    // position -> memberId -> count
+    // 順不同の賭式はすべて positionIndex=0 にまとめて「選ばれたメンバーの総数」
+    // として集計する。順序通りの賭式は各 positionIndex ごとに分けて集計。
+    const slotCount = orderless ? 1 : size;
     const perPos: Map<string, number>[] = Array.from(
-      { length: size },
+      { length: slotCount },
       () => new Map()
     );
     for (const r of rows) {
-      const arr = extract(r);
+      const arr = r[key];
       if (!Array.isArray(arr)) continue;
-      for (let i = 0; i < size; i++) {
-        const v = arr[i];
-        if (typeof v !== "string" || !v) continue;
-        perPos[i].set(v, (perPos[i].get(v) ?? 0) + 1);
+      if (orderless) {
+        for (const v of arr) {
+          if (typeof v !== "string" || !v) continue;
+          perPos[0].set(v, (perPos[0].get(v) ?? 0) + 1);
+        }
+      } else {
+        for (let i = 0; i < size; i++) {
+          const v = arr[i];
+          if (typeof v !== "string" || !v) continue;
+          perPos[i].set(v, (perPos[i].get(v) ?? 0) + 1);
+        }
       }
     }
     return perPos.map((m, i) => ({
@@ -615,10 +755,12 @@ export async function getPredictionSummary(
   return {
     totalCount: rows.length,
     bySlot: {
-      playerWin: buildTally((r) => r.player_win, 2),
-      playerTri: buildTally((r) => r.player_tri, 3),
-      pitWin: buildTally((r) => r.pit_win, 2),
-      pitTri: buildTally((r) => r.pit_tri, 3),
+      fukusho: buildTally("fukusho", 1),
+      tansho: buildTally("tansho", 1),
+      nirenpuku: buildTally("nirenpuku", 2, true),
+      nirentan: buildTally("nirentan", 2),
+      sanrenpuku: buildTally("sanrenpuku", 3, true),
+      sanrentan: buildTally("sanrentan", 3),
     },
   };
 }

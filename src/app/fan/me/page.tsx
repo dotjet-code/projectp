@@ -4,7 +4,13 @@ import { Footer } from "@/components/footer";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { getFanProfile } from "@/lib/projectp/fan-profile";
 import { listRewardsForUser, REWARD_LABELS, isExpired } from "@/lib/projectp/reward";
-import { listPredictionsForUser } from "@/lib/projectp/prediction";
+import {
+  BET_LABELS,
+  BET_POINTS,
+  MAX_PREDICTION_SCORE,
+  listPredictionsForUser,
+} from "@/lib/projectp/prediction";
+import type { BetKey } from "@/lib/projectp/prediction";
 import { DisplayNameForm, FanMeActions } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -82,10 +88,14 @@ export default async function FanMePage() {
           ) : (
             <ul className="space-y-2">
               {history.map((h) => {
-                const dot = (hit: number) =>
-                  hit === 1 ? "●" : "○";
-                const cls = (hit: number) =>
-                  hit === 1 ? "text-emerald-600" : "text-gray-300";
+                const betKeys: BetKey[] = [
+                  "fukusho",
+                  "tansho",
+                  "nirenpuku",
+                  "nirentan",
+                  "sanrenpuku",
+                  "sanrentan",
+                ];
                 return (
                   <li
                     key={h.predictionId}
@@ -106,7 +116,7 @@ export default async function FanMePage() {
                             <p className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-primary-dark">
                               {h.totalScore ?? 0}
                               <span className="text-[10px] font-bold text-muted ml-0.5">
-                                /10
+                                /{MAX_PREDICTION_SCORE}
                               </span>
                             </p>
                             <p className="text-[9px] text-muted">採点済</p>
@@ -117,39 +127,32 @@ export default async function FanMePage() {
                       </div>
                     </div>
                     {h.slotScores && (
-                      <div className="mt-2 pt-2 border-t border-gray-100 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
-                        <div>
-                          <span className="text-muted mr-1">PLAYER 連単</span>
-                          {h.slotScores.playerWin.map((v, i) => (
-                            <span key={i} className={cls(v)}>
-                              {dot(v)}
-                            </span>
-                          ))}
-                        </div>
-                        <div>
-                          <span className="text-muted mr-1">PLAYER 3連単</span>
-                          {h.slotScores.playerTri.map((v, i) => (
-                            <span key={i} className={cls(v)}>
-                              {dot(v)}
-                            </span>
-                          ))}
-                        </div>
-                        <div>
-                          <span className="text-muted mr-1">PIT 連単</span>
-                          {h.slotScores.pitWin.map((v, i) => (
-                            <span key={i} className={cls(v)}>
-                              {dot(v)}
-                            </span>
-                          ))}
-                        </div>
-                        <div>
-                          <span className="text-muted mr-1">PIT 3連単</span>
-                          {h.slotScores.pitTri.map((v, i) => (
-                            <span key={i} className={cls(v)}>
-                              {dot(v)}
-                            </span>
-                          ))}
-                        </div>
+                      <div className="mt-2 pt-2 border-t border-gray-100 grid grid-cols-3 gap-x-2 gap-y-1 text-[10px]">
+                        {betKeys.map((k) => {
+                          const r = h.slotScores![k];
+                          const hit = r.hit === 1;
+                          return (
+                            <div
+                              key={k}
+                              className={`flex items-center justify-between rounded px-1.5 py-0.5 ${
+                                hit ? "bg-emerald-50" : "bg-gray-50"
+                              }`}
+                            >
+                              <span className="text-muted">
+                                {BET_LABELS[k]}
+                              </span>
+                              <span
+                                className={
+                                  hit
+                                    ? "font-bold text-emerald-700"
+                                    : "text-gray-400"
+                                }
+                              >
+                                {hit ? `+${BET_POINTS[k]}` : "—"}
+                              </span>
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
                   </li>
