@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabase } from "@/lib/supabase/server";
-import { redeemReward } from "@/lib/projectp/reward";
+import { redeemReward, getRewardByCodeWithFan } from "@/lib/projectp/reward";
 import { logAudit } from "@/lib/projectp/audit";
 
 /**
@@ -45,5 +45,7 @@ export async function POST(req: NextRequest) {
     targetId: String(result.reward.id),
     detail: `${result.reward.rewardType} code=${result.reward.rewardCode}`,
   });
-  return NextResponse.json({ ok: true, reward: result.reward });
+  // 消込後にファン情報付きで返す(スタッフが本人確認できるように)
+  const withFan = await getRewardByCodeWithFan(result.reward.rewardCode);
+  return NextResponse.json({ ok: true, reward: withFan ?? result.reward });
 }

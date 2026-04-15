@@ -19,6 +19,8 @@ type RewardRow = {
   issuedAt: string;
   redeemedAt: string | null;
   expiresAt: string | null;
+  displayName: string | null;
+  email: string | null;
 };
 
 const REWARD_TYPES: { value: "live_vote_bonus" | "cheki_free"; label: string }[] = [
@@ -333,6 +335,7 @@ function IssueTab({
             <thead className="bg-gray-50 text-left">
               <tr>
                 <th className="px-2 py-1.5">コード</th>
+                <th className="px-2 py-1.5">ファン</th>
                 <th className="px-2 py-1.5">種別</th>
                 <th className="px-2 py-1.5">スコア</th>
                 <th className="px-2 py-1.5">発行</th>
@@ -347,6 +350,16 @@ function IssueTab({
                 return (
                   <tr key={r.id} className="border-t border-gray-100">
                     <td className="px-2 py-1.5 font-mono">{r.rewardCode}</td>
+                    <td className="px-2 py-1.5">
+                      <div className="flex flex-col leading-tight">
+                        <span className="font-bold text-foreground">
+                          {r.displayName ?? "(名無し)"}
+                        </span>
+                        <span className="text-[10px] text-muted">
+                          {r.email ?? "—"}
+                        </span>
+                      </div>
+                    </td>
                     <td className="px-2 py-1.5">
                       {r.rewardType === "cheki_free" ? "チェキ" : "投票"}
                     </td>
@@ -373,7 +386,7 @@ function IssueTab({
               })}
               {rewards.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-2 py-3 text-center text-muted">
+                  <td colSpan={7} className="px-2 py-3 text-center text-muted">
                     まだ発行されていません
                   </td>
                 </tr>
@@ -386,12 +399,20 @@ function IssueTab({
   );
 }
 
+type RedeemHistoryEntry = {
+  code: string;
+  status: "ok" | "ng";
+  message: string;
+  fan?: {
+    displayName: string | null;
+    email: string | null;
+  };
+};
+
 function RedeemTab() {
   const [code, setCode] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [history, setHistory] = useState<
-    { code: string; status: "ok" | "ng"; message: string }[]
-  >([]);
+  const [history, setHistory] = useState<RedeemHistoryEntry[]>([]);
 
   async function onRedeem(e: React.FormEvent) {
     e.preventDefault();
@@ -410,7 +431,15 @@ function RedeemTab() {
             ? "チェキ無料券"
             : "投票ボーナス";
         setHistory((h) => [
-          { code, status: "ok", message: `消込OK: ${label}` },
+          {
+            code,
+            status: "ok",
+            message: `消込OK: ${label}`,
+            fan: {
+              displayName: j.reward.displayName ?? null,
+              email: j.reward.email ?? null,
+            },
+          },
           ...h,
         ]);
       } else {
@@ -455,17 +484,29 @@ function RedeemTab() {
 
       <div>
         <p className="text-xs font-semibold text-muted mb-2">直近の消込履歴</p>
-        <ul className="space-y-1">
+        <ul className="space-y-1.5">
           {history.map((h, i) => (
             <li
               key={i}
-              className={`text-xs flex items-center gap-2 ${
-                h.status === "ok" ? "text-emerald-700" : "text-red-600"
+              className={`text-xs rounded-lg px-3 py-2 border ${
+                h.status === "ok"
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-900"
+                  : "bg-red-50 border-red-200 text-red-700"
               }`}
             >
-              <span className="font-mono">{h.code}</span>
-              <span>—</span>
-              <span>{h.message}</span>
+              <div className="flex items-baseline gap-2">
+                <span className="font-mono font-bold">{h.code}</span>
+                <span className="text-[10px]">—</span>
+                <span className="font-bold">{h.message}</span>
+              </div>
+              {h.fan && (
+                <div className="mt-0.5 text-[11px] flex items-baseline gap-2">
+                  <span className="font-bold">
+                    {h.fan.displayName ?? "(名無し)"}
+                  </span>
+                  <span className="text-muted">{h.fan.email}</span>
+                </div>
+              )}
             </li>
           ))}
           {history.length === 0 && (

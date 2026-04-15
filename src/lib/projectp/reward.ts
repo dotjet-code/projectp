@@ -293,3 +293,94 @@ export async function listRewardsForPeriod(
   if (error) return [];
   return ((data ?? []) as Row[]).map(mapRow);
 }
+
+export type RewardWithFan = Reward & {
+  displayName: string | null;
+  email: string | null;
+};
+
+/**
+ * 管理画面向け: Reward + ファン情報 (表示名 + メール) を返す。
+ */
+export async function listRewardsForPeriodWithFan(
+  periodId: string
+): Promise<RewardWithFan[]> {
+  const supabase = createAdminClient();
+  const rewards = await listRewardsForPeriod(periodId);
+  if (rewards.length === 0) return [];
+
+  const userIds = Array.from(new Set(rewards.map((r) => r.userId)));
+
+  // 表示名
+  const { data: profiles } = await supabase
+    .from("fan_profiles")
+    .select("user_id, display_name")
+    .in("user_id", userIds);
+  const nameById = new Map<string, string | null>();
+  for (const p of (profiles ?? []) as {
+    user_id: string;
+    display_name: string | null;
+  }[]) {
+    nameById.set(p.user_id, p.display_name);
+  }
+
+  // メール (auth.users から一括取得)
+  const emailById = new Map<string, string | null>();
+  try {
+    const { data: users } = await supabase.auth.admin.listUsers({
+      page: 1,
+      perPage: 1000,
+    });
+    for (const u of users?.users ?? []) {
+      if (userIds.includes(u.id)) {
+        emailById.set(u.id, u.email ?? null);
+      }
+    }
+  } catch {
+    // ignore
+  }
+
+  return rewards.map((r) => ({
+    ...r,
+    displayName: nameById.get(r.userId) ?? null,
+    email: emailById.get(r.userId) ?? null,
+  }));
+}
+
+/**
+ * code から fan 情報付きで 1 件取得(消込時の本人確認用)。
+ */
+export async function getRewardByCodeWithFan(
+  code: string
+): Promise<RewardWithFan | null> {
+  const supabase = createAdminClient();
+  const normalized = code.trim().toUpperCase();
+  if (!normalized) return null;
+
+  const { data } = await supabase
+    .from("prediction_rewards")
+    .select("*")
+    .eq("reward_code", normalized)
+    .maybeSingle();
+  if (!data) return null;
+  const reward = mapRow(data as Row);
+
+  const { data: profile } = await supabase
+    .from("fan_profiles")
+    .select("display_name")
+    .eq("user_id", reward.userId)
+    .maybeSingle();
+  let email: string | null = null;
+  try {
+    const { data: u } = await supabase.auth.admin.getUserById(reward.userId);
+    email = u.user?.email ?? null;
+  } catch {
+    // ignore
+  }
+  return {
+    ...reward,
+    displayName:
+      (profile as { display_name: string | null } | null)?.display_name ?? null,
+    email,
+  };
+}
