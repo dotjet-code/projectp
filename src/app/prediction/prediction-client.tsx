@@ -222,6 +222,30 @@ function MemberCandidate({
   );
 }
 
+function Countdown({ closeAt }: { closeAt: string }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+  const target = new Date(closeAt).getTime();
+  const diff = target - now;
+  if (diff <= 0) {
+    return <span className="text-red-600 font-bold">締切済み</span>;
+  }
+  const totalSec = Math.floor(diff / 1000);
+  const days = Math.floor(totalSec / 86400);
+  const hours = Math.floor((totalSec % 86400) / 3600);
+  const mins = Math.floor((totalSec % 3600) / 60);
+  const secs = totalSec % 60;
+  const parts: string[] = [];
+  if (days > 0) parts.push(`${days}日`);
+  if (days > 0 || hours > 0) parts.push(`${hours}時間`);
+  if (days === 0) parts.push(`${mins}分`);
+  if (days === 0 && hours === 0) parts.push(`${secs}秒`);
+  return <span>残り {parts.join(" ")}</span>;
+}
+
 function BetSection({
   config,
   candidates,
@@ -548,7 +572,8 @@ export function PredictionClient({
         )}
         {closeAt && !isClosed && (
           <p className="mt-3 text-[11px] text-amber-700">
-            ⏰ 締切: {new Date(closeAt).toLocaleString()}
+            ⏰ 締切: {new Date(closeAt).toLocaleString()} (
+            <Countdown closeAt={closeAt} />)
           </p>
         )}
         <p className="mt-2 text-[10px] text-muted">

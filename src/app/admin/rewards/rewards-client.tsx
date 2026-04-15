@@ -179,6 +179,34 @@ function IssueTab({
           />
         </label>
       </div>
+
+      {/* プリセット */}
+      <div className="flex flex-wrap gap-1.5 -mt-1">
+        <span className="text-[10px] text-muted self-center mr-1">
+          目安:
+        </span>
+        {[
+          { label: "完全的中", score: 63, tip: "全 6 賭式的中 = 特別景品" },
+          { label: "三連単的中", score: 30, tip: "三連単を当てた人" },
+          { label: "上位", score: 20, tip: "三連複+α 相当" },
+          { label: "中位", score: 10, tip: "二連単以上の的中" },
+          { label: "参加賞", score: 3, tip: "単勝か複勝以上" },
+        ].map((p) => (
+          <button
+            key={p.score}
+            type="button"
+            title={p.tip}
+            onClick={() => setMinScore(p.score)}
+            className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold transition-colors ${
+              minScore === p.score
+                ? "bg-black text-white border-black"
+                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+            }`}
+          >
+            {p.label} ({p.score}+)
+          </button>
+        ))}
+      </div>
       <label className="block">
         <span className="text-[10px] font-semibold text-muted">
           有効期限（任意 — ライブ当日の日付を指定）
