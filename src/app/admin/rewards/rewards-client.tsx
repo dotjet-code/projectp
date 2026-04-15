@@ -79,7 +79,7 @@ function IssueTab({
   );
   const [rewardType, setRewardType] =
     useState<"live_vote_bonus" | "cheki_free">("live_vote_bonus");
-  const [minScore, setMinScore] = useState(10);
+  const [minScore, setMinScore] = useState(30);
   const [expiresAt, setExpiresAt] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<string | null>(null);
@@ -166,11 +166,13 @@ function IssueTab({
           </select>
         </label>
         <label className="block">
-          <span className="text-[10px] font-semibold text-muted">最低スコア</span>
+          <span className="text-[10px] font-semibold text-muted">
+            最低スコア (0〜63)
+          </span>
           <input
             type="number"
             min={0}
-            max={10}
+            max={63}
             value={minScore}
             onChange={(e) => setMinScore(Number(e.target.value) || 0)}
             className="mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm"

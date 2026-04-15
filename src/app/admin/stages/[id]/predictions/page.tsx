@@ -4,6 +4,7 @@ import { getStageById } from "@/lib/projectp/stage";
 import {
   BET_LABELS,
   BET_SLOT_COUNTS,
+  MAX_PREDICTION_SCORE,
   countPredictionsForPeriod,
   getPredictionSummary,
   getTopPredictors,
@@ -209,7 +210,7 @@ export default async function AdminPredictionsPage({
                   )}
                 </div>
                 <span className="font-[family-name:var(--font-outfit)] text-sm font-black text-foreground">
-                  {p.totalScore}/10
+                  {p.totalScore}/{MAX_PREDICTION_SCORE}
                 </span>
               </li>
             ))}

@@ -73,7 +73,8 @@ function generateRewardCode(): string {
 
 /**
  * 指定 Stage の予想の中で totalScore >= minScore のユーザーに景品を発行する。
- * 既に同種の景品が発行済のユーザーはスキップ。
+ * スコアは 0〜63 (複勝 1 / 単勝 2 / 二連複 5 / 二連単 10 / 三連複 15 / 三連単 30)。
+ * banned/flagged のファンおよび既に同種の景品が発行済のユーザーはスキップ。
  */
 export async function issueRewardsForPeriod(input: {
   periodId: string;

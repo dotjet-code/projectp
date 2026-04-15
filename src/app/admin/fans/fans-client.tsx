@@ -215,7 +215,7 @@ export function FansClient({
                                   >
                                     <span>{p.periodName ?? "?"}</span>
                                     <span className="font-bold">
-                                      {p.totalScore ?? "—"}/10
+                                      {p.totalScore ?? "—"}/63
                                     </span>
                                   </li>
                                 ))}

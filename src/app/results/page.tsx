@@ -10,6 +10,7 @@ import {
 import {
   getTopPredictors,
   getSeriesTopPredictors,
+  MAX_PREDICTION_SCORE,
 } from "@/lib/projectp/prediction";
 
 export const dynamic = "force-dynamic";
@@ -271,7 +272,7 @@ export default async function ResultsPage({
               </h2>
             </div>
             <p className="text-[10px] text-muted mb-3">
-              Stage 確定順位と予想を突合して自動採点（最大 10点）
+              Stage 確定順位と 6 種類の賭式予想を突合して自動採点(最大 {MAX_PREDICTION_SCORE} 点)
             </p>
             <ul className="rounded-2xl bg-white/70 border border-white/80 divide-y divide-gray-100 overflow-hidden">
               {topPredictors.map((p) => (
@@ -309,7 +310,9 @@ export default async function ResultsPage({
                     <span className="font-[family-name:var(--font-outfit)] text-sm font-black text-foreground">
                       {p.totalScore}
                     </span>
-                    <span className="text-[9px] text-muted ml-0.5">/10</span>
+                    <span className="text-[9px] text-muted ml-0.5">
+                      /{MAX_PREDICTION_SCORE}
+                    </span>
                   </div>
                 </li>
               ))}
