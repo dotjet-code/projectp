@@ -97,10 +97,18 @@ export default async function FanMePage() {
 
         {standing && (
           <section className="mx-auto max-w-[520px] px-4 mt-6">
-            <div className="rounded-2xl border border-amber-200 bg-gradient-to-br from-[#fff7e6] via-[#ffe9c8] to-[#fed7aa] p-5 shadow-sm">
-              <p className="text-[10px] font-semibold tracking-wider text-[#7a4a00]">
-                👑 SERIES {standing.seriesNumber} 通算
-              </p>
+            <a
+              href={`/ranking/predictors?series=${standing.seriesNumber}`}
+              className="block rounded-2xl border border-amber-200 bg-gradient-to-br from-[#fff7e6] via-[#ffe9c8] to-[#fed7aa] p-5 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-[10px] font-semibold tracking-wider text-[#7a4a00]">
+                  👑 SERIES {standing.seriesNumber} 通算
+                </p>
+                <span className="text-[10px] text-[#7a4a00] underline">
+                  ランキングを見る →
+                </span>
+              </div>
               <div className="mt-1 flex items-baseline gap-2">
                 <span className="font-[family-name:var(--font-outfit)] text-4xl font-black text-[#c2410c]">
                   #{standing.rank}
@@ -129,7 +137,7 @@ export default async function FanMePage() {
                   </p>
                 </div>
               </div>
-            </div>
+            </a>
           </section>
         )}
 

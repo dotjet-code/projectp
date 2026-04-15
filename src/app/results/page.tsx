@@ -326,14 +326,22 @@ export default async function ResultsPage({
         {/* Series 通算ランキング */}
         {seriesN && seriesPredictors.length > 0 && (
           <section className="mx-auto max-w-[720px] px-4 mt-12">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-amber-400 to-orange-500" />
-              <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-[#c2410c] tracking-tight">
-                👑 Series {seriesN} 通算ランキング
-              </h2>
+            <div className="flex items-center justify-between gap-3 mb-5">
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-amber-400 to-orange-500" />
+                <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-[#c2410c] tracking-tight">
+                  👑 Series {seriesN} 通算ランキング
+                </h2>
+              </div>
+              <Link
+                href={`/ranking/predictors?series=${seriesN}`}
+                className="text-[11px] font-bold text-[#c2410c] underline"
+              >
+                全体を見る →
+              </Link>
             </div>
             <p className="text-[10px] text-muted mb-3">
-              Series {seriesN} の全 Stage の予想を合算した年間王者ランキング（ファン会員のみ）
+              Series {seriesN} の全 Stage の予想を合算した年間王者ランキング（ファン会員のみ・上位 10 件）
             </p>
             <ul className="rounded-2xl bg-white/70 border border-white/80 divide-y divide-gray-100 overflow-hidden">
               {seriesPredictors.map((p) => (

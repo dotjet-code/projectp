@@ -675,6 +675,23 @@ export async function getFanSeriesStanding(
   };
 }
 
+/**
+ * closed Stage を持つ Series の一覧(降順)。
+ */
+export async function listSeriesWithClosedStages(): Promise<number[]> {
+  const supabase = createAdminClient();
+  const { data } = await supabase
+    .from("periods")
+    .select("series_number")
+    .eq("status", "closed")
+    .not("series_number", "is", null);
+  const set = new Set<number>();
+  for (const r of (data ?? []) as { series_number: number | null }[]) {
+    if (r.series_number !== null) set.add(r.series_number);
+  }
+  return [...set].sort((a, b) => b - a);
+}
+
 export type SeriesTopPredictor = {
   rank: number;
   userId: string;
