@@ -9,6 +9,7 @@ import {
   BET_LABELS,
   BET_POINTS,
   MAX_PREDICTION_SCORE,
+  getFanSeriesStanding,
   listPredictionsForUser,
 } from "@/lib/projectp/prediction";
 import type { BetKey } from "@/lib/projectp/prediction";
@@ -37,10 +38,11 @@ export default async function FanMePage() {
     redirect("/admin");
   }
 
-  const [profile, rewards, history] = await Promise.all([
+  const [profile, rewards, history, standing] = await Promise.all([
     getFanProfile(user.id),
     listRewardsForUser(user.id),
     listPredictionsForUser(user.id),
+    getFanSeriesStanding(user.id),
   ]);
 
   // メンバー名解決用
@@ -92,6 +94,44 @@ export default async function FanMePage() {
             <FanMeActions />
           </div>
         </section>
+
+        {standing && (
+          <section className="mx-auto max-w-[520px] px-4 mt-6">
+            <div className="rounded-2xl border border-amber-200 bg-gradient-to-br from-[#fff7e6] via-[#ffe9c8] to-[#fed7aa] p-5 shadow-sm">
+              <p className="text-[10px] font-semibold tracking-wider text-[#7a4a00]">
+                👑 SERIES {standing.seriesNumber} 通算
+              </p>
+              <div className="mt-1 flex items-baseline gap-2">
+                <span className="font-[family-name:var(--font-outfit)] text-4xl font-black text-[#c2410c]">
+                  #{standing.rank}
+                </span>
+                <span className="text-xs text-[#7a4a00]">
+                  / {standing.totalParticipants} 人中
+                </span>
+              </div>
+              <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+                <div>
+                  <p className="text-[9px] text-muted">通算スコア</p>
+                  <p className="font-[family-name:var(--font-outfit)] text-lg font-black text-foreground">
+                    {standing.totalScore}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[9px] text-muted">参加ステージ</p>
+                  <p className="font-[family-name:var(--font-outfit)] text-lg font-black text-foreground">
+                    {standing.stageCount}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[9px] text-muted">完全的中</p>
+                  <p className="font-[family-name:var(--font-outfit)] text-lg font-black text-foreground">
+                    {standing.perfectCount}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
         <section className="mx-auto max-w-[520px] px-4 mt-6">
           <h2 className="font-[family-name:var(--font-outfit)] text-lg font-extrabold mb-3">

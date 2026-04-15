@@ -565,6 +565,116 @@ export type TopPredictor = {
  * Stage の的中スコアランキング（上位N件）。
  * cookie_id は表示用にマスク。
  */
+export type FanSeriesStanding = {
+  seriesNumber: number;
+  rank: number;
+  totalScore: number;
+  stageCount: number;
+  perfectCount: number;
+  totalParticipants: number;
+};
+
+/**
+ * ファン会員の現在の Series 通算ランキング内の位置を返す。
+ * 最新の採点済み予想がある Series を対象にする。
+ */
+export async function getFanSeriesStanding(
+  userId: string
+): Promise<FanSeriesStanding | null> {
+  const supabase = createAdminClient();
+
+  // 1) このユーザーの採点済み予想から、最新の Series を見つける
+  const { data: myPred } = await supabase
+    .from("predictions")
+    .select("period_id, periods(series_number, start_date)")
+    .eq("user_id", userId)
+    .not("scored_at", "is", null)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  type MyPredJoin = {
+    period_id: string;
+    periods: { series_number: number | null; start_date: string | null } | null;
+  };
+  const latestSeries =
+    (myPred as unknown as MyPredJoin | null)?.periods?.series_number ?? null;
+  if (!latestSeries) return null;
+
+  // 2) その Series の全 closed Stage
+  const { data: stages } = await supabase
+    .from("periods")
+    .select("id")
+    .eq("series_number", latestSeries)
+    .eq("status", "closed");
+  const stageIds = ((stages ?? []) as { id: string }[]).map((s) => s.id);
+  if (stageIds.length === 0) return null;
+
+  // 3) 全ファン予想
+  const { data: preds } = await supabase
+    .from("predictions")
+    .select("user_id, total_score")
+    .in("period_id", stageIds)
+    .not("user_id", "is", null)
+    .not("total_score", "is", null);
+
+  type PredRow = { user_id: string; total_score: number | null };
+  const rows = (preds ?? []) as PredRow[];
+
+  // 4) ユーザーごとに集計
+  type Agg = { totalScore: number; stageCount: number; perfectCount: number };
+  const byUser = new Map<string, Agg>();
+  for (const r of rows) {
+    const a = byUser.get(r.user_id) ?? {
+      totalScore: 0,
+      stageCount: 0,
+      perfectCount: 0,
+    };
+    const s = r.total_score ?? 0;
+    a.totalScore += s;
+    a.stageCount += 1;
+    if (s >= MAX_PREDICTION_SCORE) a.perfectCount += 1;
+    byUser.set(r.user_id, a);
+  }
+  const userIds = [...byUser.keys()];
+  if (!byUser.has(userId)) return null;
+
+  // 5) banned / flagged を除外
+  const { data: profiles } = await supabase
+    .from("fan_profiles")
+    .select("user_id, status")
+    .in("user_id", userIds);
+  const active = new Set(
+    ((profiles ?? []) as { user_id: string; status: string }[])
+      .filter((p) => p.status === "active")
+      .map((p) => p.user_id)
+  );
+
+  // 6) ランキング順に並べる
+  const sorted = [...byUser.entries()]
+    .filter(([uid]) => active.has(uid))
+    .map(([uid, a]) => ({ uid, ...a }))
+    .sort(
+      (a, b) =>
+        b.totalScore - a.totalScore ||
+        b.perfectCount - a.perfectCount ||
+        b.stageCount - a.stageCount
+    );
+
+  const myIndex = sorted.findIndex((x) => x.uid === userId);
+  if (myIndex < 0) return null;
+
+  const my = sorted[myIndex];
+  return {
+    seriesNumber: latestSeries,
+    rank: myIndex + 1,
+    totalScore: my.totalScore,
+    stageCount: my.stageCount,
+    perfectCount: my.perfectCount,
+    totalParticipants: sorted.length,
+  };
+}
+
 export type SeriesTopPredictor = {
   rank: number;
   userId: string;
