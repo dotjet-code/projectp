@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { createServerSupabase } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getFanProfile } from "@/lib/projectp/fan-profile";
 import { listRewardsForUser, REWARD_LABELS, isExpired } from "@/lib/projectp/reward";
 import {
@@ -41,6 +42,21 @@ export default async function FanMePage() {
     listRewardsForUser(user.id),
     listPredictionsForUser(user.id),
   ]);
+
+  // メンバー名解決用
+  const adminClient = createAdminClient();
+  const { data: memberRows } = await adminClient
+    .from("members")
+    .select("id, name")
+    .eq("is_active", true);
+  const memberNameById = new Map<string, string>(
+    ((memberRows ?? []) as { id: string; name: string }[]).map((m) => [
+      m.id,
+      m.name,
+    ])
+  );
+  const resolveName = (id: string | undefined): string =>
+    id ? memberNameById.get(id) ?? "?" : "—";
 
   return (
     <>
@@ -126,35 +142,57 @@ export default async function FanMePage() {
                         )}
                       </div>
                     </div>
-                    {h.slotScores && (
-                      <div className="mt-2 pt-2 border-t border-gray-100 grid grid-cols-3 gap-x-2 gap-y-1 text-[10px]">
-                        {betKeys.map((k) => {
-                          const r = h.slotScores![k];
-                          const hit = r.hit === 1;
-                          return (
-                            <div
-                              key={k}
-                              className={`flex items-center justify-between rounded px-1.5 py-0.5 ${
-                                hit ? "bg-emerald-50" : "bg-gray-50"
-                              }`}
-                            >
-                              <span className="text-muted">
+                    {/* 選択内容 + 的中結果 */}
+                    <div className="mt-2 pt-2 border-t border-gray-100 space-y-1">
+                      {h.actualTop3 && (
+                        <p className="text-[10px] text-muted">
+                          🏁 確定:{" "}
+                          <span className="font-bold text-foreground">
+                            {h.actualTop3
+                              .map((id, i) => `${i + 1}着 ${resolveName(id)}`)
+                              .join(" / ")}
+                          </span>
+                        </p>
+                      )}
+                      {betKeys.map((k) => {
+                        const r = h.slotScores?.[k];
+                        const hit = r?.hit === 1;
+                        const picks = h.bets[k] ?? [];
+                        const isScored = !!h.scoredAt;
+                        return (
+                          <div
+                            key={k}
+                            className={`flex items-center justify-between gap-2 rounded px-2 py-1 text-[10px] ${
+                              !isScored
+                                ? "bg-gray-50"
+                                : hit
+                                ? "bg-emerald-50"
+                                : "bg-gray-50"
+                            }`}
+                          >
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <span className="text-muted w-12 shrink-0">
                                 {BET_LABELS[k]}
                               </span>
+                              <span className="text-foreground truncate">
+                                {picks.length === 0
+                                  ? "—"
+                                  : picks.map(resolveName).join(" / ")}
+                              </span>
+                            </div>
+                            {isScored && (
                               <span
-                                className={
-                                  hit
-                                    ? "font-bold text-emerald-700"
-                                    : "text-gray-400"
-                                }
+                                className={`shrink-0 font-bold ${
+                                  hit ? "text-emerald-700" : "text-gray-400"
+                                }`}
                               >
                                 {hit ? `+${BET_POINTS[k]}` : "—"}
                               </span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </li>
                 );
               })}

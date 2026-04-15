@@ -443,6 +443,10 @@ export type UserPredictionHistory = {
   slotScores: SlotScores | null;
   scoredAt: string | null;
   createdAt: string;
+  // 自分の選択内容 (賭式ごとのメンバー ID 配列)
+  bets: Record<BetKey, string[]>;
+  // Stage の確定順位 (rank → memberId) 採点済の場合のみ入る
+  actualTop3: string[] | null;
 };
 
 function parseSlotScores(v: unknown): SlotScores | null {
@@ -476,7 +480,7 @@ export async function listPredictionsForUser(
   const { data, error } = await supabase
     .from("predictions")
     .select(
-      "id, period_id, total_score, slot_scores, scored_at, created_at, periods(name, start_date, end_date)"
+      "id, period_id, total_score, slot_scores, scored_at, created_at, tansho, fukusho, nirenpuku, nirentan, sanrenpuku, sanrentan, periods(name, start_date, end_date)"
     )
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
@@ -488,11 +492,44 @@ export async function listPredictionsForUser(
     slot_scores: unknown;
     scored_at: string | null;
     created_at: string;
+    tansho: unknown;
+    fukusho: unknown;
+    nirenpuku: unknown;
+    nirentan: unknown;
+    sanrenpuku: unknown;
+    sanrentan: unknown;
     periods:
       | { name: string | null; start_date: string | null; end_date: string | null }
       | null;
   };
-  return (data as unknown as Joined[]).map((r) => ({
+  const rows = data as unknown as Joined[];
+
+  // 採点済みの Stage の確定順位 (rank 1-3) を一括取得
+  const scoredPeriodIds = rows
+    .filter((r) => r.scored_at)
+    .map((r) => r.period_id);
+  const actualByPeriod = new Map<string, string[]>();
+  if (scoredPeriodIds.length > 0) {
+    const { data: pps } = await supabase
+      .from("period_points")
+      .select("period_id, member_id, rank")
+      .in("period_id", scoredPeriodIds)
+      .lte("rank", 3)
+      .order("rank", { ascending: true });
+    for (const p of (pps ?? []) as {
+      period_id: string;
+      member_id: string;
+      rank: number | null;
+    }[]) {
+      const arr = actualByPeriod.get(p.period_id) ?? [];
+      if (p.rank !== null && p.rank >= 1 && p.rank <= 3) {
+        arr[p.rank - 1] = p.member_id;
+      }
+      actualByPeriod.set(p.period_id, arr);
+    }
+  }
+
+  return rows.map((r) => ({
     predictionId: r.id,
     periodId: r.period_id,
     periodName: r.periods?.name ?? null,
@@ -502,6 +539,15 @@ export async function listPredictionsForUser(
     slotScores: parseSlotScores(r.slot_scores),
     scoredAt: r.scored_at,
     createdAt: r.created_at,
+    bets: {
+      tansho: asIdArray(r.tansho),
+      fukusho: asIdArray(r.fukusho),
+      nirenpuku: asIdArray(r.nirenpuku),
+      nirentan: asIdArray(r.nirentan),
+      sanrenpuku: asIdArray(r.sanrenpuku),
+      sanrentan: asIdArray(r.sanrentan),
+    },
+    actualTop3: actualByPeriod.get(r.period_id) ?? null,
   }));
 }
 
