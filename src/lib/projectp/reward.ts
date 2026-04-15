@@ -71,11 +71,20 @@ function generateRewardCode(): string {
   return out;
 }
 
+export type RewardCandidate = {
+  userId: string;
+  displayName: string | null;
+  email: string | null;
+  totalScore: number | null;
+  willIssue: boolean; // false なら既発行済
+};
+
 /**
- * 発行せずに対象者数だけ計算する dry-run。
- * eligible: 条件を満たすファン数
- * alreadyIssued: 既発行分
- * willIssue: 今回発行される数 (eligible - alreadyIssued)
+ * 発行せずに対象者数と具体リストを計算する dry-run。
+ * eligible: 条件を満たすファン数(banned 除外後)
+ * alreadyIssued: 既発行分の内訳
+ * willIssue: 今回発行される数
+ * candidates: 対象者の上位(スコア降順、最大 50 件)
  */
 export async function previewRewardCandidates(input: {
   periodId: string;
@@ -86,6 +95,7 @@ export async function previewRewardCandidates(input: {
   alreadyIssued: number;
   willIssue: number;
   maxScore: number | null;
+  candidates: RewardCandidate[];
 }> {
   const supabase = createAdminClient();
 
@@ -94,7 +104,8 @@ export async function previewRewardCandidates(input: {
     .select("user_id, total_score")
     .eq("period_id", input.periodId)
     .not("user_id", "is", null)
-    .gte("total_score", input.minScore);
+    .gte("total_score", input.minScore)
+    .order("total_score", { ascending: false });
 
   const rawRows = (preds ?? []) as Array<{
     user_id: string;
@@ -102,18 +113,22 @@ export async function previewRewardCandidates(input: {
   }>;
   const userIds = rawRows.map((r) => r.user_id);
 
-  // banned/flagged 除外
-  let blocked = new Set<string>();
+  // banned/flagged 除外 + 表示名取得
+  const nameById = new Map<string, string | null>();
+  const blocked = new Set<string>();
   if (userIds.length > 0) {
     const { data: profiles } = await supabase
       .from("fan_profiles")
-      .select("user_id, status")
+      .select("user_id, display_name, status")
       .in("user_id", userIds);
-    blocked = new Set(
-      ((profiles ?? []) as { user_id: string; status: string }[])
-        .filter((p) => p.status !== "active")
-        .map((p) => p.user_id)
-    );
+    for (const p of (profiles ?? []) as {
+      user_id: string;
+      display_name: string | null;
+      status: string;
+    }[]) {
+      nameById.set(p.user_id, p.display_name);
+      if (p.status !== "active") blocked.add(p.user_id);
+    }
   }
   const rows = rawRows.filter((r) => !blocked.has(r.user_id));
 
@@ -133,11 +148,38 @@ export async function previewRewardCandidates(input: {
     return max === null || r.total_score > max ? r.total_score : max;
   }, null);
 
+  // 対象者の上位をファン情報付きで取得 (最大 50)
+  const topUsers = rows.slice(0, 50);
+  const emailById = new Map<string, string | null>();
+  if (topUsers.length > 0) {
+    try {
+      const { data: users } = await supabase.auth.admin.listUsers({
+        page: 1,
+        perPage: 1000,
+      });
+      const topIds = new Set(topUsers.map((r) => r.user_id));
+      for (const u of users?.users ?? []) {
+        if (topIds.has(u.id)) emailById.set(u.id, u.email ?? null);
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  const candidates: RewardCandidate[] = topUsers.map((r) => ({
+    userId: r.user_id,
+    displayName: nameById.get(r.user_id) ?? null,
+    email: emailById.get(r.user_id) ?? null,
+    totalScore: r.total_score,
+    willIssue: !alreadyIssuedIds.has(r.user_id),
+  }));
+
   return {
     eligible: rows.length,
     alreadyIssued: alreadyIssuedIds.size,
     willIssue,
     maxScore,
+    candidates,
   };
 }
 

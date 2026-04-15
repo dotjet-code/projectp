@@ -92,8 +92,16 @@ function IssueTab({
     alreadyIssued: number;
     willIssue: number;
     maxScore: number | null;
+    candidates: Array<{
+      userId: string;
+      displayName: string | null;
+      email: string | null;
+      totalScore: number | null;
+      willIssue: boolean;
+    }>;
   } | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [showCandidates, setShowCandidates] = useState(false);
 
   async function loadRewards(pid: string) {
     if (!pid) return;
@@ -275,35 +283,104 @@ function IssueTab({
       </label>
       {/* プレビュー */}
       <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-xs">
-        <p className="text-[10px] font-bold text-muted mb-1">プレビュー</p>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-[10px] font-bold text-muted">プレビュー</p>
+          {preview && preview.candidates.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowCandidates((v) => !v)}
+              className="text-[10px] text-primary-dark underline hover:opacity-80"
+            >
+              {showCandidates ? "対象者を閉じる" : "対象者を確認する"}
+            </button>
+          )}
+        </div>
         {!preview ? (
-          <p className="text-muted">
+          <p className="text-muted mt-1">
             {previewLoading ? "計算中..." : "Stage を選択してください"}
           </p>
         ) : (
-          <div className="flex items-baseline gap-4 flex-wrap">
-            <span>
-              この条件で発行:{" "}
-              <b
-                className={
-                  preview.willIssue > 0
-                    ? "text-emerald-700 text-base"
-                    : "text-gray-500 text-base"
-                }
-              >
-                {preview.willIssue} 人
-              </b>
-            </span>
-            <span className="text-muted">
-              該当: {preview.eligible} / 既発行: {preview.alreadyIssued}
-            </span>
-            <span className="text-muted">
-              最高スコア:{" "}
-              <b className="text-foreground">
-                {preview.maxScore ?? "—"}
-              </b>
-            </span>
-          </div>
+          <>
+            <div className="flex items-baseline gap-4 flex-wrap mt-1">
+              <span>
+                この条件で発行:{" "}
+                <b
+                  className={
+                    preview.willIssue > 0
+                      ? "text-emerald-700 text-base"
+                      : "text-gray-500 text-base"
+                  }
+                >
+                  {preview.willIssue} 人
+                </b>
+              </span>
+              <span className="text-muted">
+                該当: {preview.eligible} / 既発行: {preview.alreadyIssued}
+              </span>
+              <span className="text-muted">
+                最高スコア:{" "}
+                <b className="text-foreground">{preview.maxScore ?? "—"}</b>
+              </span>
+            </div>
+            {showCandidates && preview.candidates.length > 0 && (
+              <div className="mt-3 max-h-80 overflow-y-auto rounded-lg border border-gray-200 bg-white">
+                <table className="w-full text-[11px]">
+                  <thead className="bg-gray-50 sticky top-0">
+                    <tr className="text-left">
+                      <th className="px-2 py-1 w-10 text-muted">#</th>
+                      <th className="px-2 py-1 text-muted">ファン</th>
+                      <th className="px-2 py-1 w-14 text-right text-muted">
+                        スコア
+                      </th>
+                      <th className="px-2 py-1 w-16 text-muted">状態</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {preview.candidates.map((c, i) => (
+                      <tr
+                        key={c.userId}
+                        className={`border-t border-gray-100 ${
+                          c.willIssue ? "" : "bg-gray-50 text-muted"
+                        }`}
+                      >
+                        <td className="px-2 py-1 font-mono text-muted">
+                          {i + 1}
+                        </td>
+                        <td className="px-2 py-1">
+                          <div className="flex flex-col leading-tight">
+                            <span className="font-bold text-foreground">
+                              {c.displayName ?? "(名無し)"}
+                            </span>
+                            <span className="text-[10px] text-muted">
+                              {c.email ?? "—"}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-2 py-1 text-right font-bold">
+                          {c.totalScore ?? "—"}
+                        </td>
+                        <td className="px-2 py-1">
+                          {c.willIssue ? (
+                            <span className="text-emerald-700 font-bold">
+                              新規
+                            </span>
+                          ) : (
+                            <span className="text-gray-400">既発行</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {preview.eligible > preview.candidates.length && (
+                  <p className="text-[10px] text-muted text-center py-1">
+                    ※ 上位 {preview.candidates.length} 件のみ表示 (合計{" "}
+                    {preview.eligible} 人)
+                  </p>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
 
