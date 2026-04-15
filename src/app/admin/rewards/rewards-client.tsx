@@ -85,6 +85,13 @@ function IssueTab({
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [rewards, setRewards] = useState<RewardRow[]>([]);
+  const [preview, setPreview] = useState<{
+    eligible: number;
+    alreadyIssued: number;
+    willIssue: number;
+    maxScore: number | null;
+  } | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
 
   async function loadRewards(pid: string) {
     if (!pid) return;
@@ -98,6 +105,40 @@ function IssueTab({
   useEffect(() => {
     if (periodId) loadRewards(periodId);
   }, [periodId]);
+
+  // プレビュー: パラメータ変化を debounce して呼び出し
+  useEffect(() => {
+    if (!periodId) {
+      setPreview(null);
+      return;
+    }
+    const ctrl = new AbortController();
+    const t = window.setTimeout(async () => {
+      setPreviewLoading(true);
+      try {
+        const qs = new URLSearchParams({
+          periodId,
+          rewardType,
+          minScore: String(minScore),
+        });
+        const res = await fetch(`/api/admin/rewards/preview?${qs}`, {
+          signal: ctrl.signal,
+        });
+        if (res.ok) {
+          const j = await res.json();
+          setPreview(j);
+        }
+      } catch {
+        // ignore (abort 含む)
+      } finally {
+        setPreviewLoading(false);
+      }
+    }, 300);
+    return () => {
+      window.clearTimeout(t);
+      ctrl.abort();
+    };
+  }, [periodId, rewardType, minScore]);
 
   async function onIssue() {
     setSubmitting(true);
@@ -125,6 +166,18 @@ function IssueTab({
       if (!res.ok) throw new Error(j.error ?? `HTTP ${res.status}`);
       setResult(`発行: ${j.issued} 件 / スキップ: ${j.skipped} 件`);
       await loadRewards(periodId);
+      // プレビューも更新 (alreadyIssued が増えるため)
+      try {
+        const qs = new URLSearchParams({
+          periodId,
+          rewardType,
+          minScore: String(minScore),
+        });
+        const pr = await fetch(`/api/admin/rewards/preview?${qs}`);
+        if (pr.ok) setPreview(await pr.json());
+      } catch {
+        // ignore
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -218,14 +271,54 @@ function IssueTab({
           className="mt-1 w-full max-w-xs rounded border border-gray-300 px-3 py-2 text-sm"
         />
       </label>
+      {/* プレビュー */}
+      <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-xs">
+        <p className="text-[10px] font-bold text-muted mb-1">プレビュー</p>
+        {!preview ? (
+          <p className="text-muted">
+            {previewLoading ? "計算中..." : "Stage を選択してください"}
+          </p>
+        ) : (
+          <div className="flex items-baseline gap-4 flex-wrap">
+            <span>
+              この条件で発行:{" "}
+              <b
+                className={
+                  preview.willIssue > 0
+                    ? "text-emerald-700 text-base"
+                    : "text-gray-500 text-base"
+                }
+              >
+                {preview.willIssue} 人
+              </b>
+            </span>
+            <span className="text-muted">
+              該当: {preview.eligible} / 既発行: {preview.alreadyIssued}
+            </span>
+            <span className="text-muted">
+              最高スコア:{" "}
+              <b className="text-foreground">
+                {preview.maxScore ?? "—"}
+              </b>
+            </span>
+          </div>
+        )}
+      </div>
+
       <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={onIssue}
-          disabled={submitting || !periodId}
+          disabled={
+            submitting || !periodId || (preview !== null && preview.willIssue === 0)
+          }
           className="rounded-full bg-black text-white px-5 py-2 text-xs font-bold disabled:opacity-40"
         >
-          {submitting ? "発行中..." : "対象者へ発行"}
+          {submitting
+            ? "発行中..."
+            : preview && preview.willIssue > 0
+            ? `${preview.willIssue} 人へ発行`
+            : "対象者へ発行"}
         </button>
         {result && <span className="text-xs text-emerald-700">{result}</span>}
         {error && <span className="text-xs text-red-600">{error}</span>}

@@ -72,6 +72,76 @@ function generateRewardCode(): string {
 }
 
 /**
+ * 発行せずに対象者数だけ計算する dry-run。
+ * eligible: 条件を満たすファン数
+ * alreadyIssued: 既発行分
+ * willIssue: 今回発行される数 (eligible - alreadyIssued)
+ */
+export async function previewRewardCandidates(input: {
+  periodId: string;
+  rewardType: RewardType;
+  minScore: number;
+}): Promise<{
+  eligible: number;
+  alreadyIssued: number;
+  willIssue: number;
+  maxScore: number | null;
+}> {
+  const supabase = createAdminClient();
+
+  const { data: preds } = await supabase
+    .from("predictions")
+    .select("user_id, total_score")
+    .eq("period_id", input.periodId)
+    .not("user_id", "is", null)
+    .gte("total_score", input.minScore);
+
+  const rawRows = (preds ?? []) as Array<{
+    user_id: string;
+    total_score: number | null;
+  }>;
+  const userIds = rawRows.map((r) => r.user_id);
+
+  // banned/flagged 除外
+  let blocked = new Set<string>();
+  if (userIds.length > 0) {
+    const { data: profiles } = await supabase
+      .from("fan_profiles")
+      .select("user_id, status")
+      .in("user_id", userIds);
+    blocked = new Set(
+      ((profiles ?? []) as { user_id: string; status: string }[])
+        .filter((p) => p.status !== "active")
+        .map((p) => p.user_id)
+    );
+  }
+  const rows = rawRows.filter((r) => !blocked.has(r.user_id));
+
+  // 既発行分
+  const { data: existing } = await supabase
+    .from("prediction_rewards")
+    .select("user_id")
+    .eq("period_id", input.periodId)
+    .eq("reward_type", input.rewardType);
+  const alreadyIssuedIds = new Set(
+    ((existing ?? []) as { user_id: string }[]).map((r) => r.user_id)
+  );
+
+  const willIssue = rows.filter((r) => !alreadyIssuedIds.has(r.user_id)).length;
+  const maxScore = rawRows.reduce<number | null>((max, r) => {
+    if (r.total_score === null) return max;
+    return max === null || r.total_score > max ? r.total_score : max;
+  }, null);
+
+  return {
+    eligible: rows.length,
+    alreadyIssued: alreadyIssuedIds.size,
+    willIssue,
+    maxScore,
+  };
+}
+
+/**
  * 指定 Stage の予想の中で totalScore >= minScore のユーザーに景品を発行する。
  * スコアは 0〜63 (複勝 1 / 単勝 2 / 二連複 5 / 二連単 10 / 三連複 15 / 三連単 30)。
  * banned/flagged のファンおよび既に同種の景品が発行済のユーザーはスキップ。
