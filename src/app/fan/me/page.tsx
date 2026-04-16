@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { createServerSupabase } from "@/lib/supabase/server";
@@ -15,6 +16,7 @@ import {
 import type { BetKey } from "@/lib/projectp/prediction";
 import { DisplayNameForm, FanMeActions } from "./actions";
 import { PredictionDraftBanner } from "./draft-banner";
+import { RewardQR } from "./reward-qr";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +40,11 @@ export default async function FanMePage() {
     // 管理者はファン用マイページではなく admin 側へ
     redirect("/admin");
   }
+
+  const hdrs = await headers();
+  const proto = hdrs.get("x-forwarded-proto") ?? "http";
+  const host = hdrs.get("host") ?? "localhost:3000";
+  const baseUrl = `${proto}://${host}`;
 
   const [profile, rewards, history, standing] = await Promise.all([
     getFanProfile(user.id),
@@ -296,11 +303,14 @@ export default async function FanMePage() {
                         {new Date(r.expiresAt!).toLocaleDateString()} に期限切れ
                       </p>
                     ) : (
-                      <p className="mt-1 text-[10px] text-muted">
-                        {r.expiresAt
-                          ? `${new Date(r.expiresAt).toLocaleDateString()} までに会場で使用`
-                          : "会場スタッフにこのコードを見せてください"}
-                      </p>
+                      <>
+                        <RewardQR rewardCode={r.rewardCode} baseUrl={baseUrl} />
+                        {r.expiresAt && (
+                          <p className="mt-1 text-[10px] text-muted text-center">
+                            {new Date(r.expiresAt).toLocaleDateString()} まで有効
+                          </p>
+                        )}
+                      </>
                     )}
                   </li>
                 );
