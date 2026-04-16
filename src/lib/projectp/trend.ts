@@ -15,19 +15,25 @@ export type TrendPoint = {
   totalPoints: number;
 };
 
+export type TrendData = {
+  stageName: string | null;
+  stageTitle: string | null;
+  points: TrendPoint[];
+};
+
 export async function getStageTrendByMemberName(
   memberName: string
-): Promise<TrendPoint[]> {
+): Promise<TrendData> {
   const supabase = createAdminClient();
   const stage = await getActiveStage();
-  if (!stage) return [];
+  if (!stage) return { stageName: null, stageTitle: null, points: [] };
 
   const { data: m } = await supabase
     .from("members")
     .select("id")
     .eq("name", memberName)
     .maybeSingle();
-  if (!m) return [];
+  if (!m) return { stageName: stage.name, stageTitle: stage.title, points: [] };
 
   const { data: snaps } = await supabase
     .from("daily_snapshots")
@@ -36,7 +42,7 @@ export async function getStageTrendByMemberName(
     .eq("period_id", stage.id)
     .order("snapshot_date", { ascending: true });
 
-  return (snaps ?? []).map((s) => {
+  const points = (snaps ?? []).map((s) => {
     const buzz = Number(s.top_video_views ?? 0);
     const live = Number(s.live_view_total ?? 0) * 10;
     return {
@@ -46,4 +52,6 @@ export async function getStageTrendByMemberName(
       totalPoints: buzz + live,
     };
   });
+
+  return { stageName: stage.name, stageTitle: stage.title, points };
 }
