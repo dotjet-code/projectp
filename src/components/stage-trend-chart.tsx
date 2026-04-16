@@ -1,21 +1,32 @@
 import { getStageTrendByMemberName } from "@/lib/projectp/trend";
 
-export async function StageTrendChart({ memberName }: { memberName: string }) {
-  const { stageName, stageTitle, points } =
-    await getStageTrendByMemberName(memberName);
-  if (points.length === 0) return null;
+function daysBetween(a: string, b: string): number {
+  return Math.round(
+    (new Date(b).getTime() - new Date(a).getTime()) / (86400 * 1000)
+  );
+}
 
+export async function StageTrendChart({ memberName }: { memberName: string }) {
+  const { stageName, stageTitle, stageStartDate, stageEndDate, points } =
+    await getStageTrendByMemberName(memberName);
+  if (points.length === 0 || !stageStartDate || !stageEndDate) return null;
+
+  const totalDays = Math.max(daysBetween(stageStartDate, stageEndDate), 1);
   const max = Math.max(...points.map((p) => p.totalPoints), 1);
   const w = 100;
   const h = 50;
   const innerH = h - 10;
 
-  const pts = points.map((p, i) => ({
-    x: points.length === 1 ? w / 2 : (i / (points.length - 1)) * w,
-    y: h - 5 - (p.totalPoints / max) * innerH,
-    value: p.totalPoints,
-    date: p.date,
-  }));
+  // 各データポイントの X 位置を Stage 全日程に対する比率で計算
+  const pts = points.map((p) => {
+    const day = daysBetween(stageStartDate, p.date);
+    return {
+      x: (day / totalDays) * w,
+      y: h - 5 - (p.totalPoints / max) * innerH,
+      value: p.totalPoints,
+      date: p.date,
+    };
+  });
 
   const path = pts
     .map(
@@ -23,7 +34,6 @@ export async function StageTrendChart({ memberName }: { memberName: string }) {
     )
     .join(" ");
 
-  // ステージ名の表示用
   const displayTitle = stageTitle
     ? `ステージ「${stageTitle}」推移`
     : stageName
@@ -40,9 +50,9 @@ export async function StageTrendChart({ memberName }: { memberName: string }) {
       </div>
       <div className="rounded-2xl bg-white/70 border border-white/80 p-5 shadow-sm">
         <p className="text-xs text-muted mb-3">
-          累計ポイント推移（1日 1スナップショット）
+          累計ポイント推移（{stageStartDate.slice(5)} 〜 {stageEndDate.slice(5)}）
         </p>
-        <div style={{ aspectRatio: "3 / 1" }}>
+        <div className="h-[180px]">
           <svg
             viewBox={`0 0 ${w} ${h + 10}`}
             className="size-full"
@@ -86,35 +96,19 @@ export async function StageTrendChart({ memberName }: { memberName: string }) {
                 strokeWidth={0.6}
               />
             ))}
-            {/* Date labels */}
-            {pts.length > 0 && (
-              <>
-                <text
-                  x={0}
-                  y={h + 6}
-                  fontSize={3.5}
-                  fill="#7a8ba0"
-                  textAnchor="start"
-                >
-                  {pts[0].date.slice(5)}
-                </text>
-                {pts.length > 1 && (
-                  <text
-                    x={w}
-                    y={h + 6}
-                    fontSize={3.5}
-                    fill="#7a8ba0"
-                    textAnchor="end"
-                  >
-                    {pts[pts.length - 1].date.slice(5)}
-                  </text>
-                )}
-              </>
-            )}
+            {/* Date labels: start / end of Stage */}
+            <text x={0} y={h + 6} fontSize={3.5} fill="#7a8ba0" textAnchor="start">
+              {stageStartDate.slice(5)}
+            </text>
+            <text x={w} y={h + 6} fontSize={3.5} fill="#7a8ba0" textAnchor="end">
+              {stageEndDate.slice(5)}
+            </text>
           </svg>
         </div>
         <div className="mt-2 flex items-center justify-between text-[10px] text-muted">
-          <span>{points.length} 日分のスナップショット</span>
+          <span>
+            {points.length} 日分 / 全 {totalDays} 日
+          </span>
           <span>
             最高: <b className="text-foreground">{max.toLocaleString()}</b> pts
           </span>
