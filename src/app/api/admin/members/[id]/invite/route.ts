@@ -38,16 +38,22 @@ export async function POST(
     );
   }
 
-  // auth.users を作成 (role='member')
+  // auth.users を作成 (role='member') + 招待メールを送信
+  const origin = req.nextUrl.origin;
   const { data: authUser, error: authErr } =
-    await supabase.auth.admin.createUser({
-      email,
-      email_confirm: true,
-      app_metadata: { role: "member" },
+    await supabase.auth.admin.inviteUserByEmail(email, {
+      data: { role: "member" },
+      redirectTo: `${origin}/auth/callback?next=/member/dashboard`,
     });
   if (authErr) {
     return NextResponse.json({ error: authErr.message }, { status: 500 });
   }
+
+  // app_metadata に role='member' を設定
+  // (inviteUserByEmail は user_metadata にしか data を入れないため)
+  await supabase.auth.admin.updateUserById(authUser.user.id, {
+    app_metadata: { role: "member" },
+  });
 
   // members.auth_user_id をリンク
   const { error: linkErr } = await supabase
@@ -56,20 +62,6 @@ export async function POST(
     .eq("id", id);
   if (linkErr) {
     return NextResponse.json({ error: linkErr.message }, { status: 500 });
-  }
-
-  // magic link を送信
-  const origin = req.nextUrl.origin;
-  const { error: otpErr } = await supabase.auth.admin.generateLink({
-    type: "magiclink",
-    email,
-    options: {
-      redirectTo: `${origin}/auth/callback?next=/member/dashboard`,
-    },
-  });
-  // generateLink のエラーは無視(メール送信は別途)
-  if (otpErr) {
-    console.warn("generateLink warning:", otpErr.message);
   }
 
   await logAudit({
