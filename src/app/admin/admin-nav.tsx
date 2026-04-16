@@ -19,7 +19,7 @@ export function AdminNav() {
   const pathname = usePathname();
 
   return (
-    <div className="flex items-center justify-between gap-4">
+    <div className="flex flex-col items-center gap-2">
       <nav className="flex items-center gap-1 overflow-x-auto rounded-full border border-gray-200 bg-white p-1">
         {items.map((it) => {
           const active = pathname.startsWith(it.href);
@@ -38,7 +38,9 @@ export function AdminNav() {
           );
         })}
       </nav>
-      <LogoutButton />
+      <div className="self-end">
+        <LogoutButton />
+      </div>
     </div>
   );
 }
