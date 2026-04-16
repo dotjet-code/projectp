@@ -113,7 +113,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 6, rank: 6, name: "Coming Soon", slug: "saito-riko", role: "PLAYER", points: 1590, avatarUrl: "/members/coming-soon.svg",
+    id: 6, rank: 11, name: "Coming Soon", slug: "saito-riko", role: "PLAYER", points: 0, avatarUrl: "/members/coming-soon.svg",
     detail: {
       stats: { buzz: 480, concurrent: 360, revenue: 350 },
       positionForecast: "PLAYER圏内", positionMargin: "ボーダー付近", supportRate: 12,
@@ -203,7 +203,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 12, rank: 12, name: "Coming Soon", slug: "maeda-sumika", role: "PIT", points: 760, avatarUrl: "/members/coming-soon.svg",
+    id: 12, rank: 12, name: "Coming Soon", slug: "maeda-sumika", role: "PIT", points: 0, avatarUrl: "/members/coming-soon.svg",
     detail: {
       stats: { buzz: 240, concurrent: 170, revenue: 150 },
       positionForecast: "PIT圏内", positionMargin: "下位", supportRate: 3,

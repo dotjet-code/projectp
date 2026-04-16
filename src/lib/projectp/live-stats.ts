@@ -156,8 +156,11 @@ export async function getRankingContext(): Promise<RankingContext> {
     };
   });
 
-  // 4. effectivePoints 降順ソート（同点は名前順で安定化）
+  // 4. effectivePoints 降順ソート（Coming Soon は常に最後）
   merged.sort((a, b) => {
+    const aComing = a.name === "Coming Soon" ? 1 : 0;
+    const bComing = b.name === "Coming Soon" ? 1 : 0;
+    if (aComing !== bComing) return aComing - bComing;
     if (b.effectivePoints !== a.effectivePoints) {
       return b.effectivePoints - a.effectivePoints;
     }

@@ -45,7 +45,12 @@ export function RankingClient({
 }) {
   const [tab, setTab] = useState<TabType>("all");
 
-  const sortedMembers = [...members].sort((a, b) => a.rank - b.rank);
+  const sortedMembers = [...members].sort((a, b) => {
+    const aComing = a.name === "Coming Soon" ? 1 : 0;
+    const bComing = b.name === "Coming Soon" ? 1 : 0;
+    if (aComing !== bComing) return aComing - bComing;
+    return a.rank - b.rank;
+  });
   const filteredMembers =
     tab === "all"
       ? sortedMembers

@@ -64,8 +64,13 @@ function MemberCard({ member }: { member: Member }) {
 
 export async function MemberGrid() {
   const ranked = await getRankedMembers();
-  const playerMembers = ranked.filter((m) => m.role === "PLAYER");
-  const pitMembers = ranked.filter((m) => m.role === "PIT");
+  const active = ranked.filter((m) => m.name !== "Coming Soon");
+  const comingSoon = ranked.filter((m) => m.name === "Coming Soon");
+  const playerMembers = active.filter((m) => m.role === "PLAYER");
+  const pitMembers = [
+    ...active.filter((m) => m.role === "PIT"),
+    ...comingSoon,
+  ];
 
   return (
     <section className="mx-auto max-w-[964px] px-4 mt-12">

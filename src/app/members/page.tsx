@@ -173,8 +173,13 @@ function CompactMemberRow({ member }: { member: Member }) {
 
 export default async function MembersPage() {
   const members = await getRankedMembers();
-  const playerMembers = members.filter((m) => m.role === "PLAYER");
-  const pitMembers = members.filter((m) => m.role === "PIT");
+  const active = members.filter((m) => m.name !== "Coming Soon");
+  const comingSoon = members.filter((m) => m.name === "Coming Soon");
+  const playerMembers = active.filter((m) => m.role === "PLAYER");
+  const pitMembers = [
+    ...active.filter((m) => m.role === "PIT"),
+    ...comingSoon,
+  ];
 
   return (
     <>
