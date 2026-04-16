@@ -486,6 +486,86 @@ type RedeemHistoryEntry = {
   };
 };
 
+function StaffTokenSection() {
+  const [label, setLabel] = useState("");
+  const [generating, setGenerating] = useState(false);
+  const [staffUrl, setStaffUrl] = useState<string | null>(null);
+
+  async function onGenerate() {
+    setGenerating(true);
+    try {
+      const res = await fetch("/api/admin/staff-tokens", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ label: label || "スタッフ消込" }),
+      });
+      const j = await res.json();
+      if (res.ok) {
+        const origin = window.location.origin;
+        setStaffUrl(`${origin}/staff/scan?token=${j.token.token}`);
+      }
+    } finally {
+      setGenerating(false);
+    }
+  }
+
+  return (
+    <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 space-y-2">
+      <p className="text-xs font-bold text-amber-800">
+        📱 スタッフ用消込 URL を発行
+      </p>
+      <p className="text-[10px] text-amber-700">
+        ログイン不要の消込専用 URL を発行してスタッフに共有できます。当日 23:59 まで有効。
+      </p>
+      {!staffUrl ? (
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+            placeholder="ラベル(例: スタッフA)"
+            className="flex-1 rounded border border-amber-300 bg-white px-3 py-1.5 text-sm"
+          />
+          <button
+            onClick={onGenerate}
+            disabled={generating}
+            className="rounded-full bg-amber-700 px-4 py-1.5 text-xs font-bold text-white disabled:opacity-40"
+          >
+            {generating ? "..." : "URL を発行"}
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <input
+            type="text"
+            readOnly
+            value={staffUrl}
+            onFocus={(e) => e.currentTarget.select()}
+            className="w-full rounded border border-amber-300 bg-white px-3 py-2 text-xs font-mono"
+          />
+          <div className="flex gap-2">
+            <button
+              onClick={() => navigator.clipboard?.writeText(staffUrl)}
+              className="rounded-full border border-amber-300 bg-white px-3 py-1 text-[10px] font-bold text-amber-800"
+            >
+              コピー
+            </button>
+            <button
+              onClick={() => setStaffUrl(null)}
+              className="text-[10px] text-amber-700 underline"
+            >
+              別のを発行
+            </button>
+          </div>
+          <p className="text-[10px] text-amber-700">
+            この URL をスタッフの LINE やメッセージで共有してください。
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function RedeemTab() {
   const [code, setCode] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -538,6 +618,8 @@ function RedeemTab() {
 
   return (
     <div className="rounded-2xl bg-white border border-gray-200 p-5 space-y-4">
+      <StaffTokenSection />
+
       <form onSubmit={onRedeem} className="flex gap-2">
         <input
           type="text"

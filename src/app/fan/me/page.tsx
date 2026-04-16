@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { createServerSupabase } from "@/lib/supabase/server";
@@ -40,11 +39,6 @@ export default async function FanMePage() {
     // 管理者はファン用マイページではなく admin 側へ
     redirect("/admin");
   }
-
-  const hdrs = await headers();
-  const proto = hdrs.get("x-forwarded-proto") ?? "http";
-  const host = hdrs.get("host") ?? "localhost:3000";
-  const baseUrl = `${proto}://${host}`;
 
   const [profile, rewards, history, standing] = await Promise.all([
     getFanProfile(user.id),
@@ -304,7 +298,7 @@ export default async function FanMePage() {
                       </p>
                     ) : (
                       <>
-                        <RewardQR rewardCode={r.rewardCode} baseUrl={baseUrl} />
+                        <RewardQR rewardCode={r.rewardCode} />
                         {r.expiresAt && (
                           <p className="mt-1 text-[10px] text-muted text-center">
                             {new Date(r.expiresAt).toLocaleDateString("ja-JP")} まで有効
