@@ -61,7 +61,7 @@ export function StaffScanClient() {
             {
               code: redeemCode,
               status: "error",
-              message: `${j.error ?? "エラー"} [debug: ${JSON.stringify(j._debug ?? null)}]`,
+              message: j.error ?? "エラー",
             },
             ...h,
           ]);

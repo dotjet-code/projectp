@@ -271,7 +271,7 @@ export async function issueRewardsForPeriod(input: {
  */
 export async function redeemReward(input: {
   rewardCode: string;
-  redeemedBy: string;
+  redeemedBy?: string | null;
   note?: string | null;
 }): Promise<
   | { ok: true; reward: Reward }
@@ -295,13 +295,18 @@ export async function redeemReward(input: {
     return { ok: false, reason: "expired" };
   }
 
+  const updatePayload: Record<string, unknown> = {
+    redeemed_at: new Date().toISOString(),
+    redeemed_note: input.note ?? null,
+  };
+  // redeemed_by は UUID 外部キーなので、有効な UUID のみセット
+  if (input.redeemedBy && input.redeemedBy.length === 36 && input.redeemedBy.includes("-")) {
+    updatePayload.redeemed_by = input.redeemedBy;
+  }
+
   const { data, error } = await supabase
     .from("prediction_rewards")
-    .update({
-      redeemed_at: new Date().toISOString(),
-      redeemed_by: input.redeemedBy,
-      redeemed_note: input.note ?? null,
-    })
+    .update(updatePayload)
     .eq("reward_code", code)
     .is("redeemed_at", null)
     .select()
