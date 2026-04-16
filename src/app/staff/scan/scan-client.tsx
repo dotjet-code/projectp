@@ -231,8 +231,13 @@ export function StaffScanClient() {
           <input
             type="text"
             value={code}
-            onChange={(e) => setCode(e.target.value.toUpperCase())}
+            onChange={(e) => setCode(e.target.value)}
+            onBlur={() => setCode((c) => c.toUpperCase())}
             placeholder="景品コードを入力"
+            autoCorrect="off"
+            autoCapitalize="characters"
+            autoComplete="off"
+            spellCheck={false}
             className="flex-1 rounded-xl border border-gray-300 px-4 py-3 text-center text-lg font-mono uppercase tracking-wider"
           />
           <button
