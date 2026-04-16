@@ -158,7 +158,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 9, rank: 9, name: "城乃せん", slug: "jono-sen", role: "PIT", points: 1058, avatarUrl: "/members/jono-sen.jpg", isLive: true,
+    id: 9, rank: 9, name: "城乃せん", slug: "shirono-sen", role: "PIT", points: 1058, avatarUrl: "/members/shirono-sen.jpg", isLive: true,
     detail: {
       stats: { buzz: 350, concurrent: 230, revenue: 228 },
       positionForecast: "PIT圏内", positionMargin: "維持", supportRate: 7,
