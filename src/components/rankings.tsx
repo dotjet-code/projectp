@@ -82,27 +82,18 @@ function RankingCard({
 
 export async function Rankings() {
   const ranked = await getRankedMembers();
-  const playerTop3 = ranked.filter((m) => m.role === "PLAYER").slice(0, 3);
-  const pitTop3 = ranked.filter((m) => m.role === "PIT").slice(0, 3);
+  const top3 = ranked.slice(0, 3);
 
   return (
     <section className="mx-auto max-w-[964px] px-4 mt-12">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+      <div className="mx-auto max-w-[480px]">
         <RankingCard
-          title="PLAYER 暫定TOP3"
+          title="暫定 TOP3"
           titleColor="#007595"
           accentFrom="#00d3f3"
           accentTo="#00bcff"
           borderColor="rgba(206,250,254,0.5)"
-          items={playerTop3}
-        />
-        <RankingCard
-          title="PIT 暫定TOP3"
-          titleColor="#bb4d00"
-          accentFrom="#ffb900"
-          accentTo="#fdc700"
-          borderColor="rgba(254,243,198,0.5)"
-          items={pitTop3}
+          items={top3}
         />
       </div>
     </section>
