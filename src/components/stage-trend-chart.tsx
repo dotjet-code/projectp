@@ -19,14 +19,14 @@ export async function StageTrendChart({ memberName }: { memberName: string }) {
   const totalDays = Math.max(daysBetween(stageStartDate, stageEndDate), 1);
   const maxVal = Math.max(...points.map((p) => p.totalPoints), 1);
 
-  // SVG 座標系: 幅 400, 高さ 200 (固定比率、歪みなし)
+  // SVG 座標系
   const svgW = 400;
   const svgH = 200;
-  const padL = 50; // Y 軸ラベル用
-  const padR = 10;
+  const padL = 0;  // 左端ぴったり
+  const padR = 0;  // 右端ぴったり
   const padT = 15;
-  const padB = 30; // X 軸ラベル用
-  const plotW = svgW - padL - padR;
+  const padB = 5;
+  const plotW = svgW;
   const plotH = svgH - padT - padB;
 
   const pts = points.map((p) => {
@@ -77,127 +77,104 @@ export async function StageTrendChart({ memberName }: { memberName: string }) {
         </h2>
       </div>
       <div className="rounded-2xl bg-white/70 border border-white/80 p-5 shadow-sm">
-        <svg
-          viewBox={`0 0 ${svgW} ${svgH}`}
-          className="w-full"
-          style={{ maxHeight: 240 }}
-          preserveAspectRatio="xMidYMid meet"
-        >
-          {/* グリッド + Y 軸ラベル */}
-          {yTicks.map((t) => (
-            <g key={t.y}>
+        {/* グラフ本体: SVG は線とドットだけ、テキストは HTML */}
+        <div className="relative" style={{ height: 180 }}>
+          <svg
+            viewBox={`0 0 ${svgW} ${svgH}`}
+            className="absolute inset-0 w-full h-full"
+            preserveAspectRatio="none"
+          >
+            {/* グリッド横線 */}
+            {yTicks.map((t) => (
               <line
-                x1={padL}
+                key={t.y}
+                x1={0}
                 y1={t.y}
-                x2={svgW - padR}
+                x2={svgW}
                 y2={t.y}
                 stroke="#f0f0f0"
                 strokeWidth={1}
+                vectorEffect="non-scaling-stroke"
               />
-              <text
-                x={padL - 6}
-                y={t.y + 4}
-                textAnchor="end"
-                fontSize={10}
-                fill="#9ca3af"
-                fontFamily="var(--font-outfit), sans-serif"
-              >
-                {t.label}
-              </text>
-            </g>
-          ))}
+            ))}
 
-          {/* X 軸ラベル: 開始日・終了日 */}
-          <text
-            x={padL}
-            y={svgH - 6}
-            textAnchor="start"
-            fontSize={10}
-            fill="#9ca3af"
-            fontFamily="var(--font-outfit), sans-serif"
-          >
-            {fmtDate(stageStartDate)}
-          </text>
-          <text
-            x={svgW - padR}
-            y={svgH - 6}
-            textAnchor="end"
-            fontSize={10}
-            fill="#9ca3af"
-            fontFamily="var(--font-outfit), sans-serif"
-          >
-            {fmtDate(stageEndDate)}
-          </text>
-
-          {/* 今日の参照線 */}
-          {todayX !== null && (
-            <>
+            {/* 今日の参照線 */}
+            {todayX !== null && (
               <line
                 x1={todayX}
                 y1={padT}
                 x2={todayX}
                 y2={padT + plotH}
-                stroke="#94a3b8"
+                stroke="#cbd5e1"
                 strokeWidth={1}
                 strokeDasharray="4 3"
+                vectorEffect="non-scaling-stroke"
               />
-              <text
-                x={todayX}
-                y={padT - 4}
-                textAnchor="middle"
-                fontSize={9}
-                fill="#94a3b8"
-                fontFamily="var(--font-outfit), sans-serif"
-              >
-                今日
-              </text>
-            </>
+            )}
+
+            {/* エリア塗り潰し */}
+            <defs>
+              <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#00d3f3" stopOpacity={0.2} />
+                <stop offset="100%" stopColor="#00d3f3" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            {pts.length > 1 && <path d={areaPath} fill="url(#areaFill)" />}
+
+            {/* ライン */}
+            {pts.length > 1 && (
+              <path
+                d={linePath}
+                fill="none"
+                stroke="#00d3f3"
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                vectorEffect="non-scaling-stroke"
+              />
+            )}
+
+            {/* ドット */}
+            {pts.map((p, i) => (
+              <circle
+                key={i}
+                cx={p.x}
+                cy={p.y}
+                r={4}
+                fill="#00d3f3"
+                stroke="white"
+                strokeWidth={2}
+                vectorEffect="non-scaling-stroke"
+              />
+            ))}
+          </svg>
+
+          {/* 「今日」ラベル (HTML) */}
+          {todayX !== null && (
+            <span
+              className="absolute text-[10px] text-gray-400 font-[family-name:var(--font-outfit)]"
+              style={{
+                left: `${(todayX / svgW) * 100}%`,
+                top: 0,
+                transform: "translateX(-50%)",
+              }}
+            >
+              今日
+            </span>
           )}
+        </div>
 
-          {/* エリア塗り潰し */}
-          <defs>
-            <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#00d3f3" stopOpacity={0.25} />
-              <stop offset="100%" stopColor="#00d3f3" stopOpacity={0} />
-            </linearGradient>
-          </defs>
-          {pts.length > 1 && (
-            <path d={areaPath} fill="url(#areaFill)" />
-          )}
-
-          {/* ライン */}
-          {pts.length > 1 && (
-            <path
-              d={linePath}
-              fill="none"
-              stroke="#00d3f3"
-              strokeWidth={2.5}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          )}
-
-          {/* ドット */}
-          {pts.map((p, i) => (
-            <circle
-              key={i}
-              cx={p.x}
-              cy={p.y}
-              r={4}
-              fill="#00d3f3"
-              stroke="white"
-              strokeWidth={2}
-            />
-          ))}
-        </svg>
-
-        <div className="mt-2 flex items-center justify-between text-[10px] text-muted">
-          <span>
-            {points.length} 日分 / 全 {totalDays} 日
+        {/* X 軸ラベル + 統計 (HTML、歪みなし) */}
+        <div className="flex items-center justify-between text-[10px] text-muted mt-1">
+          <span className="font-[family-name:var(--font-outfit)]">
+            {fmtDate(stageStartDate)}
           </span>
           <span>
-            最高:{" "}
+            {points.length} 日分 / 全 {totalDays} 日 · 最高{" "}
             <b className="text-foreground">{maxVal.toLocaleString()}</b> pts
+          </span>
+          <span className="font-[family-name:var(--font-outfit)]">
+            {fmtDate(stageEndDate)}
           </span>
         </div>
       </div>
