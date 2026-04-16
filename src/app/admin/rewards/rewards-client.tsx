@@ -199,7 +199,7 @@ function IssueTab({
     <div className="rounded-2xl bg-white border border-gray-200 p-5 space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <label className="block">
-          <span className="text-[10px] font-semibold text-muted">Stage</span>
+          <span className="text-[10px] font-semibold text-muted">ステージ</span>
           <select
             value={periodId}
             onChange={(e) => setPeriodId(e.target.value)}
@@ -297,7 +297,7 @@ function IssueTab({
         </div>
         {!preview ? (
           <p className="text-muted mt-1">
-            {previewLoading ? "計算中..." : "Stage を選択してください"}
+            {previewLoading ? "計算中..." : "ステージを選択してください"}
           </p>
         ) : (
           <>
@@ -405,7 +405,7 @@ function IssueTab({
 
       <div>
         <p className="text-xs font-semibold text-muted mb-2">
-          この Stage の発行済み景品 ({rewards.length})
+          このステージの発行済み景品 ({rewards.length})
         </p>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">

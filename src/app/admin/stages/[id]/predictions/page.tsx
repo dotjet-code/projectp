@@ -80,11 +80,11 @@ export default async function AdminPredictionsPage({
           href="/admin/stages"
           className="text-xs text-gray-500 hover:text-gray-900 underline"
         >
-          ← Stage 管理
+          ← ステージ管理
         </Link>
       </div>
       <p className="text-sm text-gray-600 mb-1">
-        Stage:{" "}
+        ステージ:{" "}
         <span className="font-bold text-foreground">
           {stage.title ?? stage.name}
         </span>
@@ -183,7 +183,7 @@ export default async function AdminPredictionsPage({
           <p className="text-xs text-gray-500">
             {stage.status === "closed"
               ? "採点済みの予想がまだありません。上の「再採点」ボタンを押してください。"
-              : "Stage を確定すると自動で採点されます。"}
+              : "ステージを確定すると自動で採点されます。"}
           </p>
         ) : (
           <ul className="divide-y divide-gray-200 rounded-2xl border border-gray-200 overflow-hidden bg-white">

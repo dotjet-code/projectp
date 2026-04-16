@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { LogoutButton } from "./logout-button";
 
 const items = [
-  { label: "Stage", href: "/admin/stages" },
+  { label: "ステージ", href: "/admin/stages" },
   { label: "メンバー", href: "/admin/connect" },
   { label: "配信収支", href: "/admin/submissions" },
   { label: "ポイント", href: "/admin/stats" },

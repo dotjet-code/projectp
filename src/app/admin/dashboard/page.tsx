@@ -141,7 +141,7 @@ export default async function AdminDashboardPage() {
       {closedStages.length > 0 && (
         <section className="mb-10">
           <h2 className="text-lg font-semibold mb-3">
-            Stage 横断 メンバー順位
+            ステージ横断 メンバー順位
           </h2>
           <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white">
             <table className="w-full text-xs">
@@ -219,7 +219,7 @@ export default async function AdminDashboardPage() {
         <h2 className="text-lg font-semibold mb-3">クイックリンク</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { href: "/admin/stages", label: "Stage 管理", icon: "🎬" },
+            { href: "/admin/stages", label: "ステージ管理", icon: "🎬" },
             { href: "/admin/connect", label: "メンバー管理", icon: "👥" },
             { href: "/admin/stats", label: "ポイント状況", icon: "📊" },
             { href: "/admin/settings", label: "設定", icon: "⚙️" },

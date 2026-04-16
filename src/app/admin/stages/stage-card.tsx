@@ -66,7 +66,7 @@ export function StageCard({
       const stn = stageNumber ? Number(stageNumber) : null;
       const newName =
         sn && stn
-          ? `Series ${sn} Stage ${stn}${title ? `: ${title}` : ""}`
+          ? `Series ${sn} ステージ ${stn}${title ? `: ${title}` : ""}`
           : title || stage.name;
 
       const res = await fetch(`/api/admin/stages/${stage.id}`, {
@@ -101,9 +101,9 @@ export function StageCard({
   async function onFinalize() {
     if (
       !confirm(
-        "この Stage を確定しますか？\n" +
+        "このステージを確定しますか？\n" +
           "現時点のスナップショットを period_points に書き込み、\n" +
-          "Stage は closed になります（後から再オープン可能）。"
+          "ステージは closed になります（後から再オープン可能）。"
       )
     ) {
       return;
@@ -129,7 +129,7 @@ export function StageCard({
   async function onReopen() {
     if (
       !confirm(
-        "この Stage を再オープンしますか？\n" +
+        "このステージを再オープンしますか？\n" +
           "状態が active に戻り、再度ポイント集計の対象になります。"
       )
     ) {
@@ -317,7 +317,7 @@ export function StageCard({
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Stage 番号
+                ステージ番号
               </label>
               <input
                 type="number"

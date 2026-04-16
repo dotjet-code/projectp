@@ -162,7 +162,7 @@ export default async function ResultsPage({
 
           {results.length === 0 ? (
             <p className="text-sm text-muted">
-              この Stage には集計データがありません。
+              このステージには集計データがありません。
             </p>
           ) : (
             <div className="space-y-2">
@@ -272,7 +272,7 @@ export default async function ResultsPage({
               </h2>
             </div>
             <p className="text-[10px] text-muted mb-3">
-              Stage 確定順位と 6 種類の賭式予想を突合して自動採点(最大 {MAX_PREDICTION_SCORE} 点)
+              ステージ確定順位と 6 種類の賭式予想を突合して自動採点(最大 {MAX_PREDICTION_SCORE} 点)
             </p>
             <ul className="rounded-2xl bg-white/70 border border-white/80 divide-y divide-gray-100 overflow-hidden">
               {topPredictors.map((p) => (
@@ -341,7 +341,7 @@ export default async function ResultsPage({
               </Link>
             </div>
             <p className="text-[10px] text-muted mb-3">
-              Series {seriesN} の全 Stage の予想を合算した年間王者ランキング（ファン会員のみ・上位 10 件）
+              Series {seriesN} の全ステージの予想を合算した年間王者ランキング（ファン会員のみ・上位 10 件）
             </p>
             <ul className="rounded-2xl bg-white/70 border border-white/80 divide-y divide-gray-100 overflow-hidden">
               {seriesPredictors.map((p) => (

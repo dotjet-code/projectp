@@ -144,7 +144,7 @@ export default async function MemberDashboardPage() {
           <p className="mt-1 text-lg font-bold text-foreground">
             {dashboard.fanPredictionCount} 回選ばれています
           </p>
-          <p className="text-[10px] text-muted">全賭式・全 Stage 合計</p>
+          <p className="text-[10px] text-muted">全賭式・全ステージ合計</p>
         </div>
 
         {/* 収支提出状況 */}

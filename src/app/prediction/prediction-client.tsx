@@ -668,7 +668,7 @@ export function PredictionClient({
         )}
         <p className="mt-2 text-[10px] text-muted">
           {isLoggedIn
-            ? "ファン会員限定: 1 Stage 1 予想 / 何度でも上書き可 / 的中で景品対象"
+            ? "ファン会員限定: 1 ステージ 1 予想 / 何度でも上書き可 / 的中で景品対象"
             : "予想の提出にはファン会員ログインが必要です"}
         </p>
       </section>

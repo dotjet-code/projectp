@@ -78,11 +78,11 @@ export default async function AdminSubmissionsPage({
           href="/admin/stages"
           className="text-xs text-gray-500 hover:text-gray-900 underline"
         >
-          ← Stage 管理
+          ← ステージ管理
         </Link>
       </div>
       <p className="text-sm text-gray-600 mb-1">
-        Stage: <b>{stage.title ?? stage.name}</b>
+        ステージ: <b>{stage.title ?? stage.name}</b>
       </p>
       <p className="text-xs text-gray-500 mb-6">
         提出 {subs.length} 件 / 未審査 {pending.length} 件 / 承認済み合計利益:{" "}
@@ -120,7 +120,7 @@ export default async function AdminSubmissionsPage({
 
       {subs.length === 0 && (
         <p className="text-sm text-gray-500">
-          この Stage にはまだ収支提出がありません。
+          このステージにはまだ収支提出がありません。
         </p>
       )}
     </main>

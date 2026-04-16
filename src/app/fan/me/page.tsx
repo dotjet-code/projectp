@@ -178,7 +178,7 @@ export default async function FanMePage() {
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         <p className="text-xs font-bold text-foreground truncate">
-                          {h.periodName ?? "Stage"}
+                          {h.periodName ?? "ステージ"}
                         </p>
                         <p className="text-[10px] text-muted">
                           {h.periodStartDate} 〜 {h.periodEndDate}
@@ -264,7 +264,7 @@ export default async function FanMePage() {
           </h2>
           {rewards.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-gray-300 bg-white/70 p-6 text-center text-xs text-muted">
-              まだ景品はありません。順位予想を提出して的中させると、Stage 終了後に発行されます。
+              まだ景品はありません。順位予想を提出して的中させると、ステージ終了後に発行されます。
             </div>
           ) : (
             <ul className="space-y-3">

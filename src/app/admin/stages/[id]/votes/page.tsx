@@ -30,11 +30,11 @@ export default async function AdminVotesPage({
           href="/admin/stages"
           className="text-xs text-gray-500 hover:text-gray-900 underline"
         >
-          ← Stage 管理
+          ← ステージ管理
         </Link>
       </div>
       <p className="text-sm text-gray-600 mb-1">
-        Stage:{" "}
+        ステージ:{" "}
         <span className="font-bold text-foreground">
           {stage.title ?? stage.name}
         </span>

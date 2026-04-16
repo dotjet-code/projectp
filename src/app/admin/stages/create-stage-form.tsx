@@ -24,8 +24,8 @@ export function CreateStageForm({ hasActive }: { hasActive: boolean }) {
       const stn = stageNumber ? Number(stageNumber) : null;
       const autoName =
         sn && stn
-          ? `Series ${sn} Stage ${stn}${title ? `: ${title}` : ""}`
-          : title || `Stage ${new Date().toISOString().slice(0, 10)}`;
+          ? `Series ${sn} ステージ ${stn}${title ? `: ${title}` : ""}`
+          : title || `ステージ ${new Date().toISOString().slice(0, 10)}`;
 
       const res = await fetch("/api/admin/stages", {
         method: "POST",
@@ -64,8 +64,8 @@ export function CreateStageForm({ hasActive }: { hasActive: boolean }) {
     >
       {hasActive && (
         <p className="rounded-lg bg-yellow-50 border border-yellow-200 px-3 py-2 text-xs text-yellow-900">
-          ⚠️ 既に active な Stage があります。新しい Stage を active で作る前に、
-          現在の Stage を確定 (close) してください。
+          ⚠️ 既に active なステージがあります。新しいステージを active で作る前に、
+          現在のステージを確定 (close) してください。
         </p>
       )}
 
@@ -84,7 +84,7 @@ export function CreateStageForm({ hasActive }: { hasActive: boolean }) {
         </div>
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1">
-            Stage 番号
+            ステージ番号
           </label>
           <input
             type="number"
@@ -157,7 +157,7 @@ export function CreateStageForm({ hasActive }: { hasActive: boolean }) {
         disabled={submitting || !startDate || !endDate}
         className="rounded-full bg-black px-5 py-2 text-sm font-bold text-white disabled:opacity-40"
       >
-        {submitting ? "作成中..." : "Stage を作成"}
+        {submitting ? "作成中..." : "ステージを作成"}
       </button>
     </form>
   );

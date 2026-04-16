@@ -35,7 +35,7 @@ export default async function SeriesPage({
               半年累計ランキング
             </h1>
             <p className="mt-2 text-xs text-muted">
-              {data.stages.length} Stage / 確定済みのみ集計
+              {data.stages.length} ステージ / 確定済みのみ集計
             </p>
           </div>
         </section>
@@ -68,7 +68,7 @@ export default async function SeriesPage({
 
           {data.rows.length === 0 ? (
             <p className="text-sm text-muted">
-              この Series にはまだ確定済み Stage がありません。
+              この Series にはまだ確定済みステージがありません。
               ステージの結果が確定するとここに累計が表示されます。
             </p>
           ) : (

@@ -23,7 +23,7 @@ export default function AdminSettingsPage() {
             <code className="bg-gray-100 px-1.5 py-0.5 rounded">/login</code>
           </p>
           <p>
-            <span className="font-bold text-gray-700">Stage 管理:</span>{" "}
+            <span className="font-bold text-gray-700">ステージ管理:</span>{" "}
             <code className="bg-gray-100 px-1.5 py-0.5 rounded">/admin/stages</code>
           </p>
           <p>

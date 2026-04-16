@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export const metadata = {
   title: "予想ランキング",
   description:
-    "Project P の順位予想の通算ランキング。Series 内の全 Stage のスコアを合算した年間王者を決める。",
+    "Project P の順位予想の通算ランキング。Series 内の全ステージのスコアを合算した年間王者を決める。",
 };
 
 export default async function PredictorsRankingPage({
@@ -58,7 +58,7 @@ export default async function PredictorsRankingPage({
             予想ランキング
           </h1>
           <p className="mt-2 text-sm text-muted max-w-md mx-auto">
-            Series 内の全 Stage を合算した通算ランキング。
+            Series 内の全ステージを合算した通算ランキング。
             <br />
             的中を積み上げて年間王者を目指せ。
           </p>
@@ -94,7 +94,7 @@ export default async function PredictorsRankingPage({
             <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center">
               <p className="text-3xl mb-2">⏳</p>
               <p className="text-sm text-muted">
-                まだ確定したシリーズがありません。Stage 終了後にランキングが出ます。
+                まだ確定したシリーズがありません。ステージ終了後にランキングが出ます。
               </p>
             </div>
           ) : predictors.length === 0 ? (
@@ -106,7 +106,7 @@ export default async function PredictorsRankingPage({
           ) : (
             <>
               <p className="text-[10px] text-muted mb-3 text-center">
-                全 Stage の合計スコア(最大 {MAX_PREDICTION_SCORE} pt × Stage 数)で順位付け。
+                全ステージの合計スコア(最大 {MAX_PREDICTION_SCORE} pt × ステージ数)で順位付け。
               </p>
               <ul className="rounded-2xl bg-white/70 border border-white/80 divide-y divide-gray-100 overflow-hidden">
                 {predictors.map((p) => {

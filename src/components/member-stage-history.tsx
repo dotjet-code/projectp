@@ -14,7 +14,7 @@ export async function MemberStageHistory({
       <div className="flex items-center gap-3 mb-5">
         <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-[#ffd230] to-[#f59e0b]" />
         <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-[#b45309] tracking-tight">
-          🏁 過去 Stage の成績
+          🏁 過去ステージの成績
         </h2>
       </div>
 

@@ -204,10 +204,10 @@ export default async function AdminMemberDetailPage({
       {/* Stage history */}
       <section>
         <h2 className="text-lg font-semibold mb-3">
-          Stage 成績 ({stageHistory.length} Stage)
+          ステージ成績 ({stageHistory.length} ステージ)
         </h2>
         {stageHistory.length === 0 ? (
-          <p className="text-xs text-gray-500">確定済みの Stage がありません。</p>
+          <p className="text-xs text-gray-500">確定済みのステージがありません。</p>
         ) : (
           <ul className="divide-y divide-gray-200 rounded-2xl border border-gray-200 overflow-hidden bg-white">
             {stageHistory.map((h) => (

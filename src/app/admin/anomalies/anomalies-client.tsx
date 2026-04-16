@@ -158,7 +158,7 @@ export function AnomaliesClient({
           🎁 同一 IP 由来の景品クラスタ ({rewardClusters.length})
         </h2>
         <p className="text-[10px] text-muted mb-3">
-          同じ IP から登録されたファンが、同じ Stage で複数の景品を取得しているケース。
+          同じ IP から登録されたファンが、同じステージで複数の景品を取得しているケース。
         </p>
         <div className="space-y-2">
           {rewardClusters.length === 0 && (
@@ -172,7 +172,7 @@ export function AnomaliesClient({
               <p>
                 <span className="font-mono font-bold">{c.ip}</span>
                 <span className="ml-2 text-muted">
-                  Stage {c.periodId.slice(0, 8)} で {c.userIds.length} アカウントが計 {c.rewardCount} 件取得
+                  ステージ {c.periodId.slice(0, 8)} で {c.userIds.length} アカウントが計 {c.rewardCount} 件取得
                 </span>
               </p>
             </div>

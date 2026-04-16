@@ -219,7 +219,7 @@ export default async function AdminStatsPage({
             （{selected.startDate} 〜 {selected.endDate}）
           </>
         ) : (
-          <span className="text-gray-500">active な Stage はありません</span>
+          <span className="text-gray-500">active なステージはありません</span>
         )}
       </p>
       <p className="text-xs text-gray-500 mb-8">
@@ -236,9 +236,9 @@ export default async function AdminStatsPage({
           </Link>
           で追加、
           <Link href="/admin/stages" className="underline ml-1">
-            Stage 管理
+            ステージ管理
           </Link>
-          で Stage を作成してください。
+          でステージを作成してください。
         </p>
       ) : (
         <div className="space-y-4">

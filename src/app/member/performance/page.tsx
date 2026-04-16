@@ -59,7 +59,7 @@ export default async function MemberPerformancePage() {
       {/* 全体平均との比較 */}
       <section className="mb-8">
         <h2 className="text-sm font-bold text-muted mb-3">
-          📊 直近 Stage: 自分 vs 全体平均
+          📊 直近ステージ: 自分 vs 全体平均
         </h2>
         <div className="rounded-xl border border-gray-200 bg-white p-4 space-y-3">
           {[
@@ -130,11 +130,11 @@ export default async function MemberPerformancePage() {
       {/* Stage 推移 */}
       <section>
         <h2 className="text-sm font-bold text-muted mb-3">
-          📈 Stage 別パフォーマンス
+          📈 ステージ別パフォーマンス
         </h2>
         {perf.stages.length === 0 ? (
           <p className="text-xs text-muted">
-            まだ確定した Stage がありません。
+            まだ確定したステージがありません。
           </p>
         ) : (
           <div className="space-y-2">
