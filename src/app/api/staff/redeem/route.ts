@@ -29,6 +29,21 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // live_vote_bonus はスタッフ消込の対象外(イベント投票時に自動消費される)
+  const { createAdminClient } = await import("@/lib/supabase/admin");
+  const checkDb = createAdminClient();
+  const { data: rewardRow } = await checkDb
+    .from("prediction_rewards")
+    .select("reward_type")
+    .eq("reward_code", code.trim().toUpperCase())
+    .maybeSingle();
+  if (rewardRow && (rewardRow as { reward_type: string }).reward_type === "live_vote_bonus") {
+    return NextResponse.json(
+      { error: "投票ボーナスはライブ投票時に自動適用されます。スタッフ消込は不要です。" },
+      { status: 400 }
+    );
+  }
+
   const result = await redeemReward({
     rewardCode: code,
     note: "staff:" + staffToken.slice(0, 8),
