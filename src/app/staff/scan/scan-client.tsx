@@ -23,6 +23,7 @@ export function StaffScanClient() {
   const [tokenValid, setTokenValid] = useState<boolean | null>(null);
   const [scanning, setScanning] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const processingRef = useRef(false);
   const scannerContainerId = "qr-reader";
 
   const doRedeem = useCallback(
@@ -108,8 +109,16 @@ export function StaffScanClient() {
           { facingMode: "environment" },
           { fps: 10, qrbox: { width: 250, height: 250 } },
           (decodedText) => {
+            // 二重読み取り防止
+            if (processingRef.current) return;
+            processingRef.current = true;
             stopScanner();
-            doRedeem(decodedText.trim());
+            doRedeem(decodedText.trim()).finally(() => {
+              // 次のスキャンを許可するまで少し待つ
+              setTimeout(() => {
+                processingRef.current = false;
+              }, 2000);
+            });
           },
           () => {}
         );
