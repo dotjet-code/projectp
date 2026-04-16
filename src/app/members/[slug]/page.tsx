@@ -270,62 +270,61 @@ export default async function MemberDetailPage({
             </h2>
           </div>
 
-          {/* Social links - DB に URL があればリンク化 */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {/* YouTube card */}
+          {(() => {
+            const ytUrl = profile?.sns_youtube;
+            const Tag = ytUrl ? "a" : "div";
+            return (
+              <Tag
+                {...(ytUrl ? { href: ytUrl, target: "_blank", rel: "noopener noreferrer" } : {})}
+                className="block rounded-2xl bg-gradient-to-r from-[#dc2626] to-[#ef4444] p-5 shadow-sm mb-4"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="flex size-10 items-center justify-center rounded-full bg-white/20">
+                      <svg className="size-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-semibold text-white/70 tracking-wider font-[family-name:var(--font-outfit)]">
+                        YOUTUBE CHANNEL
+                      </p>
+                      <p className="text-sm font-bold text-white">
+                        {base.name} 公式チャンネル
+                      </p>
+                      <p className="text-[11px] text-white/60">
+                        配信・動画をチェック
+                      </p>
+                    </div>
+                  </div>
+                  <svg className="size-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </Tag>
+            );
+          })()}
+
+          {/* Social links */}
+          <div className="grid grid-cols-3 gap-4">
             {[
-              {
-                label: "YouTube",
-                url: profile?.sns_youtube,
-                icon: "▶️",
-                desc: "配信・動画をチェック",
-                bg: "bg-gradient-to-r from-[#dc2626] to-[#ef4444] text-white",
-              },
-              {
-                label: "X",
-                url: profile?.sns_x,
-                icon: "𝕏",
-                desc: "つぶやきをチェック",
-                bg: "bg-white/70 border border-white/80",
-              },
-              {
-                label: "Instagram",
-                url: profile?.sns_instagram,
-                icon: "📸",
-                desc: "写真をチェック",
-                bg: "bg-white/70 border border-white/80",
-              },
-              {
-                label: "TikTok",
-                url: profile?.sns_tiktok,
-                icon: "🎵",
-                desc: "ショート動画",
-                bg: "bg-white/70 border border-white/80",
-              },
+              { label: "X", url: profile?.sns_x, desc: "つぶやきをチェック", svg: <svg className="size-7 text-foreground" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg> },
+              { label: "Instagram", url: profile?.sns_instagram, desc: "写真をチェック", svg: <svg className="size-7 text-[#e1306c]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="5" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" /></svg> },
+              { label: "TikTok", url: profile?.sns_tiktok, desc: "ショート動画", svg: <svg className="size-7 text-foreground" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.98a8.18 8.18 0 004.76 1.52V7.08a4.83 4.83 0 01-1-.39z" /></svg> },
             ].map((s) => {
               const hasUrl = s.url && s.url.startsWith("http");
-              const Wrapper = hasUrl ? "a" : "div";
+              const Tag = hasUrl ? "a" : "div";
               return (
-                <Wrapper
+                <Tag
                   key={s.label}
-                  {...(hasUrl
-                    ? {
-                        href: s.url!,
-                        target: "_blank",
-                        rel: "noopener noreferrer",
-                      }
-                    : {})}
-                  className={`flex flex-col items-center gap-2 rounded-2xl py-5 shadow-sm transition-shadow ${s.bg} ${
-                    hasUrl
-                      ? "hover:shadow-md cursor-pointer"
-                      : "opacity-50 cursor-default"
-                  }`}
+                  {...(hasUrl ? { href: s.url!, target: "_blank", rel: "noopener noreferrer" } : {})}
+                  className="flex flex-col items-center gap-2 rounded-2xl bg-white/70 border border-white/80 py-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                 >
-                  <span className="text-2xl">{s.icon}</span>
-                  <span className="text-xs font-bold">{s.label}</span>
-                  <span className="text-[10px] text-current opacity-60">
-                    {hasUrl ? s.desc : "未設定"}
-                  </span>
-                </Wrapper>
+                  {s.svg}
+                  <span className="text-xs font-bold text-foreground">{s.label}</span>
+                  <span className="text-[10px] text-muted">{s.desc}</span>
+                </Tag>
               );
             })}
           </div>
