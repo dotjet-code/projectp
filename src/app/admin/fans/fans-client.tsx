@@ -11,6 +11,7 @@ type Fan = {
   createdAt: string;
   predictionCount: number;
   rewardCount: number;
+  totalScore: number;
 };
 
 type FanDetail = {
@@ -121,6 +122,7 @@ export function FansClient({
               <th className="px-3 py-2">表示名</th>
               <th className="px-3 py-2">登録</th>
               <th className="px-3 py-2 text-right">予想</th>
+              <th className="px-3 py-2 text-right">累計pt</th>
               <th className="px-3 py-2 text-right">景品</th>
               <th className="px-3 py-2">状態</th>
               <th className="px-3 py-2"></th>
@@ -147,6 +149,9 @@ export function FansClient({
                       {new Date(f.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-3 py-2 text-right">{f.predictionCount}</td>
+                    <td className="px-3 py-2 text-right font-bold">
+                      {f.totalScore}
+                    </td>
                     <td className="px-3 py-2 text-right">{f.rewardCount}</td>
                     <td className="px-3 py-2">
                       <span
@@ -195,7 +200,7 @@ export function FansClient({
                   </tr>
                   {isOpen && (
                     <tr className="bg-gray-50">
-                      <td colSpan={7} className="px-4 py-3">
+                      <td colSpan={8} className="px-4 py-3">
                         {detail === "loading" || !detail ? (
                           <p className="text-[10px] text-muted">読み込み中...</p>
                         ) : (
@@ -260,7 +265,7 @@ export function FansClient({
             })}
             {fans.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-3 py-6 text-center text-muted">
+                <td colSpan={8} className="px-3 py-6 text-center text-muted">
                   該当するファンがいません
                 </td>
               </tr>

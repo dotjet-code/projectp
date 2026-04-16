@@ -34,6 +34,7 @@ export type FanListEntry = FanProfile & {
   email: string | null;
   predictionCount: number;
   rewardCount: number;
+  totalScore: number; // 採点済みの全予想の合計スコア
 };
 
 export async function listFans(query?: string): Promise<FanListEntry[]> {
@@ -65,7 +66,7 @@ export async function listFans(query?: string): Promise<FanListEntry[]> {
   const [{ data: preds }, { data: rewards }] = await Promise.all([
     supabase
       .from("predictions")
-      .select("user_id")
+      .select("user_id, total_score")
       .in("user_id", userIds),
     supabase
       .from("prediction_rewards")
@@ -73,8 +74,18 @@ export async function listFans(query?: string): Promise<FanListEntry[]> {
       .in("user_id", userIds),
   ]);
   const predCount = new Map<string, number>();
-  for (const p of (preds ?? []) as { user_id: string }[]) {
+  const totalScoreByUser = new Map<string, number>();
+  for (const p of (preds ?? []) as {
+    user_id: string;
+    total_score: number | null;
+  }[]) {
     predCount.set(p.user_id, (predCount.get(p.user_id) ?? 0) + 1);
+    if (p.total_score !== null) {
+      totalScoreByUser.set(
+        p.user_id,
+        (totalScoreByUser.get(p.user_id) ?? 0) + p.total_score
+      );
+    }
   }
   const rewardCount = new Map<string, number>();
   for (const r of (rewards ?? []) as { user_id: string }[]) {
@@ -86,6 +97,7 @@ export async function listFans(query?: string): Promise<FanListEntry[]> {
     email: emailById.get(r.user_id) ?? null,
     predictionCount: predCount.get(r.user_id) ?? 0,
     rewardCount: rewardCount.get(r.user_id) ?? 0,
+    totalScore: totalScoreByUser.get(r.user_id) ?? 0,
   }));
 }
 

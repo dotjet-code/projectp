@@ -54,6 +54,7 @@ const navItems = [
   { label: "メンバー", href: "/members" },
   { label: "順位予想", href: "/prediction" },
   { label: "ランキング", href: "/ranking" },
+  { label: "予想王", href: "/ranking/predictors" },
   { label: "ライブ応援", href: "/live/vote" },
   { label: "結果発表", href: "/results" },
 ];
@@ -79,7 +80,11 @@ export function Header() {
         <nav className="hidden md:flex items-center gap-0.5">
           {navItems.map((item) => {
             const isActive =
-              item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+              item.href === "/"
+                ? pathname === "/"
+                : item.href === "/ranking"
+                ? pathname === "/ranking"
+                : pathname.startsWith(item.href);
             return (
               <Link
                 key={item.label}
@@ -121,7 +126,11 @@ export function Header() {
         <nav className="md:hidden border-t border-gray-100 px-4 py-3 flex flex-col gap-1">
           {navItems.map((item) => {
             const isActive =
-              item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+              item.href === "/"
+                ? pathname === "/"
+                : item.href === "/ranking"
+                ? pathname === "/ranking"
+                : pathname.startsWith(item.href);
             return (
               <Link
                 key={item.label}
