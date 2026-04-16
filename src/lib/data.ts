@@ -83,7 +83,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 4, rank: 4, name: "小池ゆうの", slug: "koike-yuuno", role: "PLAYER", points: 1720, avatarUrl: "/members/koike-yuuno.jpg",
+    id: 4, rank: 4, name: "カガミルイ", slug: "koike-yuuno", role: "PLAYER", points: 1720, avatarUrl: "/members/koike-yuuno.jpg",
     detail: {
       stats: { buzz: 580, concurrent: 420, revenue: 320 },
       positionForecast: "PLAYER圏内", positionMargin: "やや安心", supportRate: 18,
@@ -98,7 +98,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 5, rank: 5, name: "田中みほ", slug: "tanaka-miho", role: "PLAYER", points: 1655, avatarUrl: "/members/tanaka-miho.jpg", isLive: true,
+    id: 5, rank: 5, name: "栗田みほ", slug: "tanaka-miho", role: "PLAYER", points: 1655, avatarUrl: "/members/tanaka-miho.jpg", isLive: true,
     detail: {
       stats: { buzz: 520, concurrent: 390, revenue: 345 },
       positionForecast: "PLAYER圏内", positionMargin: "ギリギリ", supportRate: 15,
@@ -113,7 +113,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 6, rank: 6, name: "斎藤りこ", slug: "saito-riko", role: "PLAYER", points: 1590, avatarUrl: "/members/saito-riko.jpg",
+    id: 6, rank: 6, name: "Coming Soon", slug: "saito-riko", role: "PLAYER", points: 1590, avatarUrl: "/members/coming-soon.svg",
     detail: {
       stats: { buzz: 480, concurrent: 360, revenue: 350 },
       positionForecast: "PLAYER圏内", positionMargin: "ボーダー付近", supportRate: 12,
@@ -128,7 +128,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 7, rank: 7, name: "せなももか", slug: "sena-momoka", role: "PIT", points: 1283, avatarUrl: "/members/sena-momoka.jpg",
+    id: 7, rank: 7, name: "セナモモカ", slug: "sena-momoka", role: "PIT", points: 1283, avatarUrl: "/members/sena-momoka.jpg",
     detail: {
       stats: { buzz: 420, concurrent: 280, revenue: 283 },
       positionForecast: "PIT圏内", positionMargin: "ボーダー付近", supportRate: 10,
@@ -158,7 +158,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 9, rank: 9, name: "佐々木泉", slug: "sasaki-izumi", role: "PIT", points: 1058, avatarUrl: "/members/sasaki-izumi.jpg", isLive: true,
+    id: 9, rank: 9, name: "城乃せん", slug: "sasaki-izumi", role: "PIT", points: 1058, avatarUrl: "/members/sasaki-izumi.jpg", isLive: true,
     detail: {
       stats: { buzz: 350, concurrent: 230, revenue: 228 },
       positionForecast: "PIT圏内", positionMargin: "維持", supportRate: 7,
@@ -173,7 +173,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 10, rank: 10, name: "犬飼みずき", slug: "inukai-mizuki", role: "PIT", points: 980, avatarUrl: "/members/inukai-mizuki.jpg",
+    id: 10, rank: 10, name: "さくらぎみずき", slug: "inukai-mizuki", role: "PIT", points: 980, avatarUrl: "/members/inukai-mizuki.jpg",
     detail: {
       stats: { buzz: 310, concurrent: 220, revenue: 200 },
       positionForecast: "PIT圏内", positionMargin: "維持", supportRate: 5,
@@ -203,7 +203,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 12, rank: 12, name: "前田すみか", slug: "maeda-sumika", role: "PIT", points: 760, avatarUrl: "/members/maeda-sumika.jpg",
+    id: 12, rank: 12, name: "Coming Soon", slug: "maeda-sumika", role: "PIT", points: 760, avatarUrl: "/members/coming-soon.svg",
     detail: {
       stats: { buzz: 240, concurrent: 170, revenue: 150 },
       positionForecast: "PIT圏内", positionMargin: "下位", supportRate: 3,
