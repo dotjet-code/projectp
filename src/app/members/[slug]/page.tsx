@@ -235,15 +235,6 @@ export default async function MemberDetailPage({
           </div>
         </section>
 
-        {/* Stage 推移 */}
-        <StageTrendChart memberName={base.name} />
-
-        {/* 過去 Stage の成績 */}
-        <MemberStageHistory memberName={base.name} />
-
-        {/* 最近の動き（自動生成） */}
-        <RecentActivities memberName={base.name} />
-
         {/* 自己紹介 */}
         {profile?.bio && (
           <section className="mx-auto max-w-[964px] px-4 mt-10">
@@ -260,6 +251,15 @@ export default async function MemberDetailPage({
             </div>
           </section>
         )}
+
+        {/* Stage 推移 */}
+        <StageTrendChart memberName={base.name} />
+
+        {/* 過去 Stage の成績 */}
+        <MemberStageHistory memberName={base.name} />
+
+        {/* 最近の動き（自動生成） */}
+        <RecentActivities memberName={base.name} />
 
         {/* SNS */}
         <section className="mx-auto max-w-[964px] px-4 mt-10">
