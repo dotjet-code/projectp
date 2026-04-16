@@ -42,8 +42,18 @@ export async function getMemberIdByAuthUser(
 export async function getMemberDashboard(
   memberId: string
 ): Promise<MemberDashboardData | null> {
+  const supabaseInit = createAdminClient();
+  // DB のメンバー名を取得して data.ts のランキングと照合
+  const { data: memberRow } = await supabaseInit
+    .from("members")
+    .select("name")
+    .eq("id", memberId)
+    .maybeSingle();
+  const memberName = (memberRow as { name: string } | null)?.name ?? null;
+  if (!memberName) return null;
+
   const ranked = await getRankedMembers();
-  const me = ranked.find((m) => String(m.id) === memberId);
+  const me = ranked.find((m) => m.name === memberName);
   if (!me) return null;
 
   const totalMembers = ranked.filter((m) => m.name !== "Coming Soon").length;
