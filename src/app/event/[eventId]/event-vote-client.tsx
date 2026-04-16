@@ -108,11 +108,14 @@ export function EventVoteClient({
               type="text"
               required
               value={code}
-              onChange={(e) => setCode(e.target.value.toUpperCase())}
+              onChange={(e) => setCode(e.target.value)}
+              onBlur={() => setCode((c) => c.toUpperCase())}
               placeholder="PJ-XXXX"
               className="w-full rounded-xl border border-gray-300 px-4 py-3 text-center text-xl font-[family-name:var(--font-outfit)] font-bold tracking-[0.3em] uppercase"
               autoComplete="off"
-              autoFocus
+              autoCorrect="off"
+              autoCapitalize="characters"
+              spellCheck={false}
             />
             {error && (
               <p className="text-xs text-red-600 text-center">{error}</p>
