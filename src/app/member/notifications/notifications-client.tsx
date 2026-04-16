@@ -109,7 +109,7 @@ export function NotificationsClient({
                   )}
                 </div>
                 <p className="text-[10px] text-muted shrink-0">
-                  {new Date(n.createdAt).toLocaleDateString()}
+                  {new Date(n.createdAt).toLocaleDateString("ja-JP")}
                 </p>
               </div>
             </li>

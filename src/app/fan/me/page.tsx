@@ -296,18 +296,18 @@ export default async function FanMePage() {
                     </p>
                     {used ? (
                       <p className="mt-1 text-[10px] text-muted">
-                        {new Date(r.redeemedAt!).toLocaleString()} 消込済
+                        {new Date(r.redeemedAt!).toLocaleString("ja-JP")} 消込済
                       </p>
                     ) : expired ? (
                       <p className="mt-1 text-[10px] text-red-600">
-                        {new Date(r.expiresAt!).toLocaleDateString()} に期限切れ
+                        {new Date(r.expiresAt!).toLocaleDateString("ja-JP")} に期限切れ
                       </p>
                     ) : (
                       <>
                         <RewardQR rewardCode={r.rewardCode} baseUrl={baseUrl} />
                         {r.expiresAt && (
                           <p className="mt-1 text-[10px] text-muted text-center">
-                            {new Date(r.expiresAt).toLocaleDateString()} まで有効
+                            {new Date(r.expiresAt).toLocaleDateString("ja-JP")} まで有効
                           </p>
                         )}
                       </>

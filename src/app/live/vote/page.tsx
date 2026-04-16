@@ -98,7 +98,7 @@ export default function LiveInfoPage() {
                 SPECIAL
               </span>
               <span className="text-[10px] font-bold text-purple-700 tracking-wider font-[family-name:var(--font-outfit)]">
-                LIVE DAY ONLY
+                ライブデー限定
               </span>
             </div>
             <p className="text-sm text-foreground leading-relaxed">

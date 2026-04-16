@@ -79,7 +79,7 @@ export default async function AdminNotificationsPage() {
                   </span>
                 </div>
                 <span className="text-muted">
-                  {new Date(n.created_at).toLocaleDateString()}
+                  {new Date(n.created_at).toLocaleDateString("ja-JP")}
                 </span>
               </div>
               {n.body && (

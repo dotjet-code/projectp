@@ -170,7 +170,7 @@ export default async function MemberDetailPage({
               {me.hasLiveData ? (
                 <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 tracking-wider font-[family-name:var(--font-outfit)]">
                   <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  LIVE DATA
+                  ライブデータ連携中
                 </p>
               ) : (
                 <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-gray-100 border border-gray-200 px-2.5 py-0.5 text-[10px] font-bold text-gray-500 tracking-wider font-[family-name:var(--font-outfit)]">
@@ -207,7 +207,7 @@ export default async function MemberDetailPage({
 
               <div className="mt-4 flex items-baseline gap-2">
                 <span className="font-[family-name:var(--font-outfit)] text-xs font-semibold tracking-wider text-muted">
-                  TOTAL
+                  合計
                 </span>
                 <span className="font-[family-name:var(--font-outfit)] text-2xl font-black italic text-foreground">
                   {totalPoints.toLocaleString()}
@@ -224,7 +224,7 @@ export default async function MemberDetailPage({
                     SPECIAL
                   </span>
                   <span className="text-[10px] font-bold text-purple-700 tracking-wider font-[family-name:var(--font-outfit)]">
-                    LIVE DAY ONLY
+                    ライブデー限定
                   </span>
                   <span className="font-[family-name:var(--font-outfit)] text-sm font-extrabold text-purple-900">
                     +{me.specialPoints.toLocaleString()}
@@ -288,7 +288,7 @@ export default async function MemberDetailPage({
                     </div>
                     <div>
                       <p className="text-[10px] font-semibold text-white/70 tracking-wider font-[family-name:var(--font-outfit)]">
-                        YOUTUBE CHANNEL
+                        YouTube チャンネル
                       </p>
                       <p className="text-sm font-bold text-white">
                         {base.name} 公式チャンネル

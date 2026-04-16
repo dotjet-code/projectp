@@ -461,6 +461,8 @@ export function PredictionClient({
         const arr = [...prev[key]];
         const nextSlot = arr.findIndex((s) => s === null);
         if (nextSlot === -1) return prev;
+        // 同じ賭式内での重複選択を防止
+        if (arr.includes(member.id)) return prev;
         arr[nextSlot] = member.id;
         return { ...prev, [key]: arr };
       });
@@ -662,7 +664,7 @@ export function PredictionClient({
         )}
         {closeAt && !isClosed && (
           <p className="mt-3 text-[11px] text-amber-700">
-            ⏰ 締切: {new Date(closeAt).toLocaleString()} (
+            ⏰ 締切: {new Date(closeAt).toLocaleString("ja-JP")} (
             <Countdown closeAt={closeAt} />)
           </p>
         )}

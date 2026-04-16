@@ -118,7 +118,7 @@ export default async function MemberSubmissionsPage() {
                   )}
                 </div>
                 <p className="text-[10px] text-muted shrink-0">
-                  {new Date(s.createdAt).toLocaleDateString()}
+                  {new Date(s.createdAt).toLocaleDateString("ja-JP")}
                 </p>
               </div>
             </div>

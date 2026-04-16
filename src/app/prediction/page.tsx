@@ -22,7 +22,7 @@ async function listMembersWithMeta() {
 
   const dummyByName = new Map(dummyMembers.map((d) => [d.name, d]));
 
-  return (data ?? []).map((m) => {
+  return (data ?? []).filter((m) => (m.name as string) !== "Coming Soon").map((m) => {
     const dummy = dummyByName.get(m.name);
     return {
       id: m.id as string,

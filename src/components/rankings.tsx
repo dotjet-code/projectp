@@ -33,7 +33,7 @@ function StatMiniBar({
 
 export async function Rankings() {
   const ranked = await getRankedMembers();
-  const top3 = ranked.slice(0, 3);
+  const top3 = ranked.filter((m) => m.name !== "Coming Soon").slice(0, 3);
 
   const maxBuzz = Math.max(...ranked.map((m) => m.detail.stats.buzz), 1);
   const maxConc = Math.max(

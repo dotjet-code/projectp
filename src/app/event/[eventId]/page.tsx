@@ -25,11 +25,13 @@ export default async function EventVotePage({
     .order("created_at", { ascending: true });
 
   const dummyByName = new Map(dummyMembers.map((d) => [d.name, d]));
-  const members = (data ?? []).map((m) => ({
-    id: m.id as string,
-    name: m.name as string,
-    avatarUrl: dummyByName.get(m.name)?.avatarUrl ?? "",
-  }));
+  const members = (data ?? [])
+    .filter((m) => (m.name as string) !== "Coming Soon")
+    .map((m) => ({
+      id: m.id as string,
+      name: m.name as string,
+      avatarUrl: dummyByName.get(m.name)?.avatarUrl ?? "",
+    }));
 
   return (
     <>

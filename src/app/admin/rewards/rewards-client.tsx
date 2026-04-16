@@ -442,11 +442,11 @@ function IssueTab({
                     </td>
                     <td className="px-2 py-1.5">{r.totalScore ?? "-"}</td>
                     <td className="px-2 py-1.5 text-muted">
-                      {new Date(r.issuedAt).toLocaleDateString()}
+                      {new Date(r.issuedAt).toLocaleDateString("ja-JP")}
                     </td>
                     <td className="px-2 py-1.5 text-muted">
                       {r.expiresAt
-                        ? new Date(r.expiresAt).toLocaleDateString()
+                        ? new Date(r.expiresAt).toLocaleDateString("ja-JP")
                         : "—"}
                     </td>
                     <td className="px-2 py-1.5">

@@ -75,8 +75,8 @@ export function AnomaliesClient({
                   )}
                 </p>
                 <p className="text-[10px] text-muted">
-                  {new Date(c.earliestAt).toLocaleDateString()} 〜{" "}
-                  {new Date(c.latestAt).toLocaleDateString()}
+                  {new Date(c.earliestAt).toLocaleDateString("ja-JP")} 〜{" "}
+                  {new Date(c.latestAt).toLocaleDateString("ja-JP")}
                 </p>
               </div>
               <ul className="space-y-1">

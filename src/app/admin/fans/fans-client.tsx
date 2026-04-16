@@ -146,7 +146,7 @@ export function FansClient({
                     </td>
                     <td className="px-3 py-2">{f.displayName ?? "—"}</td>
                     <td className="px-3 py-2 text-muted">
-                      {new Date(f.createdAt).toLocaleDateString()}
+                      {new Date(f.createdAt).toLocaleDateString("ja-JP")}
                     </td>
                     <td className="px-3 py-2 text-right">{f.predictionCount}</td>
                     <td className="px-3 py-2 text-right font-bold">
