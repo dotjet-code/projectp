@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getMemberStageHistory } from "@/lib/projectp/stage";
+import { InviteButton } from "./invite-button";
 
 export const dynamic = "force-dynamic";
 
@@ -38,14 +39,15 @@ export default async function AdminMemberDetailPage({
   const { data: member, error } = await supabase
     .from("members")
     .select(
-      "id, name, handle, youtube_channel_id, google_connected_at, google_scopes, is_active, created_at, updated_at, recent_video_ids"
+      "id, name, handle, youtube_channel_id, google_connected_at, google_scopes, is_active, created_at, updated_at, recent_video_ids, auth_user_id"
     )
     .eq("id", id)
     .maybeSingle();
   if (error || !member) notFound();
 
-  const m = member as unknown as MemberDetail;
+  const m = member as unknown as MemberDetail & { auth_user_id: string | null };
   const connected = Boolean(m.google_connected_at);
+  const isInvited = Boolean(m.auth_user_id);
 
   // 直近 14 日のスナップショット
   const { data: snaps } = await supabase
@@ -72,7 +74,10 @@ export default async function AdminMemberDetailPage({
   return (
     <main className="mx-auto max-w-4xl px-6 py-12">
       <div className="mb-2 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{m.name}</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-bold">{m.name}</h1>
+          <InviteButton memberId={m.id} isInvited={isInvited} />
+        </div>
         <Link
           href="/admin/connect"
           className="text-xs text-gray-500 hover:text-gray-900 underline"

@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
   if (user) {
     const role =
       (user.app_metadata as { role?: string } | null | undefined)?.role ?? null;
-    if (role !== "admin") {
+    if (role !== "admin" && role !== "member") {
       const ip =
         req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
       const ua = req.headers.get("user-agent") ?? null;

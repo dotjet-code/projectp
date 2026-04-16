@@ -2,42 +2,40 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 /**
- * 運営専用エリアのアクセス保護。
+ * アクセス保護。
  *
- * 保護対象:
- *   /admin/*
- *   /api/admin/*
- *   /api/debug/*
- *
- * 保護しない（公開）:
- *   /api/auth/google/*       … メンバーが YouTube 認可するための入口
- *   /api/batch/snapshot      … Vercel Cron が叩くバッチ（CRON_SECRET で別途認証）
- *   /login                   … 運営ログインフォーム
- *   /api/auth/login,logout   … 運営ログイン/ログアウト Route Handler
+ * /admin/*      → role='admin' 必須
+ * /member/*     → role='member' 必須
+ * /api/admin/*  → role='admin' 必須
+ * /api/member/* → role='member' 必須
  */
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // 公開パス
+  // 公開パス(認証不要)
   if (
     pathname.startsWith("/api/auth/google") ||
     pathname.startsWith("/api/auth/fan") ||
+    pathname.startsWith("/api/auth/member") ||
     pathname === "/api/batch/snapshot" ||
     pathname === "/api/batch/cleanup" ||
     pathname === "/login" ||
+    pathname === "/member/login" ||
     pathname.startsWith("/api/auth/login") ||
     pathname.startsWith("/api/auth/logout")
   ) {
     return NextResponse.next();
   }
 
-  // 保護対象かどうか
-  const needsAuth =
+  // 保護対象の判定
+  const isAdmin =
     pathname.startsWith("/admin") ||
     pathname.startsWith("/api/admin") ||
     pathname.startsWith("/api/debug");
+  const isMember =
+    pathname.startsWith("/member") || pathname.startsWith("/api/member");
 
-  if (!needsAuth) {
+  if (!isAdmin && !isMember) {
     return NextResponse.next();
   }
 
@@ -67,20 +65,29 @@ export async function middleware(req: NextRequest) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    // API なら 401 JSON、ページならログインへリダイレクト
     if (pathname.startsWith("/api/")) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     }
+    // ページなら該当ログイン画面へリダイレクト
     const loginUrl = req.nextUrl.clone();
-    loginUrl.pathname = "/login";
+    loginUrl.pathname = isMember ? "/member/login" : "/login";
     loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // 管理者ロール必須（ファン会員が /admin に入れないようにする）
   const role =
     (user.app_metadata as { role?: string } | null | undefined)?.role ?? null;
-  if (role !== "admin") {
+
+  // admin エリア → admin ロール必須
+  if (isAdmin && role !== "admin") {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    }
+    return new NextResponse("Forbidden", { status: 403 });
+  }
+
+  // member エリア → member ロール必須 (admin もアクセス可)
+  if (isMember && role !== "member" && role !== "admin") {
     if (pathname.startsWith("/api/")) {
       return NextResponse.json({ error: "forbidden" }, { status: 403 });
     }
@@ -96,6 +103,8 @@ export const config = {
     "/api/admin/:path*",
     "/api/debug/:path*",
     "/api/auth/:path*",
+    "/member/:path*",
+    "/api/member/:path*",
     "/login",
   ],
 };
