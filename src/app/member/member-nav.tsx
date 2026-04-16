@@ -2,17 +2,32 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const items = [
   { label: "ダッシュボード", href: "/member/dashboard" },
   { label: "収支提出", href: "/member/submissions" },
+  { label: "お知らせ", href: "/member/notifications" },
+  { label: "スケジュール", href: "/member/schedule" },
 ];
 
 export function MemberNav({ memberName }: { memberName?: string }) {
   const pathname = usePathname();
   const router = useRouter();
   const [loggingOut, setLoggingOut] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    fetch("/api/member/notifications")
+      .then((r) => r.json())
+      .then((j) => {
+        const unread = ((j.notifications ?? []) as { isRead: boolean }[]).filter(
+          (n) => !n.isRead
+        ).length;
+        setUnreadCount(unread);
+      })
+      .catch(() => {});
+  }, [pathname]);
 
   async function onLogout() {
     setLoggingOut(true);
@@ -30,17 +45,24 @@ export function MemberNav({ memberName }: { memberName?: string }) {
         <nav className="flex items-center gap-1 overflow-x-auto rounded-full border border-gray-200 bg-white p-1">
           {items.map((it) => {
             const active = pathname.startsWith(it.href);
+            const badge =
+              it.href === "/member/notifications" && unreadCount > 0;
             return (
               <Link
                 key={it.href}
                 href={it.href}
-                className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-bold transition-colors ${
+                className={`relative whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-bold transition-colors ${
                   active
                     ? "bg-black text-white"
                     : "text-gray-600 hover:bg-gray-100"
                 }`}
               >
                 {it.label}
+                {badge && (
+                  <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[16px] h-[16px] px-1 rounded-full bg-red-500 text-white text-[9px] font-bold border border-white">
+                    {unreadCount}
+                  </span>
+                )}
               </Link>
             );
           })}
