@@ -598,8 +598,10 @@ export function PredictionClient({
       {loaded && draftRestored && (
         <section className="mx-auto max-w-[964px] px-4 mt-4">
           <div className="rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-xs text-emerald-900">
-            ✨ 前回の選択を復元しました。
-            {!isLoggedIn && " 会員登録後に同じ内容で提出できます。"}
+            ✨ まだ予想は未提出です。
+            {isLoggedIn
+              ? " 下の「予想を提出する」ボタンを押して確定させてください。"
+              : " 会員登録を完了してから提出ボタンを押してください。"}
           </div>
         </section>
       )}

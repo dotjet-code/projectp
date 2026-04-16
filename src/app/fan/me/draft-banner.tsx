@@ -43,13 +43,13 @@ export function PredictionDraftBanner() {
         className="block rounded-2xl border-2 border-primary/30 bg-gradient-to-r from-[#ecfeff] to-[#f0f9ff] p-5 shadow-sm hover:shadow-md transition-shadow"
       >
         <p className="text-[10px] font-semibold tracking-wider text-primary-dark">
-          ✨ 予想の続きがあります
+          ⚠️ 予想はまだ未提出です
         </p>
         <p className="mt-1 text-sm font-bold text-foreground">
-          予想ページで前回選んだ内容が保存されています
+          こちらを押して予想を確定させてください
         </p>
         <p className="mt-2 text-xs font-bold text-primary-dark">
-          予想ページで提出する →
+          予想ページへ →
         </p>
       </Link>
     </section>
