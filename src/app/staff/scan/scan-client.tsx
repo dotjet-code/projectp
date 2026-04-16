@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { Html5Qrcode } from "html5-qrcode";
 
 type RedeemEntry = {
   code: string;
@@ -20,62 +21,106 @@ export function StaffScanClient() {
   const [busy, setBusy] = useState(false);
   const [history, setHistory] = useState<RedeemEntry[]>([]);
   const [tokenValid, setTokenValid] = useState<boolean | null>(null);
+  const [scanning, setScanning] = useState(false);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const scannerContainerId = "qr-reader";
+
+  const doRedeem = useCallback(
+    async (redeemCode: string) => {
+      if (!redeemCode.trim() || !staffToken || busy) return;
+      setBusy(true);
+      try {
+        const res = await fetch("/api/staff/redeem", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ staffToken, code: redeemCode }),
+        });
+        const j = await res.json();
+        if (res.ok) {
+          const label =
+            j.reward?.rewardType === "cheki_free"
+              ? "チェキ券1枚無料"
+              : "ライブ会場投票ボーナス票";
+          setHistory((h) => [
+            {
+              code: redeemCode,
+              status: "ok",
+              message: `消込OK: ${label}`,
+              fan: {
+                displayName: j.reward?.displayName ?? null,
+                email: j.reward?.email ?? null,
+              },
+              rewardType: j.reward?.rewardType,
+            },
+            ...h,
+          ]);
+        } else {
+          if (res.status === 403) setTokenValid(false);
+          setHistory((h) => [
+            {
+              code: redeemCode,
+              status: "error",
+              message: j.error ?? "エラー",
+            },
+            ...h,
+          ]);
+        }
+      } catch {
+        setHistory((h) => [
+          { code: redeemCode, status: "error", message: "通信エラー" },
+          ...h,
+        ]);
+      } finally {
+        setBusy(false);
+        setCode("");
+      }
+    },
+    [staffToken, busy]
+  );
 
   // 自動消込 (QR から code 付きで来た場合)
   useEffect(() => {
     if (autoCode && staffToken) {
       doRedeem(autoCode);
     }
-    // トークン検証
     if (staffToken) {
-      setTokenValid(true); // API が 403 返したら false にする
+      setTokenValid(true);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function doRedeem(redeemCode: string) {
-    if (!redeemCode.trim() || !staffToken || busy) return;
-    setBusy(true);
+  async function startScanner() {
+    setScanning(true);
     try {
-      const res = await fetch("/api/staff/redeem", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ staffToken, code: redeemCode }),
-      });
-      const j = await res.json();
-      if (res.ok) {
-        const label =
-          j.reward?.rewardType === "cheki_free"
-            ? "チェキ券1枚無料"
-            : "ライブ会場投票ボーナス票";
-        setHistory((h) => [
-          {
-            code: redeemCode,
-            status: "ok",
-            message: `消込OK: ${label}`,
-            fan: {
-              displayName: j.reward?.displayName ?? null,
-              email: j.reward?.email ?? null,
-            },
-            rewardType: j.reward?.rewardType,
-          },
-          ...h,
-        ]);
-      } else {
-        if (res.status === 403) setTokenValid(false);
-        setHistory((h) => [
-          { code: redeemCode, status: "error", message: j.error ?? "エラー" },
-          ...h,
-        ]);
+      const scanner = new Html5Qrcode(scannerContainerId);
+      scannerRef.current = scanner;
+      await scanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        (decodedText) => {
+          // QR 読み取り成功 → 即消込
+          stopScanner();
+          doRedeem(decodedText.trim());
+        },
+        () => {
+          // スキャン中(何も読めてない)
+        }
+      );
+    } catch (err) {
+      console.error("Camera error:", err);
+      setScanning(false);
+    }
+  }
+
+  async function stopScanner() {
+    setScanning(false);
+    if (scannerRef.current) {
+      try {
+        await scannerRef.current.stop();
+      } catch {
+        // ignore
       }
-    } catch {
-      setHistory((h) => [
-        { code: redeemCode, status: "error", message: "通信エラー" },
-        ...h,
-      ]);
-    } finally {
-      setBusy(false);
-      setCode("");
+      scannerRef.current = null;
     }
   }
 
@@ -102,9 +147,12 @@ export function StaffScanClient() {
       <main className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div className="text-center">
           <p className="text-5xl mb-3">⏰</p>
-          <p className="text-lg font-bold text-foreground">トークンの有効期限切れ</p>
+          <p className="text-lg font-bold text-foreground">
+            トークンの有効期限切れ
+          </p>
           <p className="mt-2 text-sm text-muted">
-            このスタッフ URL は期限切れです。運営に新しい URL を発行してもらってください。
+            このスタッフ URL は期限切れです。運営に新しい URL
+            を発行してもらってください。
           </p>
         </div>
       </main>
@@ -121,14 +169,47 @@ export function StaffScanClient() {
       </div>
 
       <div className="mx-auto max-w-md px-4 py-6 space-y-4">
-        {/* 入力フォーム */}
+        {/* QR スキャンボタン */}
+        {!scanning ? (
+          <button
+            onClick={startScanner}
+            className="w-full rounded-xl bg-gradient-to-r from-primary to-primary-blue py-4 text-base font-bold text-white shadow-lg"
+          >
+            📷 QR コードをスキャン
+          </button>
+        ) : (
+          <div className="space-y-2">
+            <div
+              id={scannerContainerId}
+              className="rounded-xl overflow-hidden"
+            />
+            <button
+              onClick={stopScanner}
+              className="w-full rounded-xl border border-gray-300 bg-white py-2 text-sm font-bold text-gray-700"
+            >
+              カメラを閉じる
+            </button>
+          </div>
+        )}
+
+        {/* 手入力フォーム */}
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-200" />
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-gray-50 px-3 text-[10px] text-muted">
+              または手入力
+            </span>
+          </div>
+        </div>
+
         <form onSubmit={onSubmit} className="flex gap-2">
           <input
             type="text"
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
-            autoFocus
-            placeholder="景品コードを入力 / スキャン"
+            placeholder="景品コードを入力"
             className="flex-1 rounded-xl border border-gray-300 px-4 py-3 text-center text-lg font-mono uppercase tracking-wider"
           />
           <button
@@ -139,10 +220,6 @@ export function StaffScanClient() {
             {busy ? "..." : "消込"}
           </button>
         </form>
-
-        <p className="text-[10px] text-muted text-center">
-          ファンのスマホに表示された QR コードをカメラで読み取るか、コードを手入力してください
-        </p>
 
         {/* 履歴 */}
         <div className="space-y-2">
@@ -155,15 +232,13 @@ export function StaffScanClient() {
                   : "bg-red-50 border-red-200"
               }`}
             >
-              <div className="flex items-center justify-between">
-                <span
-                  className={`text-lg font-bold ${
-                    h.status === "ok" ? "text-emerald-800" : "text-red-700"
-                  }`}
-                >
-                  {h.status === "ok" ? "✓" : "✕"} {h.message}
-                </span>
-              </div>
+              <span
+                className={`text-lg font-bold ${
+                  h.status === "ok" ? "text-emerald-800" : "text-red-700"
+                }`}
+              >
+                {h.status === "ok" ? "✓" : "✕"} {h.message}
+              </span>
               {h.fan && (
                 <div className="mt-2">
                   <p className="text-base font-bold text-foreground">
