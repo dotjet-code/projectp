@@ -29,6 +29,15 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // デバッグ: redeemReward 前に DB の生データを確認
+  const { createAdminClient } = await import("@/lib/supabase/admin");
+  const dbg = createAdminClient();
+  const { data: dbgRow } = await dbg
+    .from("prediction_rewards")
+    .select("id, reward_code, redeemed_at, redeemed_by")
+    .eq("reward_code", code.trim().toUpperCase())
+    .maybeSingle();
+
   const result = await redeemReward({
     rewardCode: code,
     redeemedBy: "staff:" + staffToken.slice(0, 8),
@@ -47,7 +56,16 @@ export async function POST(req: NextRequest) {
         : result.reason === "already_redeemed"
         ? "既に消込済みです"
         : "有効期限切れです";
-    return NextResponse.json({ error: msg, reason: result.reason }, { status });
+    // デバッグ情報を含める
+    return NextResponse.json({
+      error: msg,
+      reason: result.reason,
+      _debug: {
+        codeReceived: code,
+        codeLookup: code.trim().toUpperCase(),
+        dbRowBeforeRedeem: dbgRow,
+      },
+    }, { status });
   }
 
   await logAudit({
