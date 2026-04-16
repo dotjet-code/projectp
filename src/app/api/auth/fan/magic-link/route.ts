@@ -20,6 +20,10 @@ export async function POST(req: NextRequest) {
   const email = body?.email;
   const turnstileToken =
     typeof body?.turnstileToken === "string" ? body.turnstileToken : null;
+  // next は app 内部の相対パスのみ許可
+  const rawNext = typeof body?.next === "string" ? body.next : "";
+  const next =
+    rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/fan/me";
 
   if (typeof email !== "string" || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return NextResponse.json({ error: "invalid email" }, { status: 400 });
@@ -80,7 +84,7 @@ export async function POST(req: NextRequest) {
     email,
     options: {
       shouldCreateUser: true,
-      emailRedirectTo: `${origin}/auth/callback?next=/fan/me`,
+      emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
     },
   });
 

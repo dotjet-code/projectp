@@ -14,6 +14,7 @@ import {
 } from "@/lib/projectp/prediction";
 import type { BetKey } from "@/lib/projectp/prediction";
 import { DisplayNameForm, FanMeActions } from "./actions";
+import { PredictionDraftBanner } from "./draft-banner";
 
 export const dynamic = "force-dynamic";
 
@@ -70,6 +71,8 @@ export default async function FanMePage() {
             マイページ
           </h1>
         </section>
+
+        <PredictionDraftBanner />
 
         <section className="mx-auto max-w-[520px] px-4">
           <div className="rounded-2xl bg-white/80 border border-white/80 p-6 shadow-sm space-y-4">

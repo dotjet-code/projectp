@@ -322,6 +322,59 @@ function BetSection({
 // Main
 // =====================================================================
 
+const DRAFT_KEY_PREFIX = "projectp.prediction_draft.";
+
+function loadDraft(stageId: string): Bets | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(DRAFT_KEY_PREFIX + stageId);
+    if (!raw) return null;
+    const obj = JSON.parse(raw) as Partial<Bets>;
+    const sane: Bets = {
+      fukusho: Array.isArray(obj.fukusho) ? obj.fukusho.slice(0, 1) : [null],
+      tansho: Array.isArray(obj.tansho) ? obj.tansho.slice(0, 1) : [null],
+      nirenpuku: Array.isArray(obj.nirenpuku)
+        ? obj.nirenpuku.slice(0, 2)
+        : [null, null],
+      nirentan: Array.isArray(obj.nirentan)
+        ? obj.nirentan.slice(0, 2)
+        : [null, null],
+      sanrenpuku: Array.isArray(obj.sanrenpuku)
+        ? obj.sanrenpuku.slice(0, 3)
+        : [null, null, null],
+      sanrentan: Array.isArray(obj.sanrentan)
+        ? obj.sanrentan.slice(0, 3)
+        : [null, null, null],
+    };
+    // 何かしら埋まっていれば有効
+    const hasAny = Object.values(sane).some((arr) => arr.some((x) => x != null));
+    return hasAny ? sane : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveDraft(stageId: string, bets: Bets) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(
+      DRAFT_KEY_PREFIX + stageId,
+      JSON.stringify(bets)
+    );
+  } catch {
+    // ignore
+  }
+}
+
+function clearDraft(stageId: string) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(DRAFT_KEY_PREFIX + stageId);
+  } catch {
+    // ignore
+  }
+}
+
 export function PredictionClient({
   members,
   stage,
@@ -341,6 +394,9 @@ export function PredictionClient({
   const [submitting, setSubmitting] = useState(false);
   const [flash, setFlash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [draftRestored, setDraftRestored] = useState(false);
+
+  const stageId = stage?.id ?? null;
 
   useEffect(() => {
     (async () => {
@@ -354,6 +410,7 @@ export function PredictionClient({
         setCloseAt(j.stage?.predictionsCloseAt ?? null);
         const p: Prediction | null = j.myPrediction;
         if (p) {
+          // サーバーに既存予想がある場合はそれを優先(ドラフトより信頼できる)
           setEntryType(p.entryType);
           setBets({
             fukusho: [p.fukusho[0] ?? null],
@@ -371,6 +428,15 @@ export function PredictionClient({
               p.sanrentan[2] ?? null,
             ],
           });
+          // サーバーに保存されていれば localStorage の下書きは不要
+          if (j.stage?.id) clearDraft(j.stage.id);
+        } else if (j.stage?.id) {
+          // サーバー無し → localStorage から復元を試みる
+          const draft = loadDraft(j.stage.id);
+          if (draft) {
+            setBets(draft);
+            setDraftRestored(true);
+          }
         }
       } catch {
         // ignore
@@ -379,6 +445,15 @@ export function PredictionClient({
       }
     })();
   }, []);
+
+  // bets が変化するたびに下書きを保存(ロード完了後のみ)
+  useEffect(() => {
+    if (!loaded || !stageId) return;
+    const hasAny = Object.values(bets).some((arr) => arr.some((x) => x != null));
+    if (hasAny) {
+      saveDraft(stageId, bets);
+    }
+  }, [bets, loaded, stageId]);
 
   function makeSelect(key: BetKey) {
     return (member: PublicMember) => {
@@ -428,6 +503,9 @@ export function PredictionClient({
       const j = await res.json();
       if (!res.ok) throw new Error(j.error ?? `HTTP ${res.status}`);
       setFlash("予想を提出しました ✓");
+      // 提出完了したらドラフトは不要
+      if (stageId) clearDraft(stageId);
+      setDraftRestored(false);
       const g = await fetch("/api/public/prediction", { cache: "no-store" });
       if (g.ok) {
         const data = await g.json();
@@ -513,6 +591,16 @@ export function PredictionClient({
           >
             🎁 <b>会員登録すると景品対象に</b> ── 的中するとライブ会場投票のボーナス票やチェキ券プレゼント。メールアドレスだけで登録できます →
           </a>
+        </section>
+      )}
+
+      {/* Draft restored banner */}
+      {loaded && draftRestored && (
+        <section className="mx-auto max-w-[964px] px-4 mt-4">
+          <div className="rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-xs text-emerald-900">
+            ✨ 前回の選択を復元しました。
+            {!isLoggedIn && " 会員登録後に同じ内容で提出できます。"}
+          </div>
         </section>
       )}
 

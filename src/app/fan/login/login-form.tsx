@@ -21,6 +21,10 @@ declare global {
 export function FanLoginForm() {
   const params = useSearchParams();
   const paramError = params.get("error");
+  // 安全のため、許可する next のパスを絞る
+  const rawNext = params.get("next") ?? "";
+  const next =
+    rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "";
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
@@ -52,7 +56,7 @@ export function FanLoginForm() {
       const res = await fetch("/api/auth/fan/magic-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, turnstileToken }),
+        body: JSON.stringify({ email, turnstileToken, next }),
       });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
