@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getMemberStageHistory } from "@/lib/projectp/stage";
 import { InviteButton } from "./invite-button";
+import { CopyInput } from "./copy-input";
 
 export const dynamic = "force-dynamic";
 
@@ -132,13 +133,7 @@ export default async function AdminMemberDetailPage({
           <p>
             <span className="font-bold text-gray-500">認可 URL:</span>
           </p>
-          <input
-            type="text"
-            readOnly
-            value={connectUrl}
-            className="w-full rounded border border-gray-200 bg-gray-50 px-2 py-1 text-[10px] font-mono"
-            onFocus={(e) => e.currentTarget.select()}
-          />
+          <CopyInput value={connectUrl} />
           <p>
             <span className="font-bold text-gray-500">
               直近動画IDキャッシュ:
