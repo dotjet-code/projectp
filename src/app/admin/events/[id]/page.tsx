@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getLiveEvent, getEventCodes, getEventTally } from "@/lib/projectp/live-event";
 import { EventActions } from "./event-actions";
+import { CopyInput } from "../../members/[id]/copy-input";
 
 export const dynamic = "force-dynamic";
 
@@ -87,13 +88,7 @@ export default async function AdminEventDetailPage({
       {/* Vote URL */}
       <section className="mb-8 mt-6">
         <h2 className="text-sm font-bold text-gray-700 mb-2">投票ページ URL</h2>
-        <input
-          type="text"
-          readOnly
-          value={voteUrl}
-          className="w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 text-xs font-mono"
-          onFocus={(e) => e.currentTarget.select()}
-        />
+        <CopyInput value={voteUrl} />
         <p className="mt-1 text-[10px] text-muted">
           このURLからQRコードを作成してください。来場者はここにアクセスして投票します。
         </p>
