@@ -89,28 +89,42 @@ export function StaffScanClient() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function startScanner() {
+  function startScanner() {
     setScanning(true);
-    try {
-      const scanner = new Html5Qrcode(scannerContainerId);
-      scannerRef.current = scanner;
-      await scanner.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        (decodedText) => {
-          // QR 読み取り成功 → 即消込
-          stopScanner();
-          doRedeem(decodedText.trim());
-        },
-        () => {
-          // スキャン中(何も読めてない)
-        }
-      );
-    } catch (err) {
-      console.error("Camera error:", err);
-      setScanning(false);
-    }
   }
+
+  // scanning が true になったら DOM 更新後にカメラ起動
+  useEffect(() => {
+    if (!scanning) return;
+    let cancelled = false;
+
+    // DOM にコンテナが描画されるのを待つ
+    const timer = setTimeout(async () => {
+      if (cancelled) return;
+      try {
+        const scanner = new Html5Qrcode(scannerContainerId);
+        scannerRef.current = scanner;
+        await scanner.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 250, height: 250 } },
+          (decodedText) => {
+            stopScanner();
+            doRedeem(decodedText.trim());
+          },
+          () => {}
+        );
+      } catch (err) {
+        console.error("Camera error:", err);
+        setScanning(false);
+      }
+    }, 100);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scanning]);
 
   async function stopScanner() {
     setScanning(false);
