@@ -247,7 +247,29 @@ export async function validateCode(
       0
     );
 
-    const multiplier = calcBonusMultiplier(totalScore, event.bonusTiers);
+    let multiplier = calcBonusMultiplier(totalScore, event.bonusTiers);
+
+    // live_vote_bonus 景品を持っていれば倍率 +1 & 自動消込
+    const { data: voteRewards } = await supabase
+      .from("prediction_rewards")
+      .select("id, reward_code")
+      .eq("user_id", fanUserId)
+      .eq("reward_type", "live_vote_bonus")
+      .is("redeemed_at", null);
+    const activeReward = ((voteRewards ?? []) as { id: number; reward_code: string }[])[0];
+    if (activeReward) {
+      multiplier += 1;
+      // 自動消込
+      await supabase
+        .from("prediction_rewards")
+        .update({
+          redeemed_at: new Date().toISOString(),
+          redeemed_note: `auto:event_code_${codeRow.id}`,
+        })
+        .eq("id", activeReward.id)
+        .is("redeemed_at", null);
+    }
+
     const newTickets = event.baseTickets * multiplier;
 
     // 保存

@@ -78,6 +78,7 @@ export async function POST(req: NextRequest) {
       codeId: result.codeRow.id,
       bonusMultiplier: result.codeRow.bonusMultiplier,
       bonusApplied: result.bonusApplied,
+      baseTickets: result.event.baseTickets,
     });
   }
 
