@@ -42,12 +42,11 @@ export async function StageTrendChart({ memberName }: { memberName: string }) {
         <p className="text-xs text-muted mb-3">
           累計ポイント推移（1日 1スナップショット）
         </p>
-        {/* グラフ: max-w + aspect-ratio で横伸びを防止 */}
-        <div className="mx-auto max-w-[600px]" style={{ aspectRatio: "2 / 1" }}>
+        <div style={{ aspectRatio: "3 / 1" }}>
           <svg
-            viewBox={`-2 -2 ${w + 4} ${h + 14}`}
+            viewBox={`0 0 ${w} ${h + 10}`}
             className="size-full"
-            preserveAspectRatio="xMidYMid meet"
+            preserveAspectRatio="none"
           >
             {/* Grid */}
             {[0, 0.25, 0.5, 0.75, 1].map((t) => {
