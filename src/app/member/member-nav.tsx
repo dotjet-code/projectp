@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 
 const items = [
   { label: "ダッシュボード", href: "/member/dashboard" },
+  { label: "分析", href: "/member/performance" },
+  { label: "ファンの声", href: "/member/fans" },
   { label: "収支提出", href: "/member/submissions" },
   { label: "お知らせ", href: "/member/notifications" },
   { label: "スケジュール", href: "/member/schedule" },
