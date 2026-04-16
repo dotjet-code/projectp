@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { AdminNav } from "../admin-nav";
 import { SubmissionReviewButton } from "./submission-review-button";
 
 export const dynamic = "force-dynamic";
@@ -78,7 +77,6 @@ export default async function AdminSubmissionsPage() {
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-12">
-      <AdminNav current="submissions" />
       <div className="mb-2 flex items-center justify-between">
         <h1 className="text-2xl font-bold">配信収支</h1>
         {pendingTotal > 0 && (

@@ -2,7 +2,6 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import type { Member } from "@/lib/supabase/types";
 import { CreateMemberForm } from "./create-member-form";
 import { MemberRow } from "./member-row";
-import { AdminNav } from "../admin-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -52,7 +51,6 @@ export default async function AdminConnectPage({
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-12">
-      <AdminNav current="connect" />
       <h1 className="text-2xl font-bold mb-1">メンバー管理</h1>
       <p className="text-sm text-gray-600 mb-8">
         各メンバーの YouTube アカウントと連携し、バッチが Analytics API を叩けるようにします。

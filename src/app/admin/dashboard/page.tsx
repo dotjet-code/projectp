@@ -2,7 +2,6 @@ import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { listStages, type Stage } from "@/lib/projectp/stage";
 import { listRecentAuditLogs } from "@/lib/projectp/audit";
-import { AdminNav } from "../admin-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -87,7 +86,6 @@ export default async function AdminDashboardPage() {
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-12">
-      <AdminNav current="stages" />
       <h1 className="text-2xl font-bold mb-1">ダッシュボード</h1>
       <p className="text-sm text-gray-600 mb-8">
         Series 全体の進行状況を俯瞰します。

@@ -1,5 +1,4 @@
 import { listStages } from "@/lib/projectp/stage";
-import { AdminNav } from "../admin-nav";
 import { CreateStageForm } from "./create-stage-form";
 import { StageCard } from "./stage-card";
 
@@ -12,7 +11,6 @@ export default async function AdminStagesPage() {
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-12">
-      <AdminNav current="stages" />
       <h1 className="text-2xl font-bold mb-1">Stage 管理</h1>
       <p className="text-sm text-gray-600 mb-8">
         特番から次の特番までが1つの Stage。Series は半年の括り。

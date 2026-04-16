@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getMemberStageHistory } from "@/lib/projectp/stage";
-import { AdminNav } from "../../admin-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -72,7 +71,6 @@ export default async function AdminMemberDetailPage({
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-12">
-      <AdminNav current="connect" />
       <div className="mb-2 flex items-center justify-between">
         <h1 className="text-2xl font-bold">{m.name}</h1>
         <Link

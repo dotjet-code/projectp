@@ -1,4 +1,3 @@
-import { AdminNav } from "../admin-nav";
 import {
   detectIpClusters,
   detectRateLimitHotspots,
@@ -19,8 +18,6 @@ export default async function AnomaliesPage() {
 
   return (
     <main className="mx-auto max-w-[1000px] px-6 py-8">
-      <AdminNav current="anomalies" />
-
       <h1 className="text-2xl font-extrabold mb-2">不正検知</h1>
       <p className="text-xs text-muted mb-6">
         ファン会員と景品まわりの異常兆候。確証ではなく <b>調査の起点</b> として使ってください。

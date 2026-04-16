@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { listLiveEvents } from "@/lib/projectp/live-event";
-import { AdminNav } from "../admin-nav";
 import { CreateEventForm } from "./create-event-form";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +9,6 @@ export default async function AdminEventsPage() {
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-12">
-      <AdminNav current="stages" />
       <h1 className="text-2xl font-bold mb-1">ライブイベント管理</h1>
       <p className="text-sm text-gray-600 mb-8">
         会場での投票用イベントを作成・管理します。

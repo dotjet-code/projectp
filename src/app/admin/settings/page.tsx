@@ -1,4 +1,3 @@
-import { AdminNav } from "../admin-nav";
 import { ChangePasswordForm } from "./change-password-form";
 
 export const dynamic = "force-dynamic";
@@ -6,7 +5,6 @@ export const dynamic = "force-dynamic";
 export default function AdminSettingsPage() {
   return (
     <main className="mx-auto max-w-3xl px-6 py-12">
-      <AdminNav current="stages" />
       <h1 className="text-2xl font-bold mb-1">設定</h1>
       <p className="text-sm text-gray-600 mb-8">
         運営アカウントの設定を変更します。

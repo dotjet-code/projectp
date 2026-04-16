@@ -7,7 +7,6 @@ import {
   listStages,
   type Stage,
 } from "@/lib/projectp/stage";
-import { AdminNav } from "../admin-nav";
 import { RunBatchButton } from "./run-batch-button";
 
 export const dynamic = "force-dynamic";
@@ -177,7 +176,6 @@ export default async function AdminStatsPage({
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-12">
-      <AdminNav current="stats" />
       <div className="mb-2 flex items-center justify-between">
         <h1 className="text-2xl font-bold">ポイント状況</h1>
         <RunBatchButton />

@@ -1,42 +1,33 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { LogoutButton } from "./logout-button";
 
-/**
- * 管理画面共通ヘッダー。各 /admin ページの上部に置く。
- * 現状ページは active ハイライト付きで表示する。
- */
-type NavKey =
-  | "stages"
-  | "connect"
-  | "submissions"
-  | "stats"
-  | "rewards"
-  | "fans"
-  | "anomalies"
-  | "settings";
-
-const items: { key: NavKey; label: string; href: string }[] = [
-  { key: "stages", label: "Stage", href: "/admin/stages" },
-  { key: "connect", label: "メンバー", href: "/admin/connect" },
-  { key: "submissions", label: "配信収支", href: "/admin/submissions" },
-  { key: "stats", label: "ポイント", href: "/admin/stats" },
-  { key: "rewards", label: "景品", href: "/admin/rewards" },
-  { key: "fans", label: "ファン", href: "/admin/fans" },
-  { key: "anomalies", label: "不正検知", href: "/admin/anomalies" },
-  { key: "settings", label: "設定", href: "/admin/settings" },
+const items = [
+  { label: "Stage", href: "/admin/stages" },
+  { label: "メンバー", href: "/admin/connect" },
+  { label: "配信収支", href: "/admin/submissions" },
+  { label: "ポイント", href: "/admin/stats" },
+  { label: "景品", href: "/admin/rewards" },
+  { label: "ファン", href: "/admin/fans" },
+  { label: "不正検知", href: "/admin/anomalies" },
+  { label: "設定", href: "/admin/settings" },
 ];
 
-export function AdminNav({ current }: { current: NavKey }) {
+export function AdminNav() {
+  const pathname = usePathname();
+
   return (
-    <div className="mb-6 flex items-center justify-between gap-4">
-      <nav className="flex items-center gap-1 rounded-full border border-gray-200 bg-white p-1">
+    <div className="flex items-center justify-between gap-4">
+      <nav className="flex items-center gap-1 overflow-x-auto rounded-full border border-gray-200 bg-white p-1">
         {items.map((it) => {
-          const active = it.key === current;
+          const active = pathname.startsWith(it.href);
           return (
             <Link
-              key={it.key}
+              key={it.href}
               href={it.href}
-              className={`rounded-full px-4 py-1.5 text-xs font-bold transition-colors ${
+              className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-bold transition-colors ${
                 active
                   ? "bg-black text-white"
                   : "text-gray-600 hover:bg-gray-100"

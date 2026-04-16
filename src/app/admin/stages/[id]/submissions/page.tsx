@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStageById } from "@/lib/projectp/stage";
-import { AdminNav } from "../../../admin-nav";
 import { SubmissionActions } from "./submission-actions";
 
 export const dynamic = "force-dynamic";
@@ -73,7 +72,6 @@ export default async function AdminSubmissionsPage({
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-12">
-      <AdminNav current="stages" />
       <div className="mb-2 flex items-center justify-between">
         <h1 className="text-2xl font-bold">収支スクショ審査</h1>
         <Link

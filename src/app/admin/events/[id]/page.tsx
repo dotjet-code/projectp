@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getLiveEvent, getEventCodes, getEventTally } from "@/lib/projectp/live-event";
-import { AdminNav } from "../../admin-nav";
 import { EventActions } from "./event-actions";
 
 export const dynamic = "force-dynamic";
@@ -30,7 +29,6 @@ export default async function AdminEventDetailPage({
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-12">
-      <AdminNav current="stages" />
       <div className="mb-2 flex items-center justify-between">
         <h1 className="text-2xl font-bold">{event.title}</h1>
         <Link

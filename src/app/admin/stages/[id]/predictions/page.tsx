@@ -12,7 +12,6 @@ import {
 } from "@/lib/projectp/prediction";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { members as dummyMembers } from "@/lib/data";
-import { AdminNav } from "../../../admin-nav";
 import { RescoreButton } from "./rescore-button";
 
 export const dynamic = "force-dynamic";
@@ -75,7 +74,6 @@ export default async function AdminPredictionsPage({
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-12">
-      <AdminNav current="stages" />
       <div className="mb-2 flex items-center justify-between">
         <h1 className="text-2xl font-bold">予想集計</h1>
         <Link
