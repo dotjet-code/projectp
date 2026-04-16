@@ -3,6 +3,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
 // =====================================================================
 // Types
 // =====================================================================
+export type BonusTier = {
+  minScore: number;
+  multiplier: number;
+};
+
 export type LiveEvent = {
   id: string;
   periodId: string | null;
@@ -11,6 +16,8 @@ export type LiveEvent = {
   venue: string | null;
   status: "draft" | "open" | "closed";
   defaultTickets: number;
+  baseTickets: number;
+  bonusTiers: BonusTier[];
   createdAt: string;
 };
 
@@ -21,6 +28,8 @@ export type EventCode = {
   ticketsTotal: number;
   ticketsUsed: number;
   activatedAt: string | null;
+  userId: string | null;
+  bonusMultiplier: number;
   createdAt: string;
 };
 
@@ -60,6 +69,8 @@ export async function createLiveEvent(input: {
   venue?: string;
   periodId?: string;
   defaultTickets?: number;
+  baseTickets?: number;
+  bonusTiers?: BonusTier[];
 }): Promise<LiveEvent> {
   const supabase = createAdminClient();
   const { data, error } = await supabase
@@ -69,9 +80,45 @@ export async function createLiveEvent(input: {
       event_date: input.eventDate,
       venue: input.venue ?? null,
       period_id: input.periodId ?? null,
-      default_tickets: input.defaultTickets ?? 3,
+      default_tickets: input.defaultTickets ?? input.baseTickets ?? 3,
+      base_tickets: input.baseTickets ?? input.defaultTickets ?? 3,
+      bonus_tiers: input.bonusTiers ?? [
+        { minScore: 30, multiplier: 2 },
+        { minScore: 50, multiplier: 3 },
+      ],
       status: "draft",
     })
+    .select()
+    .single();
+  if (error) throw new Error(error.message);
+  return mapEvent(data);
+}
+
+export async function updateLiveEvent(
+  id: string,
+  patch: {
+    title?: string;
+    eventDate?: string;
+    venue?: string | null;
+    baseTickets?: number;
+    bonusTiers?: BonusTier[];
+  }
+): Promise<LiveEvent> {
+  const supabase = createAdminClient();
+  const update: Record<string, unknown> = {};
+  if (patch.title !== undefined) update.title = patch.title;
+  if (patch.eventDate !== undefined) update.event_date = patch.eventDate;
+  if (patch.venue !== undefined) update.venue = patch.venue;
+  if (patch.baseTickets !== undefined) {
+    update.base_tickets = patch.baseTickets;
+    update.default_tickets = patch.baseTickets;
+  }
+  if (patch.bonusTiers !== undefined) update.bonus_tiers = patch.bonusTiers;
+
+  const { data, error } = await supabase
+    .from("live_events")
+    .update(update)
+    .eq("id", id)
     .select()
     .single();
   if (error) throw new Error(error.message);
@@ -151,11 +198,16 @@ export async function getEventCodes(eventId: string): Promise<EventCode[]> {
 
 /**
  * コードを検証してイベント情報と残りチケット数を返す。
+ * fanUserId が渡された場合、初回有効化時にボーナス倍率を計算して保存する。
  */
-export async function validateCode(code: string): Promise<{
+export async function validateCode(
+  code: string,
+  fanUserId?: string | null
+): Promise<{
   event: LiveEvent;
   codeRow: EventCode;
   ticketsRemaining: number;
+  bonusApplied: boolean;
 } | null> {
   const supabase = createAdminClient();
   const { data, error } = await supabase
@@ -172,15 +224,53 @@ export async function validateCode(code: string): Promise<{
     tickets_total: number;
     tickets_used: number;
     activated_at: string | null;
+    user_id: string | null;
+    bonus_multiplier: number;
     created_at: string;
     live_events: Record<string, unknown>;
   };
 
   const event = mapEvent(row.live_events);
-  const codeRow = mapCode(row);
-  const ticketsRemaining = codeRow.ticketsTotal - codeRow.ticketsUsed;
+  let codeRow = mapCode(row);
+  let bonusApplied = false;
 
-  return { event, codeRow, ticketsRemaining };
+  // 初回有効化 かつ ファン会員 → ボーナス計算
+  if (!codeRow.activatedAt && fanUserId && !codeRow.userId) {
+    // ファンの通算スコアを取得
+    const { data: preds } = await supabase
+      .from("predictions")
+      .select("total_score")
+      .eq("user_id", fanUserId)
+      .not("total_score", "is", null);
+    const totalScore = ((preds ?? []) as { total_score: number | null }[]).reduce(
+      (s, r) => s + (r.total_score ?? 0),
+      0
+    );
+
+    const multiplier = calcBonusMultiplier(totalScore, event.bonusTiers);
+    const newTickets = event.baseTickets * multiplier;
+
+    // 保存
+    await supabase
+      .from("event_codes")
+      .update({
+        user_id: fanUserId,
+        bonus_multiplier: multiplier,
+        tickets_total: newTickets,
+      })
+      .eq("id", codeRow.id);
+
+    codeRow = {
+      ...codeRow,
+      userId: fanUserId,
+      bonusMultiplier: multiplier,
+      ticketsTotal: newTickets,
+    };
+    bonusApplied = multiplier > 1;
+  }
+
+  const ticketsRemaining = codeRow.ticketsTotal - codeRow.ticketsUsed;
+  return { event, codeRow, ticketsRemaining, bonusApplied };
 }
 
 /**
@@ -274,6 +364,19 @@ export async function getEventTally(
 // =====================================================================
 // mappers
 // =====================================================================
+function parseBonusTiers(v: unknown): BonusTier[] {
+  if (!Array.isArray(v)) return [];
+  return v
+    .filter(
+      (t): t is { minScore: number; multiplier: number } =>
+        !!t &&
+        typeof t === "object" &&
+        typeof t.minScore === "number" &&
+        typeof t.multiplier === "number"
+    )
+    .sort((a, b) => b.minScore - a.minScore);
+}
+
 function mapEvent(r: Record<string, unknown>): LiveEvent {
   return {
     id: r.id as string,
@@ -283,6 +386,8 @@ function mapEvent(r: Record<string, unknown>): LiveEvent {
     venue: (r.venue as string | null) ?? null,
     status: r.status as "draft" | "open" | "closed",
     defaultTickets: (r.default_tickets as number) ?? 3,
+    baseTickets: (r.base_tickets as number) ?? 3,
+    bonusTiers: parseBonusTiers(r.bonus_tiers),
     createdAt: r.created_at as string,
   };
 }
@@ -295,6 +400,21 @@ function mapCode(r: Record<string, unknown>): EventCode {
     ticketsTotal: r.tickets_total as number,
     ticketsUsed: r.tickets_used as number,
     activatedAt: (r.activated_at as string | null) ?? null,
+    userId: (r.user_id as string | null) ?? null,
+    bonusMultiplier: (r.bonus_multiplier as number) ?? 1,
     createdAt: r.created_at as string,
   };
+}
+
+/**
+ * ファンの通算スコアとイベントの bonus_tiers から倍率を計算。
+ */
+export function calcBonusMultiplier(
+  totalScore: number,
+  tiers: BonusTier[]
+): number {
+  for (const t of tiers) {
+    if (totalScore >= t.minScore) return t.multiplier;
+  }
+  return 1;
 }

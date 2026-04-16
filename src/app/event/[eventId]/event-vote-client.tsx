@@ -21,6 +21,7 @@ export function EventVoteClient({
   const [codeId, setCodeId] = useState<number | null>(null);
   const [ticketsRemaining, setTicketsRemaining] = useState(0);
   const [ticketsTotal, setTicketsTotal] = useState(0);
+  const [bonusMultiplier, setBonusMultiplier] = useState(1);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [votedMembers, setVotedMembers] = useState<string[]>([]);
@@ -40,6 +41,7 @@ export function EventVoteClient({
       setCodeId(j.codeId);
       setTicketsRemaining(j.ticketsRemaining);
       setTicketsTotal(j.ticketsTotal);
+      setBonusMultiplier(j.bonusMultiplier ?? 1);
       setPhase("voting");
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -158,6 +160,18 @@ export function EventVoteClient({
   // Phase: voting
   return (
     <section className="mx-auto max-w-[720px] px-4 mt-4">
+      {/* Bonus badge */}
+      {bonusMultiplier > 1 && (
+        <div className="rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 px-4 py-3 mb-4 text-center">
+          <span className="text-lg font-black text-amber-700">
+            🎯 予想ボーナス {bonusMultiplier}x
+          </span>
+          <p className="text-[10px] text-amber-700 mt-0.5">
+            順位予想の的中スコアにより投票数が {bonusMultiplier} 倍になりました
+          </p>
+        </div>
+      )}
+
       {/* Ticket counter */}
       <div className="rounded-2xl bg-gradient-to-r from-live/10 to-[#fb64b6]/10 border border-live/20 p-4 mb-6 text-center">
         <p className="text-xs font-bold text-muted mb-1">残りチケット</p>

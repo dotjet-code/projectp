@@ -4,6 +4,7 @@ import {
   getEventTally,
   validateCode,
 } from "@/lib/projectp/live-event";
+import { createServerSupabase } from "@/lib/supabase/server";
 
 /**
  * POST /api/public/event-vote/validate
@@ -34,7 +35,24 @@ export async function POST(req: NextRequest) {
 
   // validate のみ
   if (body.action === "validate") {
-    const result = await validateCode(body.code);
+    // ファン会員かどうかを判定
+    let fanUserId: string | null = null;
+    try {
+      const supabase = await createServerSupabase();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        const role =
+          (user.app_metadata as { role?: string } | null | undefined)?.role ??
+          null;
+        if (role !== "admin") fanUserId = user.id;
+      }
+    } catch {
+      // ignore
+    }
+
+    const result = await validateCode(body.code, fanUserId);
     if (!result) {
       return NextResponse.json(
         { error: "無効なコードです" },
@@ -58,6 +76,8 @@ export async function POST(req: NextRequest) {
       ticketsRemaining: result.ticketsRemaining,
       ticketsTotal: result.codeRow.ticketsTotal,
       codeId: result.codeRow.id,
+      bonusMultiplier: result.codeRow.bonusMultiplier,
+      bonusApplied: result.bonusApplied,
     });
   }
 
