@@ -101,22 +101,30 @@ export function EventVoteClient({
             投票コードを入力してください
           </h2>
           <p className="text-xs text-muted text-center mb-4">
-            入場時にお渡しした紙に記載されているコードを入力してください
+            入場時にお渡しした紙に記載されている 4 桁のコードを入力してください
           </p>
           <form onSubmit={onValidateCode} className="space-y-4">
-            <input
-              type="text"
-              required
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              onBlur={() => setCode((c) => c.toUpperCase())}
-              placeholder="PJ-XXXX"
-              className="w-full rounded-xl border border-gray-300 px-4 py-3 text-center text-xl font-[family-name:var(--font-outfit)] font-bold tracking-[0.3em] uppercase"
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="characters"
-              spellCheck={false}
-            />
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-xl font-[family-name:var(--font-outfit)] font-bold text-muted tracking-[0.3em]">
+                PJ-
+              </span>
+              <input
+                type="text"
+                required
+                value={code.replace(/^PJ-/i, "")}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^A-Za-z0-9]/g, "").slice(0, 4);
+                  setCode("PJ-" + val);
+                }}
+                placeholder="XXXX"
+                maxLength={4}
+                className="w-32 rounded-xl border border-gray-300 px-4 py-3 text-center text-xl font-[family-name:var(--font-outfit)] font-bold tracking-[0.3em] uppercase"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="characters"
+                spellCheck={false}
+              />
+            </div>
             {error && (
               <p className="text-xs text-red-600 text-center">{error}</p>
             )}
