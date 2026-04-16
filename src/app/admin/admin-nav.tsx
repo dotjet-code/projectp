@@ -10,6 +10,7 @@ const items = [
   { label: "配信収支", href: "/admin/submissions" },
   { label: "ポイント", href: "/admin/stats" },
   { label: "景品", href: "/admin/rewards" },
+  { label: "イベント", href: "/admin/events" },
   { label: "ファン", href: "/admin/fans" },
   { label: "お知らせ", href: "/admin/notifications" },
   { label: "不正検知", href: "/admin/anomalies" },
