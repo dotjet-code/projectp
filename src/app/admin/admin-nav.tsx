@@ -11,6 +11,7 @@ const items = [
   { label: "ポイント", href: "/admin/stats" },
   { label: "景品", href: "/admin/rewards" },
   { label: "ファン", href: "/admin/fans" },
+  { label: "お知らせ", href: "/admin/notifications" },
   { label: "不正検知", href: "/admin/anomalies" },
   { label: "設定", href: "/admin/settings" },
 ];

@@ -11,6 +11,7 @@ const items = [
   { label: "収支提出", href: "/member/submissions" },
   { label: "お知らせ", href: "/member/notifications" },
   { label: "スケジュール", href: "/member/schedule" },
+  { label: "設定", href: "/member/settings" },
 ];
 
 export function MemberNav({ memberName }: { memberName?: string }) {
