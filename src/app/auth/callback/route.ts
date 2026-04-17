@@ -7,8 +7,12 @@ import { ensureFanProfile } from "@/lib/projectp/fan-profile";
  * GET /auth/callback
  *
  * Supabase magic link からの戻り先。2 種類のパターンを処理する:
- *   1. PKCE (?code=...)       → exchangeCodeForSession
- *   2. OTP   (?token_hash=...&type=magiclink) → verifyOtp
+ *   1. PKCE (?code=...)       → exchangeCodeForSession (同一端末必須)
+ *   2. OTP   (?token_hash=...&type=magiclink|invite|signup|email) → verifyOtp (クロス端末OK)
+ *
+ * 推奨は #2。Supabase メールテンプレートを
+ *   `{{ .RedirectTo }}&token_hash={{ .TokenHash }}&type=magiclink`
+ * 形式にしておくと、どの端末で開いてもログインできる。
  *
  * session 確立後、ファンユーザーなら fan_profiles を作成して next にリダイレクト。
  */
@@ -19,6 +23,8 @@ export async function GET(req: NextRequest) {
   const type = params.get("type") as EmailOtpType | null;
   const next = params.get("next") || "/fan/me";
 
+  const loginPath = next.startsWith("/member") ? "/member/login" : "/fan/login";
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anonKey) {
@@ -26,7 +32,7 @@ export async function GET(req: NextRequest) {
   }
 
   if (!code && !(tokenHash && type)) {
-    return NextResponse.redirect(new URL("/fan/login?error=nocode", req.url));
+    return NextResponse.redirect(new URL(`${loginPath}?error=nocode`, req.url));
   }
 
   const redirect = NextResponse.redirect(new URL(next, req.url));
@@ -44,19 +50,23 @@ export async function GET(req: NextRequest) {
   });
 
   let authError: string | null = null;
-  if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (error) authError = error.message;
-  } else if (tokenHash && type) {
+  // token_hash を優先: クロス端末で成立するため
+  if (tokenHash && type) {
     const { error } = await supabase.auth.verifyOtp({
       type,
       token_hash: tokenHash,
     });
     if (error) authError = error.message;
+  } else if (code) {
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (error) authError = error.message;
   }
   if (authError) {
     return NextResponse.redirect(
-      new URL(`/fan/login?error=${encodeURIComponent(authError)}`, req.url)
+      new URL(
+        `${loginPath}?error=${encodeURIComponent(authError)}`,
+        req.url
+      )
     );
   }
 
