@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { listLiveEvents } from "@/lib/projectp/live-event";
+import { SectionHeading } from "./section-heading";
 
 export async function TodaysLive() {
   const events = await listLiveEvents();
@@ -15,16 +16,11 @@ export async function TodaysLive() {
   if (todayEvents.length === 0 && futureEvents.length === 0) return null;
 
   return (
-    <section className="mx-auto max-w-[964px] px-4 mt-12 space-y-8">
+    <section className="mx-auto max-w-[1200px] px-4 mt-16 space-y-10">
       {/* 本日のライブ */}
       {todayEvents.length > 0 && (
         <div>
-          <div className="flex items-center gap-3 mb-5">
-            <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-live to-[#fb64b6]" />
-            <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-[#e7000b] tracking-tight">
-              🎤 本日のライブ
-            </h2>
-          </div>
+          <SectionHeading title="本日のライブ" eyebrow="TONIGHT'S LIVE" accent="red" />
           <div className="space-y-3">
             {todayEvents.map((ev) => (
               <div
@@ -97,12 +93,7 @@ export async function TodaysLive() {
       {/* ライブ予定 */}
       {futureEvents.length > 0 && (
         <div>
-          <div className="flex items-center gap-3 mb-5">
-            <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-purple to-[#c27aff]" />
-            <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-[#7008e7] tracking-tight">
-              📅 ライブ予定
-            </h2>
-          </div>
+          <SectionHeading title="ライブ予定" eyebrow="UPCOMING" accent="black" />
           <div className="space-y-3">
             {futureEvents.map((ev) => (
               <div
