@@ -29,6 +29,11 @@ export default async function Home() {
           backgroundImage="/hero/bg-collage.png"
           titleImage="/hero/title-kakeagari-v2.png"
           titleImageAspect={669 / 373}
+          taglineImages={[
+            "/hero/tagline-shuyaku.png",
+            "/hero/tagline-jinsei.png",
+            "/hero/tagline-niji.png",
+          ]}
           jerseyNumber="01"
           grade="S"
         />

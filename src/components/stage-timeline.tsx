@@ -65,25 +65,23 @@ export function StageTimeline({ stage }: { stage: Stage | null }) {
             </div>
           </div>
 
-          {/* Right-side stage marker */}
-          <div className="shrink-0 flex items-center gap-3 text-xs md:text-sm">
-            {stageNum !== null && (
-              <>
-                <span className="text-[#4A5060]" style={{ fontFamily: "var(--font-outfit)" }}>
-                  第
-                </span>
-                <span
-                  className="text-xl md:text-2xl font-black text-[#111] leading-none tabular-nums"
-                  style={{ fontFamily: "var(--font-outfit)" }}
-                >
-                  {stageNum}
-                </span>
-                <span className="text-[#4A5060]">節</span>
-              </>
-            )}
-            <span className="h-4 w-px bg-[#111]" />
-            <span className="font-bold text-[#D41E28]">{currentLabel}</span>
-          </div>
+          {/* Right-side stage marker (現節がある時のみ) */}
+          {stageNum !== null && (
+            <div className="shrink-0 flex items-center gap-3 text-xs md:text-sm">
+              <span className="text-[#4A5060]" style={{ fontFamily: "var(--font-outfit)" }}>
+                第
+              </span>
+              <span
+                className="text-xl md:text-2xl font-black text-[#111] leading-none tabular-nums"
+                style={{ fontFamily: "var(--font-outfit)" }}
+              >
+                {stageNum}
+              </span>
+              <span className="text-[#4A5060]">節</span>
+              <span className="h-4 w-px bg-[#111]" />
+              <span className="font-bold text-[#D41E28]">{currentLabel}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

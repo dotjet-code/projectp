@@ -10,8 +10,12 @@ export interface HeroProps {
   titleImageAspect?: number;
   /** 事件ヘッドライン (破れ紙ラベルで配置) */
   eventHeadline?: string;
-  /** 散らし配置の煽りコピー */
+  /** 散らし配置の煽りコピー (テキストフォールバック) */
   taglines?: string[];
+  /** 煽りコピーの破れ紙画像 (優先、配列の順で配置) */
+  taglineImages?: string[];
+  /** taglineImages のアスペクト比 (既定 669:373) */
+  taglineImageAspect?: number;
   /** 事件等級 → 朱肉判子に出る語 */
   grade?: "S" | "A" | "B" | "C" | "D" | "E";
   /** 背景に敷くコラージュ画像（nanobanana 生成） */
@@ -31,7 +35,11 @@ const GRADE_LABELS: Record<NonNullable<HeroProps["grade"]>, string> = {
   E: "静寂",
 };
 
-const DEFAULT_TAGLINES = ["主役はまだ空席", "命を賭けて", "虹を架けるのは君だ"];
+const DEFAULT_TAGLINES = [
+  "主役は、まだ空席。",
+  "人生を懸けて",
+  "虹を架けるのは君だ",
+];
 
 // 破れ紙エッジのクリップパス
 const TORN_CLIP_PATH =
@@ -146,6 +154,8 @@ export function Hero({
   titleImageAspect = 1920 / 600,
   eventHeadline = "首位、陥落。",
   taglines = DEFAULT_TAGLINES,
+  taglineImages,
+  taglineImageAspect = 669 / 373,
   grade = "S",
   backgroundImage,
   portraitImage,
@@ -262,17 +272,41 @@ export function Hero({
             </TornLabel>
           </div>
 
-          <div className="flex flex-wrap items-start gap-3 md:gap-4">
-            {taglines.map((t, i) => {
-              const variants = ["white", "pink", "teal", "red"] as const;
-              const v = variants[i % variants.length];
-              const rot = i % 2 === 0 ? -3 : 2;
-              return (
-                <TornLabel key={`${t}-${i}`} variant={v} rotation={rot}>
-                  <span className="text-sm md:text-lg">{t}</span>
-                </TornLabel>
-              );
-            })}
+          <div className="flex flex-wrap items-start gap-x-2 gap-y-3 md:gap-x-3 md:gap-y-4">
+            {taglineImages && taglineImages.length > 0
+              ? taglineImages.map((src, i) => {
+                  const rotations = [-3, 2, -2, 3];
+                  const rot = rotations[i % rotations.length];
+                  const alt = taglines[i] ?? "";
+                  return (
+                    <div
+                      key={`${src}-${i}`}
+                      className="relative w-[200px] md:w-[280px]"
+                      style={{
+                        aspectRatio: taglineImageAspect,
+                        transform: `rotate(${rot}deg)`,
+                      }}
+                    >
+                      <Image
+                        src={src}
+                        alt={alt}
+                        fill
+                        className="object-contain"
+                        sizes="(max-width: 768px) 200px, 280px"
+                      />
+                    </div>
+                  );
+                })
+              : taglines.map((t, i) => {
+                  const variants = ["white", "pink", "teal", "red"] as const;
+                  const v = variants[i % variants.length];
+                  const rot = i % 2 === 0 ? -3 : 2;
+                  return (
+                    <TornLabel key={`${t}-${i}`} variant={v} rotation={rot}>
+                      <span className="text-sm md:text-lg">{t}</span>
+                    </TornLabel>
+                  );
+                })}
           </div>
         </div>
 

@@ -68,11 +68,21 @@ export function Header() {
       <div className="flex items-center justify-between px-4 py-2.5">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex size-6 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-blue">
-            <span className="font-[family-name:var(--font-outfit)] text-[10px] font-black text-white">P</span>
-          </div>
-          <span className="font-[family-name:var(--font-outfit)] text-base font-extrabold bg-gradient-to-r from-[#00b8db] to-primary-blue bg-clip-text text-transparent">
-            Project P
+          <span
+            className="inline-flex size-6 items-center justify-center bg-[#D41E28] text-white text-[11px] font-black"
+            style={{
+              fontFamily: "var(--font-noto-serif), serif",
+              transform: "rotate(-4deg)",
+            }}
+            aria-hidden
+          >
+            か
+          </span>
+          <span
+            className="text-base font-black text-[#111111] tracking-tight"
+            style={{ fontFamily: "var(--font-noto-serif), serif" }}
+          >
+            かけあがり
           </span>
         </Link>
 
