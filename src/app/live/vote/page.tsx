@@ -18,14 +18,35 @@ export default async function LiveInfoPage() {
       <Header />
       <main className="pb-10">
         {/* Hero */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-[#fdf2f8] via-[#fce7f3]/40 to-transparent pt-10 pb-8 text-center">
-          <p className="text-5xl mb-3">🎤</p>
-          <h1 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-live to-[#fb64b6] bg-clip-text text-transparent">
-            ライブ応援
-          </h1>
-          <p className="mt-3 text-sm text-muted max-w-md mx-auto px-4 leading-relaxed">
-            Project P のライブに来て、推しメンバーを直接応援しよう！
-          </p>
+        <section className="relative bg-[#111] text-[#F5F1E8] px-6 py-12 md:py-16 overflow-hidden">
+          <div
+            className="absolute top-0 left-0 right-0 h-2 bg-[#D41E28]"
+            style={{
+              clipPath:
+                "polygon(0 30%, 4% 20%, 10% 40%, 18% 15%, 26% 45%, 34% 10%, 42% 40%, 50% 18%, 58% 42%, 66% 16%, 74% 40%, 82% 14%, 90% 42%, 96% 20%, 100% 40%, 100% 100%, 0 100%)",
+            }}
+            aria-hidden
+          />
+          <div className="max-w-[1200px] mx-auto">
+            <p
+              className="text-xs md:text-sm font-black tracking-[0.35em] text-[#FFE600]"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              LIVE VOTE
+            </p>
+            <h1
+              className="mt-3 text-4xl md:text-6xl font-black leading-[0.95] tracking-tight"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              ライブ<span className="text-[#D41E28]">応援。</span>
+            </h1>
+            <p
+              className="mt-4 text-sm md:text-base leading-relaxed max-w-2xl text-[#9BA8BF]"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              会場に来た者だけが投じられる一票。かけあがり のライブで、直接プッシュせよ。
+            </p>
+          </div>
         </section>
 
         {/* 開催中のイベント */}
