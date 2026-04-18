@@ -1,158 +1,159 @@
-"use client";
+import Image from "next/image";
 
-import Link from "next/link";
+export interface HeroProps {
+  stageLabel?: string;
+  headline?: string;
+  subtitle?: string;
+  grade?: "S" | "A" | "B" | "C" | "D" | "E";
+  /** nanobanana 等で生成した背景アート画像。テキスト無し前提 */
+  backgroundImage?: string;
+  /** 主役メンバーの縦長モノクロ写真 */
+  portraitImage?: string;
+  /** 主役メンバーのゼッケン番号 (01-12) */
+  jerseyNumber?: string;
+}
 
-const windStreaks = [
-  { top: "14%", height: 1.5, duration: "4s", delay: "0s", opacity: 0.15, width: "25%" },
-  { top: "30%", height: 1, duration: "5.5s", delay: "1.5s", opacity: 0.1, width: "35%" },
-  { top: "46%", height: 2, duration: "6s", delay: "0.5s", opacity: 0.12, width: "20%" },
-  { top: "58%", height: 1, duration: "4.5s", delay: "3s", opacity: 0.08, width: "30%" },
-  { top: "22%", height: 1, duration: "7s", delay: "4s", opacity: 0.07, width: "28%" },
-  { top: "38%", height: 1.5, duration: "5s", delay: "2.5s", opacity: 0.09, width: "32%" },
-];
+const GRADE_LABELS: Record<NonNullable<HeroProps["grade"]>, string> = {
+  S: "激震",
+  A: "号外",
+  B: "速報",
+  C: "接戦",
+  D: "告知",
+  E: "静寂",
+};
 
-export function Hero({ stageLabel }: { stageLabel?: string }) {
+export function Hero({
+  stageLabel,
+  headline = "首位、陥落。",
+  subtitle = "3時間前、塩見きら が 阿久津真央 に首位を譲渡。差はわずか 8pt。",
+  grade = "S",
+  backgroundImage,
+  portraitImage,
+  jerseyNumber = "01",
+}: HeroProps) {
+  const today = new Intl.DateTimeFormat("ja-JP", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "short",
+  }).format(new Date());
+
+  const hasPortrait = Boolean(portraitImage);
+
   return (
-    <section className="relative overflow-hidden pb-24 pt-8" style={{
-      background: "linear-gradient(180deg, #dff6fd 0%, #c4ecf8 25%, #a8e0f4 45%, #8dd4ef 60%, #b2ebf2 75%, #e0f7fa 100%)",
-    }}>
+    <section className="relative overflow-hidden bg-[#F5F1E8]">
+      {backgroundImage && (
+        <Image
+          src={backgroundImage}
+          alt=""
+          fill
+          priority
+          className="object-cover"
+          aria-hidden
+        />
+      )}
 
-      {/* Sky — soft gradient clouds */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute rounded-full"
-          style={{
-            width: 500, height: 120,
-            left: "5%", top: "8%",
-            background: "radial-gradient(ellipse, rgba(255,255,255,0.5) 0%, transparent 70%)",
-            animation: "drift 12s ease-in-out infinite",
-          }}
-        />
-        <div
-          className="absolute rounded-full"
-          style={{
-            width: 400, height: 90,
-            right: "10%", top: "15%",
-            background: "radial-gradient(ellipse, rgba(255,255,255,0.4) 0%, transparent 70%)",
-            animation: "drift 15s ease-in-out infinite reverse",
-          }}
-        />
-        <div
-          className="absolute rounded-full"
-          style={{
-            width: 350, height: 80,
-            left: "30%", top: "5%",
-            background: "radial-gradient(ellipse, rgba(255,255,255,0.35) 0%, transparent 70%)",
-            animation: "drift 10s ease-in-out infinite",
-            animationDelay: "-5s",
-          }}
-        />
-      </div>
-
-      {/* Horizon glow */}
       <div
-        className="absolute left-0 right-0 pointer-events-none"
-        style={{
-          bottom: 80,
-          height: 60,
-          background: "linear-gradient(180deg, transparent 0%, rgba(0,211,243,0.06) 50%, rgba(0,188,255,0.04) 100%)",
-        }}
-      />
+        className={`relative grid min-h-[640px] ${
+          hasPortrait ? "md:grid-cols-[2fr_3fr]" : "grid-cols-1"
+        }`}
+      >
+        {hasPortrait && (
+          <div className="relative hidden md:block overflow-hidden">
+            <Image
+              src={portraitImage!}
+              alt=""
+              fill
+              priority
+              className="object-cover grayscale contrast-125"
+              aria-hidden
+            />
+            <div
+              className="absolute -left-[10%] -right-[10%] top-1/3 h-20 bg-[#D41E28] opacity-75"
+              style={{ transform: "rotate(-12deg)" }}
+              aria-hidden
+            />
+            <div
+              className="absolute bottom-6 right-6 text-white font-black leading-none pointer-events-none select-none"
+              style={{
+                fontFamily: "var(--font-outfit)",
+                fontSize: "clamp(160px, 22vw, 280px)",
+                mixBlendMode: "difference",
+              }}
+              aria-hidden
+            >
+              {jerseyNumber}
+            </div>
+          </div>
+        )}
 
-      {/* Wind streaks */}
-      <div className="absolute inset-0 pointer-events-none">
-        {windStreaks.map((w, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-white"
+        <div className="relative flex flex-col justify-center px-6 py-16 md:px-16 md:py-24">
+          <h1
+            className="relative font-black tracking-tight leading-[0.92] text-[#111111]"
             style={{
-              top: w.top,
-              left: 0,
-              width: w.width,
-              height: w.height,
-              opacity: w.opacity,
-              animation: `wind ${w.duration} ${w.delay} linear infinite`,
+              fontFamily: "var(--font-noto-serif), serif",
+              fontSize: "clamp(56px, 10vw, 128px)",
             }}
-          />
-        ))}
-      </div>
-
-      {/* Animated ocean waves */}
-      <div className="absolute bottom-0 left-0 right-0 h-28 overflow-hidden">
-        <svg
-          viewBox="0 0 1440 120" className="absolute bottom-0 h-full" preserveAspectRatio="none"
-          style={{ width: "200%", animation: "wave 12s ease-in-out infinite" }}
-        >
-          <path d="M0,70 C180,100 360,40 540,70 C720,100 900,40 1080,70 C1260,100 1440,40 1440,70 V120 H0Z" fill="rgba(0,211,243,0.12)" />
-        </svg>
-        <svg
-          viewBox="0 0 1440 120" className="absolute bottom-0 h-full" preserveAspectRatio="none"
-          style={{ width: "200%", animation: "wave 8s ease-in-out infinite", animationDelay: "-2s" }}
-        >
-          <path d="M0,80 C240,50 480,95 720,65 C960,35 1200,90 1440,55 V120 H0Z" fill="rgba(0,188,255,0.10)" />
-        </svg>
-        <svg
-          viewBox="0 0 1440 120" className="absolute bottom-0 h-full" preserveAspectRatio="none"
-          style={{ width: "200%", animation: "wave 6s ease-in-out infinite reverse", animationDelay: "-4s" }}
-        >
-          <path d="M0,85 C200,65 400,100 600,75 C800,50 1000,95 1200,70 C1350,55 1440,80 1440,85 V120 H0Z" fill="rgba(43,127,255,0.07)" />
-        </svg>
-        <svg
-          viewBox="0 0 1440 120" className="absolute bottom-0 h-full" preserveAspectRatio="none"
-          style={{ width: "200%", animation: "wave 10s ease-in-out infinite", animationDelay: "-6s" }}
-        >
-          <path d="M0,92 C360,75 720,105 1080,85 C1260,75 1380,95 1440,90 V120 H0Z" fill="rgba(255,255,255,0.6)" />
-        </svg>
-        <svg
-          viewBox="0 0 1440 120" className="absolute bottom-0 h-full" preserveAspectRatio="none"
-          style={{ width: "200%", animation: "wave 7s ease-in-out infinite reverse", animationDelay: "-1s" }}
-        >
-          <path d="M0,100 C240,90 480,108 720,95 C960,82 1200,105 1440,95 V120 H0Z" fill="rgba(255,255,255,0.85)" />
-        </svg>
-      </div>
-
-      {/* Content */}
-      <div className="relative mx-auto max-w-[996px] px-4">
-        <div className="mx-auto mb-6 flex w-fit items-center gap-3 rounded-full bg-white/60 px-5 py-2 shadow-sm border border-white/60">
-          <span className="text-sm font-bold text-primary-dark font-[family-name:var(--font-outfit)]">
-            {stageLabel}
-          </span>
-          <span className="size-2 rounded-full bg-primary opacity-90 animate-pulse" />
-        </div>
-
-        <p className="text-center text-lg sm:text-2xl font-bold text-foreground">
-          主役は、勝ち取るもの。
-        </p>
-
-        <h1 className="mt-2 text-center">
-          <span className="font-[family-name:var(--font-outfit)] text-4xl sm:text-5xl md:text-7xl font-black tracking-tight bg-gradient-to-r from-[#00b8db] via-primary-blue to-[#8e51ff] bg-clip-text text-transparent">
-            Project P
-          </span>
-        </h1>
-
-        <p className="mt-3 text-center text-xs sm:text-sm text-[#62748e] max-w-lg mx-auto leading-relaxed">
-          Project Pは、バズ・配信・収支を競い、
-          <br />
-          上位6名が次の主役を勝ち取る競争型エンタメプロジェクトです。
-          <br className="hidden sm:block" />
-          ここは、未来のステージを懸けた戦いの場です。
-        </p>
-
-        <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-          <Link
-            href="/prediction"
-            className="flex w-full sm:w-auto items-center justify-center gap-1 rounded-2xl bg-gradient-to-r from-primary to-primary-blue px-8 py-3.5 text-base font-bold text-white shadow-[0_10px_15px_rgba(83,234,253,0.4)] transition hover:shadow-[0_10px_20px_rgba(83,234,253,0.5)]"
           >
-            🎯 予想する →
-          </Link>
-          <Link
-            href="/results"
-            className="flex w-full sm:w-auto items-center justify-center gap-1 rounded-2xl bg-white/80 border border-white/80 px-8 py-3.5 text-base font-bold text-[#45556c] shadow-sm transition hover:bg-white"
-          >
-            🏆 結果を見る →
-          </Link>
+            <span
+              aria-hidden
+              className="absolute inset-0 text-[#1447E6]"
+              style={{ transform: "translate(8px, 8px)", opacity: 0.28 }}
+            >
+              {headline}
+            </span>
+            <span
+              aria-hidden
+              className="absolute inset-0 text-[#D41E28]"
+              style={{ transform: "translate(4px, 4px)", opacity: 0.6 }}
+            >
+              {headline}
+            </span>
+            <span className="relative">{headline}</span>
+
+            <span
+              className="absolute -top-4 right-0 md:-right-4 inline-flex items-center justify-center bg-[#D41E28] text-white font-black select-none"
+              style={{
+                transform: "rotate(-6deg)",
+                width: "clamp(72px, 10vw, 140px)",
+                height: "clamp(72px, 10vw, 140px)",
+                fontFamily: "var(--font-noto-serif), serif",
+                fontSize: "clamp(24px, 4vw, 56px)",
+                boxShadow: "2px 2px 0 rgba(17, 17, 17, 0.08)",
+              }}
+            >
+              {GRADE_LABELS[grade]}
+            </span>
+          </h1>
+
+          <p className="mt-8 max-w-2xl text-base sm:text-lg leading-relaxed text-[#111111]">
+            {subtitle}
+          </p>
+
+          <div className="mt-10 flex flex-wrap items-center gap-4 text-[#4A5060]">
+            <span className="text-sm font-medium">{today}</span>
+            {stageLabel && (
+              <>
+                <span className="h-5 w-px bg-[#4A5060]" aria-hidden />
+                <span className="text-xl md:text-2xl font-bold text-[#111111]">
+                  {stageLabel}
+                </span>
+              </>
+            )}
+            <span
+              className="inline-flex items-center bg-[#D41E28] text-white text-xs font-bold tracking-widest px-3 py-1.5"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              速報 GRADE {grade}
+            </span>
+          </div>
         </div>
       </div>
+
+      <div
+        className="absolute bottom-0 left-0 right-0 h-[6px] bg-[#D41E28]"
+        aria-hidden
+      />
     </section>
   );
 }

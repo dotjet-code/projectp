@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Outfit, Noto_Sans_JP } from "next/font/google";
+import { Outfit, Noto_Sans_JP, Noto_Serif_JP } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -16,6 +16,12 @@ const notoSansJP = Noto_Sans_JP({
   variable: "--font-noto",
   subsets: ["latin"],
   weight: ["400", "500", "700"],
+});
+
+const notoSerifJP = Noto_Serif_JP({
+  variable: "--font-noto-serif",
+  subsets: ["latin"],
+  weight: ["700", "900"],
 });
 
 export const metadata: Metadata = {
@@ -53,7 +59,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja" className={`${outfit.variable} ${notoSansJP.variable} antialiased`}>
+    <html lang="ja" className={`${outfit.variable} ${notoSansJP.variable} ${notoSerifJP.variable} antialiased`}>
       <body className="min-h-screen overflow-x-hidden">
         <LiveStatusProvider>{children}</LiveStatusProvider>
         <Analytics />

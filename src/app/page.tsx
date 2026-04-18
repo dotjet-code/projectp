@@ -20,7 +20,13 @@ export default async function Home() {
     <>
       <Header />
       <main>
-        <Hero stageLabel={stageLabel} />
+        <Hero
+          stageLabel={stageLabel}
+          portraitImage="/hero/shiomi-kira.jpg"
+          backgroundImage="/hero/haikei.jpg"
+          jerseyNumber="01"
+          grade="S"
+        />
         <CountdownStatus />
         <MemberGrid />
         <Rankings />
