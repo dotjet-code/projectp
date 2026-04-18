@@ -42,11 +42,27 @@ export default async function ResultsPage({
       <>
         <Header />
         <main className="pb-10">
-          <section className="relative overflow-hidden bg-gradient-to-b from-[#fef9c3] via-[#fef3c6]/40 to-transparent pt-10 pb-8 text-center">
-            <div className="relative">
-              <p className="text-5xl mb-3">🏆</p>
-              <h1 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-[#f59e0b] via-[#ef4444] to-[#8b5cf6] bg-clip-text text-transparent">
-                結果発表
+          <section className="relative bg-[#111] text-[#F5F1E8] px-6 py-12 md:py-16 overflow-hidden">
+            <div
+              className="absolute top-0 left-0 right-0 h-2 bg-[#D41E28]"
+              style={{
+                clipPath:
+                  "polygon(0 30%, 4% 20%, 10% 40%, 18% 15%, 26% 45%, 34% 10%, 42% 40%, 50% 18%, 58% 42%, 66% 16%, 74% 40%, 82% 14%, 90% 42%, 96% 20%, 100% 40%, 100% 100%, 0 100%)",
+              }}
+              aria-hidden
+            />
+            <div className="max-w-[1200px] mx-auto">
+              <p
+                className="text-xs md:text-sm font-black tracking-[0.35em] text-[#FFE600]"
+                style={{ fontFamily: "var(--font-outfit)" }}
+              >
+                RESULTS
+              </p>
+              <h1
+                className="mt-3 text-4xl md:text-6xl font-black leading-[0.95] tracking-tight"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                結果<span className="text-[#D41E28]">発表。</span>
               </h1>
             </div>
           </section>
@@ -88,32 +104,53 @@ export default async function ResultsPage({
       <Header />
       <main className="pb-10">
         {/* Hero */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-[#fef9c3] via-[#fef3c6]/40 to-transparent pt-10 pb-8 text-center">
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute left-[20%] top-[10%] size-32 rounded-full bg-[#ffd230] blur-[60px]" />
-            <div className="absolute right-[20%] top-[20%] size-24 rounded-full bg-primary blur-[50px]" />
-          </div>
-          <div className="relative">
-            <p className="text-5xl mb-3">🏆</p>
-            <p className="text-xs font-bold tracking-wider text-amber-700 mb-1">
+        <section className="relative bg-[#111] text-[#F5F1E8] px-6 py-12 md:py-16 overflow-hidden">
+          <div
+            className="absolute top-0 left-0 right-0 h-2 bg-[#D41E28]"
+            style={{
+              clipPath:
+                "polygon(0 30%, 4% 20%, 10% 40%, 18% 15%, 26% 45%, 34% 10%, 42% 40%, 50% 18%, 58% 42%, 66% 16%, 74% 40%, 82% 14%, 90% 42%, 96% 20%, 100% 40%, 100% 100%, 0 100%)",
+            }}
+            aria-hidden
+          />
+          <div className="max-w-[1200px] mx-auto">
+            <p
+              className="text-xs md:text-sm font-black tracking-[0.35em] text-[#FFE600]"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              RESULTS ·{" "}
               {targetStage.stageNumber !== null
-                ? `ステージ ${targetStage.stageNumber}`
-                : "ステージ"}
+                ? `STAGE ${targetStage.stageNumber}`
+                : "STAGE"}
             </p>
-            <h1 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-[#f59e0b] via-[#ef4444] to-[#8b5cf6] bg-clip-text text-transparent">
+            <h1
+              className="mt-3 text-4xl md:text-6xl font-black leading-[0.95] tracking-tight"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
               {targetStage.title ?? targetStage.name}
+              <span className="text-[#D41E28]">。</span>
             </h1>
             {targetStage.subtitle && (
-              <p className="mt-1 text-sm text-muted">{targetStage.subtitle}</p>
+              <p
+                className="mt-3 text-sm md:text-base text-[#9BA8BF]"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                {targetStage.subtitle}
+              </p>
             )}
-            <p className="mt-2 text-xs text-muted">
-              {targetStage.startDate} 〜 {targetStage.endDate}
+            <p
+              className="mt-4 text-xs font-bold tracking-widest text-[#9BA8BF]"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              {targetStage.startDate.replace(/-/g, ".")} —{" "}
+              {targetStage.endDate.replace(/-/g, ".")}
             </p>
 
             {seriesN !== null && (
               <Link
                 href={`/series/${seriesN}`}
-                className="mt-3 inline-block text-[11px] underline text-primary-dark"
+                className="mt-4 inline-flex items-center gap-2 text-sm font-black text-[#FFE600] hover:underline"
+                style={{ fontFamily: "var(--font-outfit)" }}
               >
                 Series {seriesN} 累計を見る →
               </Link>

@@ -2,8 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { SectionHeading } from "@/components/section-heading";
 import { FloatingLiveBadge } from "@/components/live-badge";
-import { getBoatColor } from "@/lib/projectp/boat-colors";
 import {
   getRankedMembers,
   type RankedMember,
@@ -11,161 +11,93 @@ import {
 
 export const dynamic = "force-dynamic";
 
-type Member = RankedMember;
-const medals = ["🥇", "🥈", "🥉"];
+const BOAT_PLATES: Record<
+  number,
+  { bg: string; border: string }
+> = {
+  1: { bg: "#F5F5F0", border: "#111111" },
+  2: { bg: "#1A1A1A", border: "#1A1A1A" },
+  3: { bg: "#D41E28", border: "#D41E28" },
+  4: { bg: "#1E4BC8", border: "#1E4BC8" },
+  5: { bg: "#F2C81B", border: "#F2C81B" },
+  6: { bg: "#0F8F4A", border: "#0F8F4A" },
+};
 
-function SnsIcons() {
-  return (
-    <div className="flex items-center justify-center gap-1.5 border-t border-gray-100 pt-2.5">
-      {/* Instagram */}
-      <button className="flex size-7 items-center justify-center rounded-2xl text-muted hover:bg-gray-50 transition-colors">
-        <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-          <rect x="2" y="2" width="20" height="20" rx="5" />
-          <circle cx="12" cy="12" r="5" />
-          <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
-        </svg>
-      </button>
-      {/* X */}
-      <button className="flex size-7 items-center justify-center rounded-2xl text-muted hover:bg-gray-50 transition-colors">
-        <svg className="size-4" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-        </svg>
-      </button>
-      {/* YouTube */}
-      <button className="flex size-7 items-center justify-center rounded-2xl text-muted hover:bg-gray-50 transition-colors">
-        <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-          <rect x="2" y="4" width="20" height="16" rx="4" />
-          <polygon points="10,8 16,12 10,16" fill="currentColor" stroke="none" />
-        </svg>
-      </button>
-      {/* TikTok */}
-      <button className="flex size-7 items-center justify-center rounded-2xl text-muted hover:bg-gray-50 transition-colors">
-        <svg className="size-4" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.98a8.18 8.18 0 004.76 1.52V7.08a4.83 4.83 0 01-1-.39z" />
-        </svg>
-      </button>
-    </div>
-  );
-}
-
-function MemberCard({ member }: { member: Member }) {
-  const rankDisplay =
-    member.rank <= 3 ? medals[member.rank - 1] : `#${member.rank}`;
-  const isTopRank = member.rank <= 3;
+function MemberCard({ member, rank }: { member: RankedMember; rank: number }) {
+  const plate = rank <= 6 ? BOAT_PLATES[rank] : null;
 
   return (
     <Link
       href={`/members/${member.slug}`}
-      className="group relative rounded-2xl border border-gray-100/80 bg-white transition-shadow hover:shadow-md"
+      className="group flex flex-col border border-[#111] bg-[#F5F1E8] hover:bg-white transition-colors"
     >
-      {/* Rank badge */}
-      <div
-        className={`absolute -top-2 right-[-6px] z-10 flex size-8 items-center justify-center rounded-full shadow-md ${
-          isTopRank
-            ? "bg-gradient-to-br from-[#fef3c6] to-[#fef9c2]"
-            : "bg-white border border-gray-100"
-        }`}
-      >
-        <span
-          className={`font-[family-name:var(--font-outfit)] text-center leading-none ${
-            isTopRank ? "text-base" : "text-xs font-extrabold text-[#0092b8]"
-          }`}
+      {/* 順位 + 号艇/PIT */}
+      <div className="flex items-stretch border-b border-[#111]">
+        <div
+          className="flex items-center justify-center w-14 text-3xl font-black tabular-nums bg-[#111] text-[#F5F1E8]"
+          style={{ fontFamily: "var(--font-outfit)" }}
         >
-          {rankDisplay}
-        </span>
+          {rank}
+        </div>
+        {plate ? (
+          <div
+            className="flex-1 border-l border-[#111]"
+            style={{ backgroundColor: plate.bg, borderColor: plate.border }}
+            aria-label={`${rank}号艇`}
+          />
+        ) : (
+          <div className="flex-1 flex items-center justify-center bg-[#4A5060] text-white text-xs font-black tracking-[0.2em] border-l border-[#111]" style={{ fontFamily: "var(--font-outfit)" }}>
+            PIT
+          </div>
+        )}
       </div>
 
-      {/* Image */}
-      {(() => {
-        const mbc = getBoatColor(member.boatColor);
-        return (
-          <div className="relative mx-2 sm:mx-4 mt-2 sm:mt-4 aspect-square">
-            <Image
-              src={member.avatarUrl}
-              alt={member.name}
-              width={195}
-              height={195}
-              className="absolute inset-0 size-full rounded-[20px] object-cover object-top"
-              style={{
-                boxShadow: mbc
-                  ? `0 0 0 3px ${mbc.main}, 0 2px 8px rgba(0,0,0,0.1)`
-                  : "0 2px 8px rgba(0,0,0,0.08)",
-              }}
-            />
-            <FloatingLiveBadge slug={member.slug} />
-          </div>
-        );
-      })()}
+      {/* 写真 */}
+      <div className="relative aspect-square border-b border-[#111]">
+        <Image
+          src={member.avatarUrl}
+          alt=""
+          fill
+          className="object-cover object-top grayscale contrast-125 group-hover:grayscale-0 transition-[filter]"
+          sizes="(max-width: 768px) 50vw, 280px"
+        />
+        <FloatingLiveBadge slug={member.slug} />
+      </div>
 
-      {/* Info */}
-      <div className="px-4 pt-3">
-        <p className="text-center text-sm font-bold text-foreground">{member.name}</p>
-        <div className="mt-1.5 flex justify-center">
+      {/* 氏名 + ポイント */}
+      <div className="px-3 py-3">
+        <p
+          className="text-base md:text-lg font-black text-[#111] truncate"
+          style={{ fontFamily: "var(--font-noto-serif), serif" }}
+        >
+          {member.name}
+        </p>
+        <div className="mt-2 flex items-end justify-between">
           <span
-            className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold tracking-wider text-white font-[family-name:var(--font-outfit)] ${
+            className={`text-[10px] font-black tracking-[0.2em] px-1.5 py-0.5 ${
               member.role === "PLAYER"
-                ? "bg-gradient-to-r from-player to-player-end shadow-[0_1px_3px_#bedbff]"
-                : "bg-gradient-to-r from-pit to-pit-end shadow-[0_1px_3px_#fee685]"
+                ? "bg-[#D41E28] text-white"
+                : "bg-[#4A5060] text-white"
             }`}
+            style={{ fontFamily: "var(--font-outfit)" }}
           >
             {member.role}
           </span>
+          <div className="text-right">
+            <span
+              className="text-2xl font-black tabular-nums leading-none text-[#111]"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              {member.effectivePoints.toLocaleString()}
+            </span>
+            <span
+              className="ml-1 text-[10px] text-[#4A5060]"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              pt
+            </span>
+          </div>
         </div>
-      </div>
-
-      {/* Points */}
-      <div className="mt-2 px-4 text-center">
-        <p className="text-[10px] text-muted">総合ポイント</p>
-        <p className="font-[family-name:var(--font-outfit)] text-base font-extrabold text-[#0092b8]">
-          {member.points.toLocaleString()}
-        </p>
-      </div>
-
-      {/* SNS */}
-      <div className="px-4 pb-3 pt-2">
-        <SnsIcons />
-      </div>
-    </Link>
-  );
-}
-
-function CompactMemberRow({ member }: { member: Member }) {
-  return (
-    <Link
-      href={`/members/${member.slug}`}
-      className="flex flex-col items-center gap-1 rounded-2xl p-3 hover:bg-white/50 transition-colors"
-    >
-      <Image
-        src={member.avatarUrl}
-        alt={member.name}
-        width={64}
-        height={64}
-        className="size-16 rounded-full object-cover object-top shadow-sm"
-      />
-      <p className="text-xs font-bold text-foreground text-center">{member.name}</p>
-      <p className="font-[family-name:var(--font-outfit)] text-[11px] font-semibold text-muted">
-        #{member.rank}
-      </p>
-      <div className="flex items-center gap-1">
-        {/* Compact SNS */}
-        <button className="flex size-[22px] items-center justify-center rounded-full text-muted hover:bg-gray-100 transition-colors">
-          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <rect x="2" y="2" width="20" height="20" rx="5" />
-            <circle cx="12" cy="12" r="5" />
-            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
-          </svg>
-        </button>
-        <button className="flex size-[22px] items-center justify-center rounded-full text-muted hover:bg-gray-100 transition-colors">
-          <svg className="size-3.5" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-          </svg>
-        </button>
-        <button className="flex size-[22px] items-center justify-center rounded-full text-muted hover:bg-gray-100 transition-colors">
-          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-            <rect x="2" y="4" width="20" height="16" rx="4" />
-            <polygon points="10,8 16,12 10,16" fill="currentColor" stroke="none" />
-          </svg>
-        </button>
       </div>
     </Link>
   );
@@ -174,88 +106,67 @@ function CompactMemberRow({ member }: { member: Member }) {
 export default async function MembersPage() {
   const members = await getRankedMembers();
   const active = members.filter((m) => m.name !== "Coming Soon");
-  const comingSoon = members.filter((m) => m.name === "Coming Soon");
-  const playerMembers = active.filter((m) => m.role === "PLAYER");
-  const pitMembers = [
-    ...active.filter((m) => m.role === "PIT"),
-    ...comingSoon,
-  ];
 
   return (
     <>
       <Header />
-      <main>
-        {/* Page Header */}
-        <section className="pt-10 pb-8 text-center">
-          <p className="text-4xl mb-2">👥</p>
-          <h1 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-primary to-primary-blue bg-clip-text text-transparent">
-            メンバー紹介
-          </h1>
-          <p className="mt-2 text-sm text-muted">
-            Project P を構成する12人のメンバー
-          </p>
+      <main className="pb-20">
+        {/* Hero */}
+        <section className="relative bg-[#111] text-[#F5F1E8] px-6 py-16 md:py-20 overflow-hidden">
+          <div
+            className="absolute top-0 left-0 right-0 h-2 bg-[#D41E28]"
+            style={{
+              clipPath:
+                "polygon(0 30%, 4% 20%, 10% 40%, 18% 15%, 26% 45%, 34% 10%, 42% 40%, 50% 18%, 58% 42%, 66% 16%, 74% 40%, 82% 14%, 90% 42%, 96% 20%, 100% 40%, 100% 100%, 0 100%)",
+            }}
+            aria-hidden
+          />
+          <div className="max-w-[1200px] mx-auto">
+            <p
+              className="text-xs md:text-sm font-black tracking-[0.35em] text-[#FFE600]"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              RUNNERS
+            </p>
+            <h1
+              className="mt-3 text-5xl md:text-7xl font-black leading-[0.9] tracking-tight"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              12人の<br />
+              <span className="text-[#D41E28]">現在地。</span>
+            </h1>
+            <p
+              className="mt-6 text-base md:text-lg leading-relaxed max-w-2xl text-[#9BA8BF]"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              毎月の成績で全員のポジションが変わる。上位 6 名が PLAYER、下位 6 名が PIT。
+            </p>
+          </div>
         </section>
 
-        {/* All Members Grid */}
-        <section className="mx-auto max-w-[996px] px-4">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-primary to-primary-cyan" />
-            <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-primary-dark tracking-tight">
-              🏆 全メンバー（現在の順位順）
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-5">
-            {members.map((member) => (
-              <MemberCard key={member.id} member={member} />
+        {/* Grid */}
+        <section className="max-w-[1200px] mx-auto px-4 mt-16">
+          <SectionHeading
+            title="全メンバー"
+            eyebrow="CURRENT STANDINGS"
+            accent="red"
+            aside={<span>順位順</span>}
+          />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {active.map((member, i) => (
+              <MemberCard key={member.id} member={member} rank={i + 1} />
             ))}
           </div>
         </section>
 
-        {/* PLAYER Section */}
-        <section className="mx-auto max-w-[996px] px-4 mt-14">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-primary to-primary-cyan" />
-            <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-primary-dark tracking-tight">
-              ⭐ PLAYER（上位6名）
-            </h2>
-          </div>
-
-          <div className="rounded-2xl bg-white/70 border border-white/80 p-5 shadow-sm">
-            <p className="text-sm text-muted mb-3">ステージの主役として活躍するメンバー</p>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6">
-              {playerMembers.map((member) => (
-                <CompactMemberRow key={member.id} member={member} />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* PIT Section */}
-        <section className="mx-auto max-w-[996px] px-4 mt-10">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-pit to-[#fdc700]" />
-            <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-[#bb4d00] tracking-tight">
-              🔥 PIT（下位6名）
-            </h2>
-          </div>
-
-          <div className="rounded-2xl bg-white/70 border border-white/80 p-5 shadow-sm">
-            <p className="text-sm text-muted mb-3">逆襲の機会を待つメンバー</p>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6">
-              {pitMembers.map((member) => (
-                <CompactMemberRow key={member.id} member={member} />
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* Footer note */}
-        <section className="mx-auto max-w-[996px] px-4 mt-10">
-          <div className="rounded-2xl border border-[rgba(206,250,254,0.5)] bg-gradient-to-r from-[rgba(236,254,255,0.8)] to-[rgba(240,249,255,0.8)] px-5 py-5 text-center">
-            <p className="text-2xl mb-2">🔄</p>
-            <p className="text-sm font-bold text-primary-dark">
-              月間3指標（バズ・配信・収支）と月末特番の結果により、毎月 PLAYER / PIT が再編成されます
+        <section className="max-w-[1200px] mx-auto px-4 mt-16">
+          <div className="bg-[#D41E28] text-white px-6 py-5">
+            <p
+              className="text-center text-base md:text-lg font-black"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              月間 3 指標（バズ・配信・収支）と月末特番の結果で、毎月 PLAYER / PIT が再編成される。
             </p>
           </div>
         </section>
