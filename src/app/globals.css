@@ -1,29 +1,47 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-background: #f0f9ff;
-  --color-foreground: #2d3a4a;
+  /* かけあがり ベーストークン */
+  --color-background: #F5F1E8;
+  --color-foreground: #111111;
+  --color-muted: #4A5060;
+  --color-rule: #111111;
+  --color-rule-soft: #D5CFC0;
+  --color-paper: #F5F1E8;
+  --color-paper-elevated: #FFFFFF;
 
-  --color-primary: #00d3f3;
-  --color-primary-dark: #007595;
-  --color-primary-blue: #2b7fff;
-  --color-primary-cyan: #00bcff;
+  /* シグネチャ色 */
+  --color-signal-red: #D41E28;
+  --color-signal-pink: #ED2B86;
+  --color-signal-teal: #1CB4AF;
+  --color-signal-yellow: #FFE600;
+  --color-signal-gold: #D4A73E;
+  --color-signal-ink: #111111;
 
-  --color-muted: #7a8ba0;
+  /* 指標色（バズ・配信・収支） */
+  --color-buzz: #00BCFF;
+  --color-stream: #1447E6;
+  --color-revenue: #7A3DFF;
+
+  /* 旧 Project P トークン（段階的に削除予定） */
+  --color-primary: #D41E28;
+  --color-primary-dark: #D41E28;
+  --color-primary-blue: #1447E6;
+  --color-primary-cyan: #00BCFF;
   --color-card: rgba(255, 255, 255, 0.7);
-  --color-card-border: rgba(255, 255, 255, 0.8);
+  --color-card-border: #D5CFC0;
+  --color-player: #D41E28;
+  --color-player-end: #D41E28;
+  --color-pit: #4A5060;
+  --color-pit-end: #4A5060;
+  --color-reorg: #FFE600;
+  --color-live: #D41E28;
+  --color-live-end: #ED2B86;
+  --color-trending: #1CB4AF;
+  --color-purple: #7A3DFF;
+  --color-purple-end: #ED2B86;
 
-  --color-player: #00bcff;
-  --color-player-end: #2b7fff;
-  --color-pit: #ffb900;
-  --color-pit-end: #ff8904;
-  --color-reorg: #ffd230;
-  --color-live: #ff6467;
-  --color-live-end: #f6339a;
-  --color-trending: #00d492;
-  --color-purple: #a684ff;
-  --color-purple-end: #e12afb;
-
+  /* フォント */
   --font-outfit: "Outfit", sans-serif;
   --font-noto: "Noto Sans JP", sans-serif;
 }
@@ -33,9 +51,8 @@ html, body {
 }
 
 body {
-  background: linear-gradient(180deg, #ecfeff 0%, #f0f9ff 30%, #f8fafc 100%);
+  background: var(--color-paper);
   color: var(--color-foreground);
   font-family: var(--font-noto);
   min-height: 100vh;
 }
-

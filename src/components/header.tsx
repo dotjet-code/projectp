@@ -28,11 +28,15 @@ function FanAuthLink({ onNavigate }: { onNavigate?: () => void }) {
       <Link
         href="/fan/me"
         onClick={onNavigate}
-        className="relative rounded-full bg-gradient-to-r from-primary to-primary-blue px-4 py-1.5 text-xs font-bold text-white shadow-sm"
+        className="relative inline-flex items-center gap-1 bg-[#D41E28] text-white px-3 py-1.5 text-xs font-black"
+        style={{ fontFamily: "var(--font-noto-serif), serif" }}
       >
-        🎟️ マイページ
+        マイページ
         {unredeemed > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-extrabold border-2 border-white shadow">
+          <span
+            className="absolute -top-2 -right-2 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-[#FFE600] text-[#111] text-[10px] font-black border border-[#111]"
+            style={{ fontFamily: "var(--font-outfit)" }}
+          >
             {unredeemed}
           </span>
         )}
@@ -43,12 +47,14 @@ function FanAuthLink({ onNavigate }: { onNavigate?: () => void }) {
     <Link
       href="/fan/login"
       onClick={onNavigate}
-      className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-xs font-bold text-gray-700 hover:bg-gray-50"
+      className="inline-flex items-center border border-[#111] bg-[#F5F1E8] text-[#111] px-3 py-1.5 text-xs font-black hover:bg-[#111] hover:text-[#F5F1E8] transition-colors"
+      style={{ fontFamily: "var(--font-noto-serif), serif" }}
     >
       会員ログイン
     </Link>
   );
 }
+
 const navItems = [
   { label: "トップ", href: "/" },
   { label: "メンバー", href: "/members" },
@@ -59,17 +65,23 @@ const navItems = [
   { label: "結果発表", href: "/results" },
 ];
 
+function isActivePath(pathname: string, href: string): boolean {
+  if (href === "/") return pathname === "/";
+  if (href === "/ranking") return pathname === "/ranking";
+  return pathname.startsWith(href);
+}
+
 export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-md bg-white/70">
-      <div className="flex items-center justify-between px-4 py-2.5">
+    <header className="sticky top-0 z-50 bg-[#F5F1E8] border-b border-[#111]">
+      <div className="flex items-center justify-between px-4 py-3 max-w-[1400px] mx-auto">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2 shrink-0">
           <span
-            className="inline-flex size-6 items-center justify-center bg-[#D41E28] text-white text-[11px] font-black"
+            className="inline-flex size-7 items-center justify-center bg-[#D41E28] text-white text-xs font-black"
             style={{
               fontFamily: "var(--font-noto-serif), serif",
               transform: "rotate(-4deg)",
@@ -79,7 +91,7 @@ export function Header() {
             か
           </span>
           <span
-            className="text-base font-black text-[#111111] tracking-tight"
+            className="text-lg font-black text-[#111] tracking-tight"
             style={{ fontFamily: "var(--font-noto-serif), serif" }}
           >
             かけあがり
@@ -87,45 +99,48 @@ export function Header() {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-0.5">
+        <nav className="hidden md:flex items-center gap-1">
           {navItems.map((item) => {
-            const isActive =
-              item.href === "/"
-                ? pathname === "/"
-                : item.href === "/ranking"
-                ? pathname === "/ranking"
-                : pathname.startsWith(item.href);
+            const isActive = isActivePath(pathname, item.href);
             return (
               <Link
                 key={item.label}
                 href={item.href}
-                className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                className={`relative px-3 py-2 text-sm font-black tracking-wide transition-colors ${
                   isActive
-                    ? "bg-gradient-to-r from-[#ecfeff] to-[#f0f9ff] text-primary-dark font-bold shadow-sm"
-                    : "text-muted hover:bg-gray-50"
+                    ? "text-[#D41E28]"
+                    : "text-[#111] hover:text-[#D41E28]"
                 }`}
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
                 {item.label}
+                {isActive && (
+                  <span
+                    className="absolute left-2 right-2 bottom-0 h-[3px] bg-[#D41E28]"
+                    aria-hidden
+                  />
+                )}
               </Link>
             );
           })}
-          <div className="ml-2">
+          <div className="ml-3">
             <FanAuthLink />
           </div>
         </nav>
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden flex size-10 items-center justify-center rounded-xl text-muted hover:bg-gray-50 transition-colors"
+          className="md:hidden flex size-10 items-center justify-center text-[#111] border border-[#111]"
           onClick={() => setOpen(!open)}
+          aria-label="メニュー"
         >
           {open ? (
             <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
             </svg>
           ) : (
             <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           )}
         </button>
@@ -133,30 +148,31 @@ export function Header() {
 
       {/* Mobile menu */}
       {open && (
-        <nav className="md:hidden border-t border-gray-100 px-4 py-3 flex flex-col gap-1">
+        <nav className="md:hidden border-t border-[#111] bg-[#F5F1E8] px-4 py-3 flex flex-col">
           {navItems.map((item) => {
-            const isActive =
-              item.href === "/"
-                ? pathname === "/"
-                : item.href === "/ranking"
-                ? pathname === "/ranking"
-                : pathname.startsWith(item.href);
+            const isActive = isActivePath(pathname, item.href);
             return (
               <Link
                 key={item.label}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className={`rounded-xl px-4 py-2.5 text-sm font-medium transition-colors ${
+                className={`flex items-center justify-between border-b border-[#D5CFC0] px-2 py-3 text-base font-black transition-colors ${
                   isActive
-                    ? "bg-gradient-to-r from-[#ecfeff] to-[#f0f9ff] text-primary-dark font-bold"
-                    : "text-muted hover:bg-gray-50"
+                    ? "text-[#D41E28]"
+                    : "text-[#111] hover:text-[#D41E28]"
                 }`}
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                {item.label}
+                <span>{item.label}</span>
+                {isActive && (
+                  <span className="text-[#D41E28]" aria-hidden>
+                    →
+                  </span>
+                )}
               </Link>
             );
           })}
-          <div className="pt-2 mt-1 border-t border-gray-100">
+          <div className="pt-4">
             <FanAuthLink onNavigate={() => setOpen(false)} />
           </div>
         </nav>

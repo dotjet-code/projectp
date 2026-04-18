@@ -2,6 +2,100 @@ import Link from "next/link";
 import { listLiveEvents } from "@/lib/projectp/live-event";
 import { SectionHeading } from "./section-heading";
 
+type LiveEvent = Awaited<ReturnType<typeof listLiveEvents>>[number];
+
+function formatDate(iso: string): string {
+  return iso.replace(/-/g, ".");
+}
+
+function TodayRow({ ev }: { ev: LiveEvent }) {
+  return (
+    <div className="relative border-t-[3px] border-[#111111] bg-[#111111] text-[#F5F1E8] px-5 py-6 md:px-7 md:py-7 overflow-hidden">
+      {/* 右側スタンプ: 放送中 */}
+      {ev.status === "open" && (
+        <div
+          className="absolute top-4 right-4 md:top-6 md:right-6 bg-[#D41E28] text-white px-3 py-1 flex items-center gap-2 select-none"
+          style={{ transform: "rotate(-3deg)" }}
+        >
+          <span className="inline-block w-2 h-2 bg-white animate-pulse" aria-hidden />
+          <span
+            className="text-[10px] font-black tracking-[0.2em]"
+            style={{ fontFamily: "var(--font-outfit)" }}
+          >
+            投票受付中
+          </span>
+        </div>
+      )}
+
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <div className="flex-1 min-w-0">
+          <p
+            className="text-xs font-black tracking-[0.3em] text-[#FFE600]"
+            style={{ fontFamily: "var(--font-outfit)" }}
+          >
+            {formatDate(ev.eventDate)}
+          </p>
+          <h3
+            className="mt-3 text-2xl md:text-4xl font-black leading-tight text-[#F5F1E8]"
+            style={{ fontFamily: "var(--font-noto-serif), serif" }}
+          >
+            {ev.title}
+          </h3>
+          {ev.venue && (
+            <p
+              className="mt-2 text-sm font-bold text-[#9BA8BF]"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              @ {ev.venue}
+            </p>
+          )}
+        </div>
+
+        <Link
+          href={ev.status === "open" ? `/event/${ev.id}` : "/live/vote"}
+          className="shrink-0 self-start md:self-end inline-flex items-center gap-2 bg-[#D41E28] text-white px-6 py-3 text-base font-black tracking-wide hover:translate-y-[-2px] transition-transform"
+          style={{ fontFamily: "var(--font-noto-serif), serif" }}
+        >
+          {ev.status === "open" ? "投票する" : "詳細を見る"} →
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function FutureRow({ ev }: { ev: LiveEvent }) {
+  return (
+    <div className="flex items-center justify-between gap-4 py-5 border-b border-[#D5CFC0]">
+      <div className="flex items-baseline gap-4 min-w-0">
+        <span
+          className="text-sm font-black tracking-[0.2em] text-[#D41E28] shrink-0 tabular-nums"
+          style={{ fontFamily: "var(--font-outfit)" }}
+        >
+          {formatDate(ev.eventDate)}
+        </span>
+        <div className="min-w-0">
+          <p
+            className="text-base md:text-lg font-black text-[#111111] truncate"
+            style={{ fontFamily: "var(--font-noto-serif), serif" }}
+          >
+            {ev.title}
+          </p>
+          {ev.venue && (
+            <p className="text-xs text-[#4A5060] truncate">@ {ev.venue}</p>
+          )}
+        </div>
+      </div>
+      <Link
+        href="/live/vote"
+        className="shrink-0 text-xs font-black text-[#D41E28] hover:underline"
+        style={{ fontFamily: "var(--font-outfit)" }}
+      >
+        詳細 →
+      </Link>
+    </div>
+  );
+}
+
 export async function TodaysLive() {
   const events = await listLiveEvents();
   const today = new Date().toISOString().slice(0, 10);
@@ -16,106 +110,32 @@ export async function TodaysLive() {
   if (todayEvents.length === 0 && futureEvents.length === 0) return null;
 
   return (
-    <section className="mx-auto max-w-[1200px] px-4 mt-16 space-y-10">
-      {/* 本日のライブ */}
+    <section className="mx-auto max-w-[1200px] px-4 mt-16 space-y-12">
       {todayEvents.length > 0 && (
         <div>
-          <SectionHeading title="本日のライブ" eyebrow="TONIGHT'S LIVE" accent="red" />
+          <SectionHeading
+            title="本日のライブ"
+            eyebrow="TONIGHT'S LIVE"
+            accent="red"
+          />
           <div className="space-y-3">
             {todayEvents.map((ev) => (
-              <div
-                key={ev.id}
-                className="relative overflow-hidden rounded-2xl border border-live/30 px-6 py-6"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(172deg, rgba(255,230,235,0.8) 0%, rgba(255,240,245,0.8) 50%, rgba(253,244,255,0.8) 100%)",
-                }}
-              >
-                {/* Sound wave bars */}
-                <div className="absolute right-5 top-1/2 -translate-y-1/2 flex items-end gap-[3px] pointer-events-none">
-                  {[18, 28, 14, 24, 20, 32, 16, 26, 20, 30].map((h, i) => (
-                    <div
-                      key={i}
-                      className="w-[3px] rounded-full"
-                      style={{
-                        height: h,
-                        backgroundColor: "rgba(231,0,11,0.1)",
-                        animation: `soundbar 1.2s ease-in-out infinite`,
-                        animationDelay: `${i * 0.1}s`,
-                      }}
-                    />
-                  ))}
-                </div>
-
-                <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="font-[family-name:var(--font-outfit)] text-sm font-bold text-[#e7000b]">
-                        {ev.eventDate}
-                      </span>
-                      {ev.status === "open" && (
-                        <span className="rounded-full bg-gradient-to-r from-live to-[#fb64b6] px-2.5 py-0.5 text-[11px] font-bold tracking-wider text-white animate-pulse">
-                          投票受付中
-                        </span>
-                      )}
-                      {ev.status === "draft" && (
-                        <span className="rounded-full bg-amber-500 px-2.5 py-0.5 text-[11px] font-bold tracking-wider text-white">
-                          本日開催
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="text-lg font-bold text-foreground">{ev.title}</h3>
-                    {ev.venue && <p className="mt-1 text-sm text-muted">{ev.venue}</p>}
-                  </div>
-
-                  {ev.status === "open" ? (
-                    <Link
-                      href={`/event/${ev.id}`}
-                      className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-live to-[#fb64b6] px-6 py-3 text-base font-bold text-white shadow-lg transition hover:scale-[1.02]"
-                    >
-                      💖 投票する →
-                    </Link>
-                  ) : (
-                    <Link
-                      href="/live/vote"
-                      className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-purple to-purple-end px-6 py-3 text-base font-bold text-white shadow-[0_10px_15px_rgba(221,214,255,0.5)] transition hover:scale-[1.02]"
-                    >
-                      詳細を見る →
-                    </Link>
-                  )}
-                </div>
-              </div>
+              <TodayRow key={ev.id} ev={ev} />
             ))}
           </div>
         </div>
       )}
 
-      {/* ライブ予定 */}
       {futureEvents.length > 0 && (
         <div>
-          <SectionHeading title="ライブ予定" eyebrow="UPCOMING" accent="black" />
-          <div className="space-y-3">
+          <SectionHeading
+            title="ライブ予定"
+            eyebrow="UPCOMING"
+            accent="black"
+          />
+          <div className="border-t-[3px] border-[#111]">
             {futureEvents.map((ev) => (
-              <div
-                key={ev.id}
-                className="rounded-2xl border border-[rgba(237,233,254,0.5)] bg-gradient-to-r from-[rgba(237,233,254,0.5)] to-[rgba(250,245,255,0.5)] px-6 py-4"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="font-[family-name:var(--font-outfit)] text-xs font-bold text-[#7f22fe]">
-                      {ev.eventDate}
-                    </span>
-                    <p className="text-sm font-bold text-foreground mt-0.5">{ev.title}</p>
-                    {ev.venue && <p className="text-xs text-muted">{ev.venue}</p>}
-                  </div>
-                  <Link
-                    href="/live/vote"
-                    className="text-xs font-bold text-[#7f22fe] underline"
-                  >
-                    詳細 →
-                  </Link>
-                </div>
-              </div>
+              <FutureRow key={ev.id} ev={ev} />
             ))}
           </div>
         </div>
