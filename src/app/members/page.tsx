@@ -58,7 +58,8 @@ function MemberCard({ member, rank }: { member: RankedMember; rank: number }) {
           src={member.avatarUrl}
           alt=""
           fill
-          className="object-cover object-top grayscale contrast-125 group-hover:grayscale-0 transition-[filter]"
+          className="object-cover md:grayscale md:contrast-125 md:group-hover:grayscale-0 transition-[filter]"
+          style={{ objectPosition: "50% 18%" }}
           sizes="(max-width: 768px) 50vw, 280px"
         />
         <FloatingLiveBadge slug={member.slug} />

@@ -45,8 +45,12 @@ export function SectionHeading({
             </p>
           )}
           <h2
-            className="text-2xl md:text-4xl font-black leading-none tracking-tight text-[#111111]"
-            style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            className="text-2xl md:text-4xl font-black leading-tight tracking-tight text-[#111111]"
+            style={{
+              fontFamily: "var(--font-noto-serif), serif",
+              wordBreak: "keep-all",
+              overflowWrap: "anywhere",
+            }}
           >
             {title}
           </h2>
