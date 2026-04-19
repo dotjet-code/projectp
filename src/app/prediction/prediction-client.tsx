@@ -208,6 +208,24 @@ function SectionHeading({
 // 出馬表 (Starter Roster) — メンバー一覧 + 主役指名ボタン
 // =====================================================================
 
+/** メンバー別の決意表明コメント (出馬表 中央列に表示) */
+const MEMBER_COMMENTS: Record<string, string> = {
+  "塩見きら": "首位は、譲らない。",
+  "ねこみ。": "可愛い、で終わらない。",
+  "阿久津真央": "次の主役は、私。",
+  "カガミルイ": "光るのは、私の番。",
+  "栗田みほ": "静かに、確実に削る。",
+  "セナモモカ": "PIT で終わる気はない。",
+  "清宮みゆ": "数字で証明する。",
+  "城乃せん": "下から、ひっくり返す。",
+  "さくらぎみずき": "見ててね、ぜんぶ。",
+  "ありよりのあみ": "次は『ありより』じゃない。",
+};
+
+function commentFor(name: string): string {
+  return MEMBER_COMMENTS[name] ?? "ここから、勝ち上がる。";
+}
+
 function StarterRoster({ members }: { members: PublicMember[] }) {
   return (
     <PaperCard className="px-5 py-6 md:px-7 md:py-8">
@@ -253,8 +271,8 @@ function StarterRoster({ members }: { members: PublicMember[] }) {
               />
             </div>
 
-            {/* 名前 + ロール */}
-            <div className="flex-1 min-w-0">
+            {/* 名前 + ロール (固定幅) */}
+            <div className="flex-1 md:flex-initial md:shrink-0 md:w-44 min-w-0">
               <p
                 className="text-sm md:text-base font-bold text-[#111] truncate leading-tight"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
@@ -271,6 +289,23 @@ function StarterRoster({ members }: { members: PublicMember[] }) {
               >
                 {m.role}
               </span>
+            </div>
+
+            {/* === 決意表明コメント (デスクトップのみ、中央余白を埋める) === */}
+            <div className="hidden md:flex flex-1 min-w-0 px-4 items-center">
+              <span
+                className="shrink-0 mr-2 text-[#D41E28] text-base font-black leading-none"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                aria-hidden
+              >
+                ❝
+              </span>
+              <p
+                className="text-sm md:text-base font-bold text-[#111] leading-snug truncate"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                {commentFor(m.name)}
+              </p>
             </div>
 
             {/* 主役指名ボタン: モバイルはアイコンのみ、デスクトップはフルサイズ */}
