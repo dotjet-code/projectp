@@ -36,7 +36,12 @@ export async function MemberGrid() {
   return (
     <section className="mx-auto max-w-[1200px] px-4 mt-16">
       <SectionHeading
-        title="本日の出走"
+        title={
+          <>
+            <span className="inline-block">本日の</span>
+            <span className="inline-block">出走</span>
+          </>
+        }
         eyebrow="TODAY'S STARTERS"
         aside={
           <span>

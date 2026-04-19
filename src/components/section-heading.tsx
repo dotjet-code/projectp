@@ -9,7 +9,7 @@ const ACCENT_COLOR: Record<Accent, string> = {
 };
 
 export interface SectionHeadingProps {
-  title: string;
+  title: ReactNode;
   /** 英字サブタイトル (Anton/Outfit で小さく上に置く) */
   eyebrow?: string;
   /** セクション右端の小さな補足 */
@@ -46,11 +46,7 @@ export function SectionHeading({
           )}
           <h2
             className="text-2xl md:text-4xl font-black leading-tight tracking-tight text-[#111111]"
-            style={{
-              fontFamily: "var(--font-noto-serif), serif",
-              wordBreak: "keep-all",
-              overflowWrap: "anywhere",
-            }}
+            style={{ fontFamily: "var(--font-noto-serif), serif" }}
           >
             {title}
           </h2>
