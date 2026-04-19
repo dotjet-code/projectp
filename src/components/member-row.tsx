@@ -51,8 +51,8 @@ function BoatPlate({ rank }: { rank: number }) {
 }
 
 /**
- * モバイル用 EQ 風ミニ統計バー (4 指標を縦バーで)。
- * デスクトップでは `md:hidden` で非表示、フル ScoreBar を別の列で表示する。
+ * モバイル用 ミニ統計 (4 指標: バー + ラベル付き)。
+ * デスクトップでは `md:hidden` で非表示。
  */
 function MiniStatsBars({
   buzz,
@@ -81,23 +81,33 @@ function MiniStatsBars({
   ];
   return (
     <div
-      className="md:hidden flex items-end gap-[2px] h-3"
+      className="md:hidden flex items-end gap-2"
       role="img"
       aria-label="バズ・配信・収支・投票 の強度"
     >
-      {bars.map((b, i) => {
-        const pct = Math.max(8, Math.min(100, (b.value / Math.max(b.max, 1)) * 100));
+      {bars.map((b) => {
+        const pct = Math.max(
+          6,
+          Math.min(100, (b.value / Math.max(b.max, 1)) * 100),
+        );
         return (
           <div
-            key={i}
-            className="w-[3px] bg-[#E0DCC8] flex items-end"
-            style={{ height: "100%" }}
+            key={b.label}
+            className="flex flex-col items-center gap-0.5"
             title={`${b.label}: ${b.value.toLocaleString()}`}
           >
-            <div
-              className="w-full"
-              style={{ height: `${pct}%`, backgroundColor: b.color }}
-            />
+            <div className="w-3 h-3 bg-[#E0DCC8] flex items-end">
+              <div
+                className="w-full"
+                style={{ height: `${pct}%`, backgroundColor: b.color }}
+              />
+            </div>
+            <span
+              className="text-[8px] font-bold leading-none text-[#4A5060] whitespace-nowrap"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              {b.label}
+            </span>
           </div>
         );
       })}
@@ -214,14 +224,14 @@ export function MemberRow({
         </span>
       </Link>
 
-      {/* 名前 + ロール + モバイル用 EQ 風ミニ統計 */}
+      {/* 名前 + ロール + モバイル用 ミニ統計 (ラベル付き) */}
       <Link href={href} className="flex-1 md:flex-initial md:shrink-0 md:mr-3 md:w-40 min-w-0">
         <p className="text-sm md:text-lg font-bold text-[#111] truncate leading-tight">
           {member.name}
         </p>
-        <div className="mt-0.5 md:mt-1 flex items-center gap-2">
+        <div className="mt-0.5 md:mt-1 flex flex-col gap-1.5">
           <span
-            className={`inline-block text-[9px] md:text-[10px] font-black tracking-wider px-1.5 py-0.5 ${
+            className={`self-start inline-block text-[9px] md:text-[10px] font-black tracking-wider px-1.5 py-0.5 ${
               member.role === "PLAYER"
                 ? "bg-[#D41E28] text-white"
                 : "bg-[#4A5060] text-white"
@@ -230,7 +240,7 @@ export function MemberRow({
           >
             {member.role}
           </span>
-          {/* モバイル専用: 4 指標を縦バー (EQ 風) で */}
+          {/* モバイル専用: 4 指標バー + ラベル */}
           <MiniStatsBars
             buzz={member.detail.stats.buzz}
             conc={member.detail.stats.concurrent}
