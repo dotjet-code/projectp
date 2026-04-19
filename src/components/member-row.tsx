@@ -127,7 +127,7 @@ export function MemberRow({
 
       <Link
         href={href}
-        className="shrink-0 md:mr-4 relative w-12 h-12 md:w-16 md:h-16 overflow-hidden border border-[#D5CFC0]"
+        className="shrink-0 md:mr-4 relative w-10 h-10 md:w-16 md:h-16 overflow-hidden border border-[#D5CFC0]"
         tabIndex={-1}
         aria-hidden
       >
@@ -144,12 +144,12 @@ export function MemberRow({
 
       <Link
         href={href}
-        className="shrink-0 md:mr-3 w-7 md:w-12 flex items-baseline gap-0.5"
+        className="shrink-0 md:mr-3 w-6 md:w-12 flex items-baseline gap-0.5"
         tabIndex={-1}
         aria-hidden
       >
         <span
-          className="text-2xl md:text-4xl font-black leading-none tabular-nums text-[#111]"
+          className="text-xl md:text-4xl font-black leading-none tabular-nums text-[#111]"
           style={{ fontFamily: "var(--font-outfit)" }}
         >
           {rank}
@@ -207,49 +207,47 @@ export function MemberRow({
       {/* 合計 pt */}
       <Link
         href={href}
-        className="shrink-0 md:mr-10 w-16 md:w-24 text-right tabular-nums"
+        className="shrink-0 md:mr-10 w-[68px] md:w-24 text-right tabular-nums"
         tabIndex={-1}
         aria-hidden
       >
         <p
-          className="text-xl md:text-3xl font-black tabular-nums leading-none text-[#111]"
+          className="text-base md:text-3xl font-black tabular-nums leading-none text-[#111]"
           style={{ fontFamily: "var(--font-outfit)" }}
         >
           {member.effectivePoints.toLocaleString()}
         </p>
         <p
-          className="text-[10px] text-[#4A5060] mt-0.5"
+          className="text-[9px] md:text-[10px] text-[#4A5060] mt-0.5"
           style={{ fontFamily: "var(--font-outfit)" }}
         >
           pt
         </p>
       </Link>
 
-      {/* === ACTION (mobile はコンパクト・desktop は通常サイズ) === */}
-      {member.supabaseId && (
-        <>
-          {/* mobile: アイコンのみのコンパクトボタン */}
-          <div className="md:hidden shrink-0 ml-1">
-            <ShuyakuVoteButton
-              memberId={member.supabaseId}
-              memberName={member.name}
-              size="sm"
-              showRule={false}
-              compact
-            />
-          </div>
-          {/* desktop: 通常サイズ */}
-          <div className="hidden md:block shrink-0 w-44">
-            <ShuyakuVoteButton
-              memberId={member.supabaseId}
-              memberName={member.name}
-              size="sm"
-              showRule={false}
-              fullWidth
-            />
-          </div>
-        </>
-      )}
+      {/* === ACTION (mobile はコンパクト 60px幅・desktop は 176px幅 で固定) === */}
+      <div className="md:hidden shrink-0 w-[60px] flex justify-center">
+        {member.supabaseId && (
+          <ShuyakuVoteButton
+            memberId={member.supabaseId}
+            memberName={member.name}
+            size="sm"
+            showRule={false}
+            compact
+          />
+        )}
+      </div>
+      <div className="hidden md:block shrink-0 w-44">
+        {member.supabaseId && (
+          <ShuyakuVoteButton
+            memberId={member.supabaseId}
+            memberName={member.name}
+            size="sm"
+            showRule={false}
+            fullWidth
+          />
+        )}
+      </div>
     </div>
   );
 }

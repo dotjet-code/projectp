@@ -7,11 +7,11 @@ export interface ShuyakuVoteButtonProps {
   memberName: string;
   /** 表示モード */
   size?: "sm" | "md";
-  /** ルール説明文を併記するか */
+  /** ルール説明文を併記するか (md size のみ表示) */
   showRule?: boolean;
   /** 親幅にフィットさせる (列を揃える時) */
   fullWidth?: boolean;
-  /** モバイル向けアイコンのみのコンパクトモード */
+  /** モバイル向け正方形コンパクトモード */
   compact?: boolean;
 }
 
@@ -19,9 +19,14 @@ const DICE_FACES = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"]; // d6
 
 /**
  * 「主役指名」 サイコロを振って 1〜6 票を入れる人気投票ボタン。
- * - クライアントは出目を決めない（サーバーが決める）
+ * - サイコロ値はサーバーが決める (クライアントは出目を決めない)
  * - クリック → サイコロアニメ → サーバーから出た値を表示
  * - 既に今日指名済みなら disabled + 過去の出目を表示
+ *
+ * レイアウト方針:
+ * - ボタン本体は voted 前後で同一寸法 (行高がブレない)
+ * - 結果メッセージは行内に出さない (色の変化で状態を伝える)
+ * - 「また明日復活」等の補足はセクション側で説明する
  */
 export function ShuyakuVoteButton({
   memberId,
@@ -37,7 +42,6 @@ export function ShuyakuVoteButton({
   const [rollFace, setRollFace] = useState(0);
   const [, startTransition] = useTransition();
   const [posting, setPosting] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
   const animTimer = useRef<number | null>(null);
 
   // 初回: 今日の指名済みを取得
@@ -83,7 +87,6 @@ export function ShuyakuVoteButton({
   const handleClick = () => {
     if (voted || posting || rolling) return;
     setPosting(true);
-    setMessage(null);
     startRollAnim();
     const startedAt = Date.now();
     startTransition(async () => {
@@ -106,53 +109,92 @@ export function ShuyakuVoteButton({
             stopRollAnim(v);
             setVoted(true);
             setResultValue(v);
-            setMessage(
-              v === 6
-                ? `🎉 大当たり！ ${v} 票 投票しました`
-                : `${v} 票 投票しました`,
-            );
           } else {
             stopRollAnim(1);
-            setMessage("結果取得に失敗。再読み込みしてね");
           }
         } else {
           const j = await r.json().catch(() => ({}));
           stopRollAnim(rollFace + 1);
           if (j?.code === "already_voted_today") {
             setVoted(true);
-            setMessage("本日はすでに投票済みです");
-          } else if (j?.code === "rate_limited") {
-            setMessage("混雑中。少し待ってから試してね");
-          } else {
-            setMessage("通信エラー。あとで試してね");
           }
         }
       } catch {
         stopRollAnim(rollFace + 1);
-        setMessage("通信エラー。あとで試してね");
       } finally {
         setPosting(false);
       }
     });
   };
 
+  const displayFace = voted && resultValue ? resultValue - 1 : rollFace;
+
+  // ====== モバイル/コンパクト: 正方形ダイス + 上にラベル ======
+  if (compact) {
+    const topLabel = rolling
+      ? "振っています…"
+      : voted && resultValue
+        ? `✓ ${resultValue} 票で投票済み`
+        : "押して投票";
+
+    return (
+      <div className="inline-flex flex-col items-center gap-1 select-none">
+        <span
+          className="text-[9px] font-black tracking-wide text-[#4A5060] whitespace-nowrap leading-none"
+          style={{ fontFamily: "var(--font-noto-serif), serif" }}
+          aria-hidden
+        >
+          {topLabel}
+        </span>
+        <button
+          type="button"
+          onClick={handleClick}
+          disabled={voted || posting || rolling}
+          aria-pressed={voted}
+          aria-label={
+            voted
+              ? `${memberName} に ${resultValue} 票で投票済み`
+              : `${memberName} を主役に指名する (サイコロを振る)`
+          }
+          className="relative flex items-center justify-center w-12 h-12 disabled:cursor-not-allowed transition-transform active:translate-y-0.5"
+          style={{
+            backgroundColor: voted ? "#111111" : "#D41E28",
+            boxShadow: voted
+              ? "3px 3px 0 rgba(17,17,17,0.25)"
+              : "3px 3px 0 rgba(17,17,17,0.22)",
+            opacity: posting && !rolling ? 0.6 : 1,
+          }}
+        >
+          <span
+            className="text-3xl leading-none"
+            style={{
+              color: voted ? "#FFE600" : "#FFFFFF",
+              transform: rolling ? "rotate(15deg)" : "rotate(0deg)",
+              transition: rolling ? "none" : "transform 200ms ease",
+              textShadow: "1px 1px 0 rgba(0,0,0,0.25)",
+              marginTop: "-2px",
+            }}
+            aria-hidden
+          >
+            {DICE_FACES[displayFace]}
+          </span>
+        </button>
+      </div>
+    );
+  }
+
+  // ====== デスクトップ: 横長ボタン (ラベル付き) ======
   const sm = size === "sm";
   const dicePx = sm ? "text-3xl" : "text-5xl";
   const labelText = sm ? "text-xs md:text-sm" : "text-sm md:text-base";
-  const padding = compact ? "px-2 py-2" : sm ? "px-3 py-2" : "px-4 py-3";
+  const padding = sm ? "px-3 py-2" : "px-4 py-3";
 
-  const displayFace = voted && resultValue ? resultValue - 1 : rollFace;
-
-  const wrapperCls = compact
-    ? "inline-flex flex-col items-center gap-1"
-    : fullWidth
-      ? "flex flex-col items-start gap-1.5 w-full"
-      : "inline-flex flex-col items-start gap-1.5";
-  const buttonCls = compact
-    ? "inline-flex items-center justify-center"
-    : fullWidth
-      ? "flex w-full items-center justify-start gap-3"
-      : "inline-flex items-center gap-3";
+  const wrapperCls = fullWidth
+    ? "flex flex-col items-start gap-1.5 w-full"
+    : "inline-flex flex-col items-start gap-1.5";
+  const buttonCls = fullWidth
+    ? "flex w-full items-center justify-start gap-3"
+    : "inline-flex items-center gap-3";
 
   return (
     <div className={wrapperCls}>
@@ -177,7 +219,6 @@ export function ShuyakuVoteButton({
           opacity: posting && !rolling ? 0.6 : 1,
         }}
       >
-        {/* サイコロ */}
         <span
           className={`${dicePx} leading-none select-none`}
           style={{
@@ -185,82 +226,46 @@ export function ShuyakuVoteButton({
             display: "inline-block",
             transform: rolling ? "rotate(15deg)" : "rotate(0deg)",
             transition: rolling ? "none" : "transform 200ms ease",
-            textShadow: voted
-              ? "2px 2px 0 rgba(0,0,0,0.4)"
-              : "2px 2px 0 rgba(0,0,0,0.3)",
+            textShadow: "2px 2px 0 rgba(0,0,0,0.3)",
           }}
           aria-hidden
         >
           {DICE_FACES[displayFace]}
         </span>
 
-        {/* compact モードではアイコンのみ。それ以外は ラベル + 説明 */}
-        {!compact && (
-          <span className="flex flex-col items-start leading-tight">
-            {voted && resultValue ? (
-              <>
-                <span className="text-[10px] tracking-[0.25em] opacity-80">
-                  INDICATED
-                </span>
-                <span>{resultValue} 票で投票済み</span>
-              </>
-            ) : rolling ? (
-              <>
-                <span className="text-[10px] tracking-[0.25em] opacity-80">
-                  ROLLING…
-                </span>
-                <span>振っています</span>
-              </>
-            ) : (
-              <>
-                <span className="text-[10px] tracking-[0.25em] opacity-80">
-                  ROLL THE DIE
-                </span>
-                <span>この子を主役に。</span>
-              </>
-            )}
-          </span>
-        )}
+        <span className="flex flex-col items-start leading-tight">
+          {voted && resultValue ? (
+            <>
+              <span className="text-[10px] tracking-[0.25em] opacity-80">
+                INDICATED
+              </span>
+              <span>{resultValue} 票で投票済み</span>
+            </>
+          ) : rolling ? (
+            <>
+              <span className="text-[10px] tracking-[0.25em] opacity-80">
+                ROLLING…
+              </span>
+              <span>振っています</span>
+            </>
+          ) : (
+            <>
+              <span className="text-[10px] tracking-[0.25em] opacity-80">
+                ROLL THE DIE
+              </span>
+              <span>この子を主役に。</span>
+            </>
+          )}
+        </span>
       </button>
 
-      {/* compact モードでは長文メッセージは出さない (ボタンの色で状態を伝える) */}
-      {!compact && message && (
-        <p
-          className="text-[11px] font-bold text-[#111]"
-          style={{ fontFamily: "var(--font-noto-serif), serif" }}
-          role="status"
-        >
-          {message}
-        </p>
-      )}
-
-      {/* 投票済み時: 明日もリセットされることをさりげなく伝える (compact 以外) */}
-      {!compact && voted && (
-        <p
-          className="text-[10px] md:text-[11px] text-[#4A5060]"
-          style={{ fontFamily: "var(--font-outfit)" }}
-        >
-          ━ また明日 0:00 にサイコロが復活
-        </p>
-      )}
-
-      {/* compact + voted 時: 出目だけ小さく表示 */}
-      {compact && voted && resultValue && (
-        <span
-          className="text-[10px] font-black tabular-nums text-[#FFE600] bg-[#111] px-1.5 py-0.5 leading-none"
-          style={{ fontFamily: "var(--font-outfit)" }}
-        >
-          {resultValue}
-        </span>
-      )}
-
       {/* 投票前 + showRule=true 時のみ: 1 日 1 回ルールをさりげなく */}
-      {!compact && showRule && !voted && (
+      {showRule && !voted && (
         <p
           className="text-[10px] md:text-[11px] text-[#4A5060]"
           style={{ fontFamily: "var(--font-noto-serif), serif" }}
         >
-          ※ 同じ人には 1 日 1 回まで。
+          ※ 同じ人には 1 日 1 回まで。明日 0:00 にサイコロが復活。
         </p>
       )}
     </div>
