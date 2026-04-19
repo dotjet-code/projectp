@@ -194,7 +194,7 @@ export default async function SeriesPage({
                           alt={r.memberName}
                           width={48}
                           height={48}
-                          className="w-12 h-12 shrink-0 object-cover border border-[#111]/40 grayscale contrast-125 group-hover:grayscale-0 group-hover:contrast-100 transition-[filter] duration-300"
+                          className="w-12 h-12 shrink-0 object-cover border border-[#111]/40 md:grayscale md:contrast-125 md:group-hover:grayscale-0 md:group-hover:contrast-100 transition-[filter] duration-300"
                           style={{ objectPosition: "50% 18%" }}
                         />
                       )}

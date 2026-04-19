@@ -136,7 +136,7 @@ export function MemberRow({
           alt=""
           width={64}
           height={64}
-          className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 group-hover:contrast-100 transition-[filter] duration-300"
+          className="w-full h-full object-cover md:grayscale md:contrast-125 md:group-hover:grayscale-0 md:group-hover:contrast-100 transition-[filter] duration-300"
           style={{ objectPosition: "50% 18%" }}
         />
         <FloatingLiveBadge slug={member.slug} />

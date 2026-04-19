@@ -248,7 +248,7 @@ function StarterRoster({ members }: { members: PublicMember[] }) {
                 alt=""
                 width={56}
                 height={56}
-                className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 group-hover:contrast-100 transition-[filter] duration-300"
+                className="w-full h-full object-cover md:grayscale md:contrast-125 md:group-hover:grayscale-0 md:group-hover:contrast-100 transition-[filter] duration-300"
                 style={{ objectPosition: "50% 18%" }}
               />
             </div>
@@ -273,8 +273,8 @@ function StarterRoster({ members }: { members: PublicMember[] }) {
               </span>
             </div>
 
-            {/* 主役指名ボタン */}
-            <div className="shrink-0 w-44 hidden sm:block">
+            {/* 主役指名ボタン: モバイルはアイコンのみ、デスクトップはフルサイズ */}
+            <div className="shrink-0 w-44 hidden md:block">
               <ShuyakuVoteButton
                 memberId={m.id}
                 memberName={m.name}
@@ -283,12 +283,13 @@ function StarterRoster({ members }: { members: PublicMember[] }) {
                 fullWidth
               />
             </div>
-            <div className="shrink-0 sm:hidden">
+            <div className="shrink-0 md:hidden">
               <ShuyakuVoteButton
                 memberId={m.id}
                 memberName={m.name}
                 size="sm"
                 showRule={false}
+                compact
               />
             </div>
           </li>
@@ -397,7 +398,7 @@ function CandidateChip({
         alt={member.name}
         width={42}
         height={42}
-        className="w-[42px] h-[42px] object-cover border border-[#111]/40 grayscale contrast-125 group-hover:grayscale-0 group-hover:contrast-100 transition-[filter] duration-300"
+        className="w-[42px] h-[42px] object-cover border border-[#111]/40 md:grayscale md:contrast-125 md:group-hover:grayscale-0 md:group-hover:contrast-100 transition-[filter] duration-300"
         style={{ objectPosition: "50% 18%" }}
       />
       <p

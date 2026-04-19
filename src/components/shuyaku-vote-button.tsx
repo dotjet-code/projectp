@@ -223,7 +223,8 @@ export function ShuyakuVoteButton({
         )}
       </button>
 
-      {message && (
+      {/* compact モードでは長文メッセージは出さない (ボタンの色で状態を伝える) */}
+      {!compact && message && (
         <p
           className="text-[11px] font-bold text-[#111]"
           style={{ fontFamily: "var(--font-noto-serif), serif" }}
@@ -233,8 +234,8 @@ export function ShuyakuVoteButton({
         </p>
       )}
 
-      {/* 投票済み時: 明日もリセットされることをさりげなく伝える */}
-      {voted && (
+      {/* 投票済み時: 明日もリセットされることをさりげなく伝える (compact 以外) */}
+      {!compact && voted && (
         <p
           className="text-[10px] md:text-[11px] text-[#4A5060]"
           style={{ fontFamily: "var(--font-outfit)" }}
@@ -243,8 +244,18 @@ export function ShuyakuVoteButton({
         </p>
       )}
 
+      {/* compact + voted 時: 出目だけ小さく表示 */}
+      {compact && voted && resultValue && (
+        <span
+          className="text-[10px] font-black tabular-nums text-[#FFE600] bg-[#111] px-1.5 py-0.5 leading-none"
+          style={{ fontFamily: "var(--font-outfit)" }}
+        >
+          {resultValue}
+        </span>
+      )}
+
       {/* 投票前 + showRule=true 時のみ: 1 日 1 回ルールをさりげなく */}
-      {showRule && !voted && (
+      {!compact && showRule && !voted && (
         <p
           className="text-[10px] md:text-[11px] text-[#4A5060]"
           style={{ fontFamily: "var(--font-noto-serif), serif" }}
