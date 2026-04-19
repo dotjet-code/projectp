@@ -10,63 +10,94 @@ export async function MemberStageHistory({
   if (history.length === 0) return null;
 
   return (
-    <section className="mx-auto max-w-[964px] px-4 mt-10">
-      <div className="flex items-center gap-3 mb-5">
-        <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-[#ffd230] to-[#f59e0b]" />
-        <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-[#b45309] tracking-tight">
-          🏁 過去ステージの成績
+    <section className="mx-auto max-w-[1100px] px-4 mt-12">
+      <div className="flex items-baseline gap-3 mb-4">
+        <span className="inline-block w-2 h-2 bg-[#D41E28]" />
+        <p
+          className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
+          style={{ fontFamily: "var(--font-outfit)" }}
+        >
+          ━ HISTORY
+        </p>
+        <h2
+          className="text-2xl md:text-3xl font-black text-[#111] leading-none"
+          style={{ fontFamily: "var(--font-noto-serif), serif" }}
+        >
+          過去ステージの成績
         </h2>
+        <span className="flex-1 h-px bg-[#111]/30" aria-hidden />
       </div>
 
-      <ul className="flex flex-col gap-2">
+      <ul className="border-t-[3px] border-[#111]">
         {history.map((h) => (
           <li key={h.stageId}>
             <Link
               href={`/results?stage=${h.stageId}`}
-              className="flex items-center gap-3 rounded-2xl bg-white/70 border border-white/80 px-4 py-3 shadow-sm hover:shadow-md transition-all group"
+              className="flex items-center gap-3 md:gap-4 px-3 py-3 border-b border-[#D5CFC0] hover:bg-white/60 transition-colors group"
             >
               <div className="w-10 shrink-0 text-center">
                 {h.rank !== null ? (
-                  <span className="font-[family-name:var(--font-outfit)] text-lg font-black text-[#0092b8]">
+                  <span
+                    className="text-xl font-black tabular-nums text-[#111]"
+                    style={{ fontFamily: "var(--font-outfit)" }}
+                  >
                     #{h.rank}
                   </span>
                 ) : (
-                  <span className="text-xs text-muted">—</span>
+                  <span className="text-xs text-[#4A5060]">—</span>
                 )}
               </div>
 
               <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-bold text-gray-500 tracking-wider">
+                <p
+                  className="text-[10px] font-black tracking-[0.25em] text-[#D41E28]"
+                  style={{ fontFamily: "var(--font-outfit)" }}
+                >
                   {h.seriesNumber !== null ? `SERIES ${h.seriesNumber}` : ""}
                   {h.stageNumber !== null
-                    ? ` / STAGE ${h.stageNumber}`
+                    ? ` · STAGE ${h.stageNumber}`
                     : ""}
                 </p>
-                <p className="text-sm font-bold text-foreground truncate">
+                <p
+                  className="mt-0.5 text-base font-black text-[#111] truncate leading-tight"
+                  style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                >
                   {h.stageTitle ?? h.stageName}
                 </p>
-                <p className="text-[10px] text-muted">
+                <p
+                  className="text-[10px] text-[#4A5060] tabular-nums"
+                  style={{ fontFamily: "var(--font-outfit)" }}
+                >
                   {h.startDate} 〜 {h.endDate}
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-3 shrink-0">
                 {h.position && (
                   <span
-                    className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider text-white font-[family-name:var(--font-outfit)] ${
+                    className={`inline-block px-1.5 py-0.5 text-[10px] font-black tracking-wider text-white ${
                       h.position === "PLAYER"
-                        ? "bg-gradient-to-r from-player to-player-end"
-                        : "bg-gradient-to-r from-pit to-pit-end"
+                        ? "bg-[#D41E28]"
+                        : "bg-[#4A5060]"
                     }`}
+                    style={{ fontFamily: "var(--font-outfit)" }}
                   >
                     {h.position}
                   </span>
                 )}
                 <div className="text-right">
-                  <span className="font-[family-name:var(--font-outfit)] text-sm font-black text-foreground">
+                  <span
+                    className="text-lg md:text-xl font-black tabular-nums text-[#111] leading-none"
+                    style={{ fontFamily: "var(--font-outfit)" }}
+                  >
                     {h.totalPoints.toLocaleString()}
                   </span>
-                  <span className="text-[9px] text-muted ml-0.5">pts</span>
+                  <span
+                    className="text-[9px] text-[#4A5060] ml-0.5"
+                    style={{ fontFamily: "var(--font-outfit)" }}
+                  >
+                    pt
+                  </span>
                 </div>
               </div>
             </Link>

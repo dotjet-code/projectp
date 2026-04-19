@@ -82,7 +82,7 @@ export function RankingClient({
             >
               <span className="text-[#FFE600]">いま、走っているのは誰だ。</span>
               <br />
-              バズ・配信・収支・主役 ── 4 つの数字が、来月の主役を決める。
+              バズ・配信・収支・投票 ── 4 つの数字が、来月の主役を決める。
             </p>
             {stageLabel && (
               <p
@@ -187,7 +187,7 @@ export function RankingClient({
             className="text-sm text-[#4A5060]"
             style={{ fontFamily: "var(--font-noto-serif), serif" }}
           >
-            月間 4 指標（バズ・配信・収支・主役）のみ反映中。月末特番で最終確定 → 翌月の再編成に反映される。
+            月間 4 指標（バズ・配信・収支・投票）のみ反映中。月末特番で最終確定 → 翌月の再編成に反映される。
           </p>
         </div>
       </section>

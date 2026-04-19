@@ -197,7 +197,7 @@ export function MemberRow({
           color="#7A3DFF"
         />
         <ScoreBar
-          label="主役"
+          label="投票"
           value={member.detail.stats.shuyaku ?? 0}
           max={maxShuyaku}
           color="#D41E28"

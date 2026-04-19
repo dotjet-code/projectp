@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "総合ランキング",
-  description: "かけあがり メンバーの暫定順位。バズ・配信・収支・主役の 4 指標で競う。",
+  description: "かけあがり メンバーの暫定順位。バズ・配信・収支・投票の 4 指標で競う。",
 };
 
 export default async function RankingPage() {

@@ -130,7 +130,8 @@ export default async function MemberDetailPage({
                     src={base.avatarUrl}
                     alt={base.name}
                     fill
-                    className="object-cover object-top grayscale contrast-125"
+                    className="object-cover"
+                    style={{ objectPosition: "50% 18%" }}
                   />
                   <FloatingLiveBadge slug={base.slug} />
                 </div>
@@ -203,7 +204,7 @@ export default async function MemberDetailPage({
                   <StatBar label="バズ" value={buzz} max={maxStat} color="#00BCFF" />
                   <StatBar label="配信" value={concurrent} max={maxStat} color="#1447E6" />
                   <StatBar label="収支" value={revenue} max={maxStat} color="#7A3DFF" />
-                  <StatBar label="主役" value={shuyaku} max={maxStat} color="#D41E28" />
+                  <StatBar label="投票" value={shuyaku} max={maxStat} color="#D41E28" />
                 </div>
 
                 {/* Total */}

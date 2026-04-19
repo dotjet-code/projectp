@@ -179,7 +179,7 @@ export default async function MembersPage() {
               className="text-center text-base md:text-lg font-black"
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
-              月間 4 指標（バズ・配信・収支・主役）と月末特番の結果で、毎月 PLAYER / PIT が再編成される。
+              月間 4 指標（バズ・配信・収支・投票）と月末特番の結果で、毎月 PLAYER / PIT が再編成される。
             </p>
           </div>
         </section>

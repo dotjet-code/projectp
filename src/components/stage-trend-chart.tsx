@@ -2,7 +2,7 @@ import { getStageTrendByMemberName } from "@/lib/projectp/trend";
 
 function daysBetween(a: string, b: string): number {
   return Math.round(
-    (new Date(b).getTime() - new Date(a).getTime()) / (86400 * 1000)
+    (new Date(b).getTime() - new Date(a).getTime()) / (86400 * 1000),
   );
 }
 
@@ -19,13 +19,12 @@ export async function StageTrendChart({ memberName }: { memberName: string }) {
   const totalDays = Math.max(daysBetween(stageStartDate, stageEndDate), 1);
   const maxVal = Math.max(...points.map((p) => p.totalPoints), 1);
 
-  // SVG 座標系
   const svgW = 400;
-  const svgH = 200;
-  const padL = 0;  // 左端ぴったり
-  const padR = 0;  // 右端ぴったり
-  const padT = 15;
-  const padB = 5;
+  const svgH = 220;
+  const padL = 0;
+  const padR = 0;
+  const padT = 18;
+  const padB = 6;
   const plotW = svgW;
   const plotH = svgH - padT - padB;
 
@@ -43,7 +42,6 @@ export async function StageTrendChart({ memberName }: { memberName: string }) {
     .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`)
     .join(" ");
 
-  // グラデーション塗り潰しパス
   const areaPath =
     linePath +
     ` L ${pts[pts.length - 1].x.toFixed(1)} ${padT + plotH} L ${pts[0].x.toFixed(1)} ${padT + plotH} Z`;
@@ -63,70 +61,122 @@ export async function StageTrendChart({ memberName }: { memberName: string }) {
       : null;
 
   const displayTitle = stageTitle
-    ? `ステージ「${stageTitle}」推移`
+    ? `「${stageTitle}」推移`
     : stageName
-    ? `${stageName} 推移`
-    : "ステージ内推移";
+      ? `${stageName} 推移`
+      : "ステージ内推移";
 
   return (
-    <section className="mx-auto max-w-[964px] px-4 mt-10">
-      <div className="flex items-center gap-3 mb-5">
-        <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-primary to-primary-cyan" />
-        <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-primary-dark tracking-tight">
-          📈 {displayTitle}
+    <section className="mx-auto max-w-[1100px] px-4 mt-12">
+      {/* セクション見出し (新トーン) */}
+      <div className="flex items-baseline gap-3 mb-4">
+        <span className="inline-block w-2 h-2 bg-[#D41E28]" />
+        <p
+          className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
+          style={{ fontFamily: "var(--font-outfit)" }}
+        >
+          ━ TREND
+        </p>
+        <h2
+          className="text-2xl md:text-3xl font-black text-[#111] leading-none"
+          style={{ fontFamily: "var(--font-noto-serif), serif" }}
+        >
+          {displayTitle}
         </h2>
+        <span className="flex-1 h-px bg-[#111]/30" aria-hidden />
       </div>
-      <div className="rounded-2xl bg-white/70 border border-white/80 p-5 shadow-sm">
-        {/* グラフ本体: SVG は線とドットだけ、テキストは HTML */}
-        <div className="relative" style={{ height: 180 }}>
+
+      <div
+        className="relative bg-[#F5F1E8] border-2 border-[#111] px-5 py-5 md:px-6 md:py-6"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, rgba(17,17,17,0.08) 0.6px, transparent 1px)",
+          backgroundSize: "5px 5px",
+          boxShadow: "5px 5px 0 rgba(17,17,17,0.18)",
+        }}
+      >
+        {/* 上段: 統計サマリ */}
+        <div className="flex items-baseline justify-between mb-4 pb-3 border-b-[3px] border-[#111]">
+          <div className="flex items-baseline gap-2">
+            <span
+              className="text-[10px] font-black tracking-[0.3em] text-[#4A5060]"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              MAX
+            </span>
+            <span
+              className="text-2xl md:text-3xl font-black tabular-nums text-[#111] leading-none"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              {maxVal.toLocaleString()}
+            </span>
+            <span
+              className="text-xs font-bold text-[#4A5060]"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              pt
+            </span>
+          </div>
+          <div
+            className="text-[10px] font-bold tabular-nums tracking-wider text-[#4A5060]"
+            style={{ fontFamily: "var(--font-outfit)" }}
+          >
+            {points.length} 日記録 · 全 {totalDays} 日
+          </div>
+        </div>
+
+        {/* グラフ本体 */}
+        <div className="relative" style={{ height: 200 }}>
           <svg
             viewBox={`0 0 ${svgW} ${svgH}`}
             className="absolute inset-0 w-full h-full"
             preserveAspectRatio="none"
           >
-            {/* グリッド横線 */}
-            {yTicks.map((t) => (
+            {/* グリッド横線 (黒の点線) */}
+            {yTicks.map((t, i) => (
               <line
                 key={t.y}
                 x1={0}
                 y1={t.y}
                 x2={svgW}
                 y2={t.y}
-                stroke="#f0f0f0"
+                stroke="#111111"
+                strokeOpacity={i === 0 || i === yTicks.length - 1 ? 0.4 : 0.12}
                 strokeWidth={1}
+                strokeDasharray={i === 0 || i === yTicks.length - 1 ? "0" : "3 3"}
                 vectorEffect="non-scaling-stroke"
               />
             ))}
 
-            {/* 今日の参照線 */}
+            {/* 今日の参照線 (赤の縦点線) */}
             {todayX !== null && (
               <line
                 x1={todayX}
                 y1={padT}
                 x2={todayX}
                 y2={padT + plotH}
-                stroke="#cbd5e1"
-                strokeWidth={1}
+                stroke="#D41E28"
+                strokeWidth={1.5}
                 strokeDasharray="4 3"
                 vectorEffect="non-scaling-stroke"
               />
             )}
 
-            {/* エリア塗り潰し */}
+            {/* エリア塗り潰し (赤グラデ) */}
             <defs>
               <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#00d3f3" stopOpacity={0.2} />
-                <stop offset="100%" stopColor="#00d3f3" stopOpacity={0} />
+                <stop offset="0%" stopColor="#D41E28" stopOpacity={0.25} />
+                <stop offset="100%" stopColor="#D41E28" stopOpacity={0} />
               </linearGradient>
             </defs>
             {pts.length > 1 && <path d={areaPath} fill="url(#areaFill)" />}
 
-            {/* ライン */}
+            {/* ライン (赤・太め) */}
             {pts.length > 1 && (
               <path
                 d={linePath}
                 fill="none"
-                stroke="#00d3f3"
+                stroke="#D41E28"
                 strokeWidth={2.5}
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -134,48 +184,44 @@ export async function StageTrendChart({ memberName }: { memberName: string }) {
               />
             )}
 
-            {/* ドット */}
+            {/* ドット (赤、白縁) */}
             {pts.map((p, i) => (
               <circle
                 key={i}
                 cx={p.x}
                 cy={p.y}
                 r={4}
-                fill="#00d3f3"
-                stroke="white"
+                fill="#D41E28"
+                stroke="#F5F1E8"
                 strokeWidth={2}
                 vectorEffect="non-scaling-stroke"
               />
             ))}
           </svg>
 
-          {/* 「今日」ラベル (HTML) */}
+          {/* 「今日」ラベル */}
           {todayX !== null && (
             <span
-              className="absolute text-[10px] text-gray-400 font-[family-name:var(--font-outfit)]"
+              className="absolute text-[10px] font-black tracking-wider text-[#D41E28] bg-[#FFE600] px-1.5 py-0.5 leading-none"
               style={{
+                fontFamily: "var(--font-outfit)",
                 left: `${(todayX / svgW) * 100}%`,
-                top: 0,
+                top: -2,
                 transform: "translateX(-50%)",
+                boxShadow: "1px 1px 0 rgba(17,17,17,0.22)",
               }}
             >
-              今日
+              TODAY
             </span>
           )}
         </div>
 
-        {/* X 軸ラベル + 統計 (HTML、歪みなし) */}
-        <div className="flex items-center justify-between text-[10px] text-muted mt-1">
-          <span className="font-[family-name:var(--font-outfit)]">
-            {fmtDate(stageStartDate)}
-          </span>
-          <span>
-            {points.length} 日分 / 全 {totalDays} 日 · 最高{" "}
-            <b className="text-foreground">{maxVal.toLocaleString()}</b> pts
-          </span>
-          <span className="font-[family-name:var(--font-outfit)]">
-            {fmtDate(stageEndDate)}
-          </span>
+        {/* X 軸ラベル */}
+        <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#111]/30 text-[10px] font-bold tabular-nums text-[#4A5060]"
+          style={{ fontFamily: "var(--font-outfit)" }}
+        >
+          <span>{fmtDate(stageStartDate)}</span>
+          <span>{fmtDate(stageEndDate)}</span>
         </div>
       </div>
     </section>

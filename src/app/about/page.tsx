@@ -109,7 +109,7 @@ export default function AboutPage() {
                 },
                 {
                   num: "04",
-                  label: "主役",
+                  label: "投票",
                   desc: "毎日のサイコロ投票と順位予想で集まる、ファンからの直接指名。",
                   color: "#D41E28",
                 },
