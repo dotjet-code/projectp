@@ -33,12 +33,24 @@ export default function AboutPage() {
               かけあがり<br />
               <span className="text-[#D41E28]">とは？</span>
             </h1>
-            <p
-              className="mt-6 text-base md:text-xl leading-relaxed max-w-2xl text-[#9BA8BF]"
-              style={{ fontFamily: "var(--font-noto-serif), serif" }}
-            >
-              12 人が数字で競い、主役の座を勝ち取る。それが、かけあがり のすべて。
-            </p>
+            <div className="mt-6 max-w-2xl">
+              <p
+                className="text-lg md:text-2xl font-black leading-relaxed text-[#F5F1E8]"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                <span className="text-[#FFE600]">数字で勝ち取り、数字で奪われる。</span>
+                <br />
+                12 人が毎月、主役の座を懸けて駆け上がる。
+              </p>
+              <div
+                className="mt-4 h-2 max-w-[220px] bg-[#D41E28]"
+                style={{
+                  clipPath:
+                    "polygon(0 60%, 4% 20%, 10% 70%, 18% 30%, 28% 65%, 38% 25%, 48% 70%, 58% 30%, 68% 68%, 78% 28%, 86% 70%, 94% 34%, 100% 66%, 100% 100%, 0 100%)",
+                }}
+                aria-hidden
+              />
+            </div>
           </div>
         </section>
 
@@ -68,14 +80,14 @@ export default function AboutPage() {
             </div>
           </section>
 
-          {/* 3指標 */}
+          {/* 4指標 */}
           <section>
             <SectionHeading
-              title="3 つの競争指標"
+              title="4 つの競争指標"
               eyebrow="SCORING AXIS"
               accent="red"
             />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-t-[3px] border-[#111]">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border-t-[3px] border-[#111]">
               {[
                 {
                   num: "01",
@@ -95,20 +107,26 @@ export default function AboutPage() {
                   desc: "グッズ・投げ銭・チケットなどの経済指標。応援が数字になる。",
                   color: "#7A3DFF",
                 },
+                {
+                  num: "04",
+                  label: "主役",
+                  desc: "毎日のサイコロ投票と順位予想で集まる、ファンからの直接指名。",
+                  color: "#D41E28",
+                },
               ].map((stat) => (
                 <div
                   key={stat.label}
-                  className="border-b-[3px] border-[#111] md:border-b-0 md:border-r-[3px] md:last:border-r-0 px-6 py-8 bg-[#F5F1E8]"
+                  className="border-b-[3px] border-[#111] md:border-b-0 md:border-r-[3px] md:last:border-r-0 even:border-r-0 md:even:border-r-[3px] px-5 py-7 md:px-6 md:py-8 bg-[#F5F1E8]"
                 >
                   <div className="flex items-baseline gap-3 mb-4">
                     <span
-                      className="text-4xl font-black leading-none tabular-nums"
+                      className="text-3xl md:text-4xl font-black leading-none tabular-nums"
                       style={{ fontFamily: "var(--font-outfit)", color: stat.color }}
                     >
                       {stat.num}
                     </span>
                     <h3
-                      className="text-2xl font-black"
+                      className="text-xl md:text-2xl font-black"
                       style={{ fontFamily: "var(--font-noto-serif), serif" }}
                     >
                       {stat.label}
@@ -128,7 +146,7 @@ export default function AboutPage() {
                 className="text-center text-base md:text-lg font-black"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                3 指標の合計ポイントが、毎月の総合順位を決める。
+                4 指標の合計ポイントが、毎月の総合順位を決める。
               </p>
             </div>
           </section>
@@ -242,7 +260,7 @@ export default function AboutPage() {
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-t-[3px] border-[#111]">
               {[
-                { num: "01", label: "振り返り", desc: "3 指標の推移と順位変動を全員で確認" },
+                { num: "01", label: "振り返り", desc: "4 指標の推移と順位変動を全員で確認" },
                 { num: "02", label: "最終決戦", desc: "最終順位に影響する特別企画を実施" },
                 { num: "03", label: "新編成", desc: "PLAYER 6 名 / PIT 6 名が決定、翌月スタート" },
               ].map((item) => (

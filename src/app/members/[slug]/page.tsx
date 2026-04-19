@@ -8,6 +8,7 @@ import { LiveNowIndicator } from "@/components/live-now-indicator";
 import { MemberStageHistory } from "@/components/member-stage-history";
 import { RecentActivities } from "@/components/recent-activities";
 import { ShareButtons } from "@/components/share-buttons";
+import { ShuyakuVoteButton } from "@/components/shuyaku-vote-button";
 import { StageTrendChart } from "@/components/stage-trend-chart";
 import { members } from "@/lib/data";
 import { getRankedMembers } from "@/lib/projectp/live-stats";
@@ -34,7 +35,7 @@ export async function generateMetadata({
   if (!base) return {};
   return {
     title: base.name,
-    description: `${base.name} の Project P プロフィール・ポイント・配信データ`,
+    description: `${base.name} の かけあがり プロフィール・ポイント・配信データ`,
   };
 }
 
@@ -98,9 +99,10 @@ export default async function MemberDetailPage({
   const profile = (profileRow as MemberProfile | null) ?? null;
 
   const { buzz, concurrent, revenue } = me.detail.stats;
-  const totalPoints = buzz + concurrent + revenue;
+  const shuyaku = me.detail.stats.shuyaku ?? 0;
+  const totalPoints = buzz + concurrent + revenue + shuyaku;
   const isPlayer = me.role === "PLAYER";
-  const maxStat = Math.max(buzz, concurrent, revenue, 1) * 1.2;
+  const maxStat = Math.max(buzz, concurrent, revenue, shuyaku, 1) * 1.2;
 
   const bc = getBoatColor(me.boatColor);
   const boatLabel = bc?.label;
@@ -201,6 +203,7 @@ export default async function MemberDetailPage({
                   <StatBar label="バズ" value={buzz} max={maxStat} color="#00BCFF" />
                   <StatBar label="配信" value={concurrent} max={maxStat} color="#1447E6" />
                   <StatBar label="収支" value={revenue} max={maxStat} color="#7A3DFF" />
+                  <StatBar label="主役" value={shuyaku} max={maxStat} color="#D41E28" />
                 </div>
 
                 {/* Total */}
@@ -224,6 +227,18 @@ export default async function MemberDetailPage({
                     pt
                   </span>
                 </div>
+
+                {/* 主役指名ボタン */}
+                {me.supabaseId && (
+                  <div className="mt-6">
+                    <ShuyakuVoteButton
+                      memberId={me.supabaseId}
+                      memberName={me.name}
+                      size="md"
+                      showRule={true}
+                    />
+                  </div>
+                )}
 
                 {me.specialPoints > 0 && (
                   <div className="mt-4 inline-flex items-center gap-3 bg-[#D41E28] text-white px-3 py-2">
@@ -363,7 +378,7 @@ export default async function MemberDetailPage({
             SHARE
           </p>
           <ShareButtons
-            text={`#ProjectP ${base.name} を応援中！`}
+            text={`#かけあがり ${base.name} を応援中！`}
             path={`/members/${base.slug}`}
           />
         </section>

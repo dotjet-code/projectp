@@ -4,7 +4,7 @@ const cards = [
   {
     icon: "📊",
     title: "何を競う？",
-    desc: "バズ・配信・収支の3つのポイントを積み上げて競います。",
+    desc: "バズ・配信・収支・主役の 4 つのポイントを積み上げて競う。",
     color: "from-primary/10 to-primary-blue/10",
     border: "border-primary/15",
   },
@@ -37,7 +37,7 @@ export function AboutCards() {
       <div className="flex items-center gap-3 mb-5">
         <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-primary to-primary-blue" />
         <h2 className="font-[family-name:var(--font-outfit)] text-lg sm:text-xl font-extrabold text-primary-dark tracking-tight">
-          ⚡ 30秒でわかる Project P
+          ⚡ 30秒でわかる かけあがり
         </h2>
       </div>
 
@@ -59,7 +59,7 @@ export function AboutCards() {
           href="/about"
           className="inline-flex items-center gap-1 text-sm font-bold text-primary-dark hover:text-primary transition-colors"
         >
-          Project P のルールを詳しく見る →
+          かけあがり のルールを詳しく見る →
         </Link>
       </div>
     </section>

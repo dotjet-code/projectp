@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export const metadata = {
   title: "予想ランキング",
   description:
-    "Project P の順位予想の通算ランキング。Series 内の全ステージのスコアを合算した年間王者を決める。",
+    "かけあがり の順位予想の通算ランキング。Series 内の全ステージのスコアを合算した年間王者を決める。",
 };
 
 export default async function PredictorsRankingPage({
@@ -51,34 +51,73 @@ export default async function PredictorsRankingPage({
   return (
     <>
       <Header />
-      <main className="pb-16">
-        <section className="pt-12 pb-6 text-center">
-          <p className="text-5xl mb-3">👑</p>
-          <h1 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-[#f59e0b] via-[#ef4444] to-[#8b5cf6] bg-clip-text text-transparent">
-            予想ランキング
-          </h1>
-          <p className="mt-2 text-sm text-muted max-w-md mx-auto">
-            Series 内の全ステージを合算した通算ランキング。
-            <br />
-            的中を積み上げて年間王者を目指せ。
-          </p>
+      <main className="pb-16 bg-[#F5F1E8] min-h-[60vh]">
+        {/* Hero */}
+        <section className="relative bg-[#111] text-[#F5F1E8] px-6 py-12 md:py-16 overflow-hidden">
+          <div
+            className="absolute top-0 left-0 right-0 h-2 bg-[#D41E28]"
+            style={{
+              clipPath:
+                "polygon(0 30%, 4% 20%, 10% 40%, 18% 15%, 26% 45%, 34% 10%, 42% 40%, 50% 18%, 58% 42%, 66% 16%, 74% 40%, 82% 14%, 90% 42%, 96% 20%, 100% 40%, 100% 100%, 0 100%)",
+            }}
+            aria-hidden
+          />
+          <div className="max-w-[1200px] mx-auto">
+            <p
+              className="text-xs md:text-sm font-black tracking-[0.35em] text-[#FFE600]"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              ANNUAL HALL OF HITS
+            </p>
+            <h1
+              className="mt-3 text-4xl md:text-6xl font-black leading-[0.95] tracking-tight"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              予想<span className="text-[#D41E28]">ランキング。</span>
+            </h1>
+            <div className="mt-6 max-w-2xl">
+              <p
+                className="text-lg md:text-2xl font-black leading-relaxed text-[#F5F1E8]"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                <span className="text-[#FFE600]">最も読み切った者は、誰だ。</span>
+                <br />
+                シリーズを貫く、的中の積み上げ。年間王者の称号は、ひとつだけ。
+              </p>
+              <div
+                className="mt-4 h-2 max-w-[220px] bg-[#D41E28]"
+                style={{
+                  clipPath:
+                    "polygon(0 60%, 4% 20%, 10% 70%, 18% 30%, 28% 65%, 38% 25%, 48% 70%, 58% 30%, 68% 68%, 78% 28%, 86% 70%, 94% 34%, 100% 66%, 100% 100%, 0 100%)",
+                }}
+                aria-hidden
+              />
+            </div>
+          </div>
         </section>
 
         {/* Series タブ */}
         {availableSeries.length > 0 && (
-          <section className="mx-auto max-w-[720px] px-4 mb-6">
-            <div className="flex flex-wrap items-center gap-2 justify-center">
+          <section className="mx-auto max-w-[1100px] px-4 mt-8 mb-6">
+            <p
+              className="text-[10px] font-black tracking-[0.32em] text-[#D41E28] mb-2"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              ━ SERIES
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
               {availableSeries.map((n) => {
                 const active = n === selectedSeries;
                 return (
                   <Link
                     key={n}
                     href={`/ranking/predictors?series=${n}`}
-                    className={`rounded-full px-4 py-1.5 text-xs font-bold transition-colors ${
+                    className={`px-4 py-1.5 text-xs font-black border-2 tracking-wider transition-colors ${
                       active
-                        ? "bg-black text-white"
-                        : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                        ? "bg-[#111] text-[#FFE600] border-[#111]"
+                        : "border-[#111] text-[#111] bg-[#F5F1E8] hover:bg-white"
                     }`}
+                    style={{ fontFamily: "var(--font-noto-serif), serif" }}
                   >
                     Series {n}
                   </Link>
@@ -89,67 +128,123 @@ export default async function PredictorsRankingPage({
         )}
 
         {/* 本体 */}
-        <section className="mx-auto max-w-[720px] px-4">
+        <section className="mx-auto max-w-[1100px] px-4">
           {!selectedSeries ? (
-            <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center">
-              <p className="text-3xl mb-2">⏳</p>
-              <p className="text-sm text-muted">
-                まだ確定したシリーズがありません。ステージ終了後にランキングが出ます。
+            <div
+              className="bg-[#F5F1E8] border-2 border-[#111] p-8 md:p-10 text-center"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle, rgba(17,17,17,0.10) 0.6px, transparent 1px)",
+                backgroundSize: "5px 5px",
+                boxShadow: "5px 5px 0 rgba(17,17,17,0.18)",
+              }}
+            >
+              <h2
+                className="text-2xl md:text-3xl font-black text-[#111]"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                まだ確定したシリーズがありません
+              </h2>
+              <p
+                className="mt-3 text-sm text-[#4A5060] leading-relaxed"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                ステージ終了後に予想ランキングが集計されて表示される。
               </p>
             </div>
           ) : predictors.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center">
-              <p className="text-sm text-muted">
+            <div
+              className="bg-[#F5F1E8] border-2 border-[#111] p-8 md:p-10 text-center"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle, rgba(17,17,17,0.10) 0.6px, transparent 1px)",
+                backgroundSize: "5px 5px",
+                boxShadow: "5px 5px 0 rgba(17,17,17,0.18)",
+              }}
+            >
+              <p
+                className="text-sm text-[#4A5060]"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
                 Series {selectedSeries} の予想ランキングはまだ集計されていません。
               </p>
             </div>
           ) : (
             <>
-              <p className="text-[10px] text-muted mb-3 text-center">
-                全ステージの合計スコア(最大 {MAX_PREDICTION_SCORE} pt × ステージ数)で順位付け。
+              <p
+                className="text-[11px] text-[#4A5060] mb-3"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                全ステージの合計スコア（最大 {MAX_PREDICTION_SCORE} pt × ステージ数）で順位付け。
               </p>
-              <ul className="rounded-2xl bg-white/70 border border-white/80 divide-y divide-gray-100 overflow-hidden">
+              <ul
+                className="border-t-[3px] border-b-[3px] border-[#111] divide-y divide-[#111]/15 bg-[#F5F1E8]"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(circle, rgba(17,17,17,0.08) 0.6px, transparent 1px)",
+                  backgroundSize: "5px 5px",
+                }}
+              >
                 {predictors.map((p) => {
                   const isMe = myUserId === p.userId;
                   return (
                     <li
                       key={p.userId}
-                      className={`flex items-center justify-between px-4 py-3 text-xs ${
-                        isMe
-                          ? "bg-gradient-to-r from-[#fff7e6] to-[#ffe9c8]"
-                          : ""
+                      className={`flex items-center justify-between px-4 py-3 text-sm ${
+                        isMe ? "bg-[#FFE600]" : ""
                       }`}
                     >
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className="w-6 text-center font-[family-name:var(--font-outfit)] font-extrabold text-[#c2410c] shrink-0">
+                        <span
+                          className="w-7 text-center text-base font-black text-[#111] shrink-0 tabular-nums"
+                          style={{ fontFamily: "var(--font-outfit)" }}
+                        >
                           {p.rank <= 3
                             ? ["🥇", "🥈", "🥉"][p.rank - 1]
                             : `#${p.rank}`}
                         </span>
-                        <span className="font-bold text-foreground truncate">
+                        <span
+                          className="font-black text-[#111] truncate"
+                          style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                        >
                           {p.displayName ?? "ファン会員"}
                         </span>
                         {isMe && (
-                          <span className="rounded-full bg-black text-white px-1.5 py-0.5 text-[9px] font-bold shrink-0">
+                          <span
+                            className="bg-[#111] text-[#FFE600] px-1.5 py-0.5 text-[9px] font-black tracking-wider shrink-0"
+                            style={{ fontFamily: "var(--font-outfit)" }}
+                          >
                             YOU
                           </span>
                         )}
                         {p.perfectCount > 0 && (
-                          <span className="rounded-full bg-amber-100 border border-amber-200 px-1.5 py-0.5 text-[9px] font-bold text-amber-700 shrink-0">
+                          <span
+                            className="bg-[#D41E28] text-white px-1.5 py-0.5 text-[9px] font-black tracking-wider shrink-0"
+                            style={{ fontFamily: "var(--font-outfit)" }}
+                          >
                             完全的中 {p.perfectCount}
                           </span>
                         )}
                         {p.rewardCount > 0 && (
-                          <span className="text-[10px] text-muted shrink-0">
+                          <span
+                            className="text-[10px] text-[#4A5060] shrink-0"
+                            style={{ fontFamily: "var(--font-outfit)" }}
+                          >
                             🎁×{p.rewardCount}
                           </span>
                         )}
                       </div>
                       <div className="text-right shrink-0">
-                        <span className="font-[family-name:var(--font-outfit)] text-base font-black text-foreground">
+                        <span
+                          className="text-lg font-black text-[#111] tabular-nums"
+                          style={{ fontFamily: "var(--font-outfit)" }}
+                        >
                           {p.totalScore}
                         </span>
-                        <span className="text-[9px] text-muted ml-0.5">
+                        <span
+                          className="text-[10px] text-[#4A5060] ml-0.5"
+                          style={{ fontFamily: "var(--font-outfit)" }}
+                        >
                           pt / {p.stageCount}stage
                         </span>
                       </div>
@@ -159,9 +254,21 @@ export default async function PredictorsRankingPage({
               </ul>
 
               {!myUserId && (
-                <div className="mt-4 rounded-xl border border-[rgba(255,208,120,0.6)] bg-gradient-to-r from-[#fff7e6] to-[#ffe9c8] px-4 py-2.5 text-[11px] text-[#7a4a00] text-center">
-                  🎟️ <b>会員登録するとランキング入り</b> ── 的中を積み上げて年間王者を狙おう。{" "}
-                  <Link href="/fan/login" className="underline font-bold">
+                <div
+                  className="mt-4 bg-[#FFE600] border-l-4 border-[#D41E28] px-4 py-3 text-[12px] text-[#111]"
+                  style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                >
+                  <span
+                    className="text-[10px] font-black tracking-[0.3em] text-[#D41E28] mr-2"
+                    style={{ fontFamily: "var(--font-outfit)" }}
+                  >
+                    ━ JOIN
+                  </span>
+                  <b>会員登録でランキング入り</b> — 的中を積み上げて年間王者を狙おう。
+                  <Link
+                    href="/fan/login"
+                    className="underline font-black ml-1 text-[#D41E28]"
+                  >
                     登録はこちら →
                   </Link>
                 </div>

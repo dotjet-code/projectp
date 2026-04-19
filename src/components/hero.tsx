@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { TornDivider } from "@/components/torn-divider";
 
 export interface HeroProps {
   stageLabel?: string;
@@ -8,7 +9,7 @@ export interface HeroProps {
   titleImage?: string;
   /** titleImage のアスペクト比 (既定 1920:600 = 3.2) */
   titleImageAspect?: number;
-  /** 事件ヘッドライン (破れ紙ラベルで配置) */
+  /** 事件ヘッドライン (NewsFlash 側で使う想定、Hero 内には出さない) */
   eventHeadline?: string;
   /** 散らし配置の煽りコピー (テキストフォールバック) */
   taglines?: string[];
@@ -24,6 +25,8 @@ export interface HeroProps {
   portraitImage?: string;
   /** 被写体のゼッケン番号 */
   jerseyNumber?: string;
+  /** 左カラムに差し込む号外ニュース枠 */
+  newsFlashSlot?: React.ReactNode;
 }
 
 const GRADE_LABELS: Record<NonNullable<HeroProps["grade"]>, string> = {
@@ -152,7 +155,6 @@ export function Hero({
   brandTitle = "かけあがり",
   titleImage,
   titleImageAspect = 1920 / 600,
-  eventHeadline = "首位、陥落。",
   taglines = DEFAULT_TAGLINES,
   taglineImages,
   taglineImageAspect = 669 / 373,
@@ -160,6 +162,7 @@ export function Hero({
   backgroundImage,
   portraitImage,
   jerseyNumber = "01",
+  newsFlashSlot,
 }: HeroProps) {
   const today = new Intl.DateTimeFormat("ja-JP", {
     year: "numeric",
@@ -169,207 +172,201 @@ export function Hero({
   }).format(new Date());
 
   return (
-    <section className="relative overflow-hidden bg-[#F5F1E8]">
-      {/* ====== 背景コラージュレイヤー ====== */}
-
-      {/* 生成背景画像 (コラージュ本体) */}
-      {backgroundImage && (
-        <Image
-          src={backgroundImage}
-          alt=""
-          fill
-          priority
-          className="object-cover"
-          aria-hidden
-        />
-      )}
-
-
-
-      {/* ====== メインコンテンツ ====== */}
-      <div className="relative mx-auto max-w-[1200px] px-4 pt-10 pb-20 md:pt-16 md:pb-28 min-h-[740px]">
-        {/* 人物切抜き */}
-        {portraitImage && (
-          <div
-            className="absolute right-0 md:right-4 bottom-8 w-[60%] md:w-[46%] pointer-events-none"
-            style={{ height: "84%" }}
+    <section className="relative bg-[#F5F1E8]">
+      {/* ==== ステージ: 背景コラージュ画像 1376×768 を最大サイズとする ==== */}
+      <div className="relative mx-auto w-full max-w-[1376px] md:aspect-[1376/768] overflow-hidden">
+        {/* 背景画像 (リピートなし、ピッタリ収める) */}
+        {backgroundImage && (
+          <Image
+            src={backgroundImage}
+            alt=""
+            fill
+            priority
+            className="object-cover object-center pointer-events-none select-none"
+            sizes="(max-width: 1376px) 100vw, 1376px"
             aria-hidden
-          >
-            <div className="relative w-full h-full">
-              <Image
-                src={portraitImage}
-                alt=""
-                fill
-                priority
-                className="object-cover object-top"
-                style={{
-                  filter: "contrast(1.1) saturate(1.05)",
-                  clipPath:
-                    "polygon(6% 2%, 14% 0, 28% 4%, 44% 0, 58% 3%, 72% 0, 86% 4%, 96% 2%, 100% 14%, 96% 28%, 100% 46%, 98% 62%, 100% 78%, 94% 92%, 86% 100%, 72% 96%, 58% 100%, 44% 96%, 28% 100%, 14% 96%, 4% 100%, 0 88%, 4% 72%, 0 56%, 4% 38%, 0 22%, 2% 10%)",
-                }}
-              />
-              {/* 巨大ゼッケン (彫込み) */}
-              <div
-                className="absolute right-2 bottom-8 font-black leading-none select-none"
-                style={{
-                  color: "#F5F1E8",
-                  fontFamily: "var(--font-outfit)",
-                  fontSize: "clamp(140px, 20vw, 280px)",
-                  mixBlendMode: "difference",
-                  fontWeight: 900,
-                }}
-              >
-                {jerseyNumber}
-              </div>
-            </div>
-          </div>
+          />
         )}
 
-        {/* 巨大ブランドタイトル */}
-        <div className="relative z-10 pt-2 md:pt-4">
-          {titleImage ? (
-            <div
-              className="relative w-full max-w-[720px]"
-              style={{ aspectRatio: titleImageAspect }}
-            >
-              <Image
-                src={titleImage}
-                alt={brandTitle}
-                fill
-                priority
-                className="object-contain object-left"
-                sizes="(max-width: 768px) 90vw, 900px"
-              />
+        {/* ==== コンテンツオーバーレイ ==== */}
+        <div className="relative z-10 h-full grid grid-cols-1 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-4 md:gap-6 px-4 md:px-6 pt-2 pb-4 md:pt-3 md:pb-5">
+          {/* 左カラム: タイトル + 号外 (オーバーラップ) */}
+          <div className="flex flex-col min-h-0">
+            {/* かけあがり タイトル (左上に詰めて、ほんの少し大きめ) */}
+            <div className="shrink-0 relative z-30">
+              {titleImage ? (
+                <div
+                  className="relative w-full max-w-[300px] md:max-w-[380px]"
+                  style={{ aspectRatio: titleImageAspect }}
+                >
+                  <Image
+                    src={titleImage}
+                    alt={brandTitle}
+                    fill
+                    priority
+                    className="object-contain object-left"
+                    sizes="(max-width: 768px) 70vw, 380px"
+                  />
+                </div>
+              ) : (
+                <div className="inline-block relative">
+                  <div
+                    className="absolute bg-[#F5F1E8]"
+                    style={{
+                      inset: "-12px -18px",
+                      clipPath: TORN_CLIP_PATH,
+                      boxShadow: "4px 4px 0 rgba(17,17,17,0.1)",
+                    }}
+                    aria-hidden
+                  />
+                  <div className="relative px-2">
+                    <BrandTitle text={brandTitle} />
+                  </div>
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="inline-block relative">
+
+            {/* 号外ニュース紙面 (タイトルにかぶせて上に持ち上げ、下端は見切れさせる) */}
+            <div className="relative z-20 -mt-16 md:-mt-24 pl-2 pr-2">
+              {newsFlashSlot}
+            </div>
+
+            {/* 下段メタラベル */}
+            <div className="shrink-0 mt-3 flex flex-wrap items-center gap-2 relative z-30">
+              <TornLabel variant="white" rotation={1}>
+                <span
+                  className="text-[10px]"
+                  style={{ fontFamily: "var(--font-outfit)" }}
+                >
+                  {today}
+                </span>
+              </TornLabel>
+              {stageLabel && (
+                <TornLabel variant="red" rotation={-1}>
+                  <span className="text-[10px]">{stageLabel}</span>
+                </TornLabel>
+              )}
+            </div>
+          </div>
+
+          {/* 右カラム: 人物 + タグライン (ポスタークラスタ) */}
+          <div className="relative min-h-[420px] md:min-h-0">
+            {/* 人物切抜き (右側) */}
+            {portraitImage && (
               <div
-                className="absolute bg-[#F5F1E8]"
-                style={{
-                  inset: "-16px -24px",
-                  clipPath: TORN_CLIP_PATH,
-                  boxShadow: "6px 6px 0 rgba(17,17,17,0.1)",
-                }}
+                className="absolute right-0 top-0 bottom-0 w-[70%] md:w-[68%] pointer-events-none"
                 aria-hidden
-              />
-              <div className="relative px-2">
-                <BrandTitle text={brandTitle} />
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* 煽りコピー群 */}
-        <div className="relative z-10 mt-8 md:mt-12 max-w-[64%] md:max-w-[58%]">
-          <div className="mb-4">
-            <TornLabel variant="black" rotation={-2}>
-              <span
-                className="text-xl md:text-3xl"
-                style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                {eventHeadline}
+                <div className="relative w-full h-full">
+                  <Image
+                    src={portraitImage}
+                    alt=""
+                    fill
+                    priority
+                    className="object-cover object-top"
+                    sizes="(max-width: 1376px) 50vw, 660px"
+                    style={{
+                      filter: "contrast(1.1) saturate(1.05)",
+                      clipPath:
+                        "polygon(6% 2%, 14% 0, 28% 4%, 44% 0, 58% 3%, 72% 0, 86% 4%, 96% 2%, 100% 14%, 96% 28%, 100% 46%, 98% 62%, 100% 78%, 94% 92%, 86% 100%, 72% 96%, 58% 100%, 44% 96%, 28% 100%, 14% 96%, 4% 100%, 0 88%, 4% 72%, 0 56%, 4% 38%, 0 22%, 2% 10%)",
+                    }}
+                  />
+                  <div
+                    className="absolute right-2 bottom-4 font-black leading-none select-none"
+                    style={{
+                      color: "#F5F1E8",
+                      fontFamily: "var(--font-outfit)",
+                      fontSize: "clamp(110px, 14vw, 220px)",
+                      mixBlendMode: "difference",
+                      fontWeight: 900,
+                    }}
+                  >
+                    {jerseyNumber}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 朱肉判子 GRADE (右上) */}
+            <div
+              className="absolute right-2 md:right-4 top-1 md:top-2 z-20 flex items-center justify-center select-none"
+              style={{
+                width: "clamp(64px, 7.5vw, 112px)",
+                height: "clamp(64px, 7.5vw, 112px)",
+                backgroundColor: "#D41E28",
+                transform: "rotate(-8deg)",
+                boxShadow: "4px 4px 0 rgba(17,17,17,0.15)",
+                clipPath: STAMP_CLIP_PATH,
+              }}
+              aria-label={`等級 ${grade}: ${GRADE_LABELS[grade]}`}
+            >
+              <span
+                className="text-white font-black"
+                style={{
+                  fontFamily: "var(--font-noto-serif), serif",
+                  fontSize: "clamp(20px, 3vw, 42px)",
+                  lineHeight: 1,
+                }}
+              >
+                {GRADE_LABELS[grade]}
               </span>
-            </TornLabel>
+            </div>
+
+            {/* タグラインラベル群 (人物の左側に積む) */}
+            <div className="absolute left-0 top-4 md:top-6 z-10 flex flex-col items-start gap-2 md:gap-3 w-[42%] md:w-[38%]">
+              {taglineImages && taglineImages.length > 0
+                ? taglineImages.map((src, i) => {
+                    const rotations = [-3, 2, -2];
+                    const rot = rotations[i % rotations.length];
+                    const alt = taglines[i] ?? "";
+                    return (
+                      <div
+                        key={`${src}-${i}`}
+                        className="relative w-full max-w-[200px]"
+                        style={{
+                          aspectRatio: taglineImageAspect,
+                          transform: `rotate(${rot}deg)`,
+                        }}
+                      >
+                        <Image
+                          src={src}
+                          alt={alt}
+                          fill
+                          className="object-contain object-left"
+                          sizes="(max-width: 768px) 160px, 200px"
+                        />
+                      </div>
+                    );
+                  })
+                : taglines.map((t, i) => {
+                    const variants = ["white", "pink", "teal", "red"] as const;
+                    const v = variants[i % variants.length];
+                    const rot = i % 2 === 0 ? -3 : 2;
+                    return (
+                      <TornLabel key={`${t}-${i}`} variant={v} rotation={rot}>
+                        <span className="text-sm md:text-base">{t}</span>
+                      </TornLabel>
+                    );
+                  })}
+            </div>
+
+            {/* GRADE タグ (右下、メタ情報) */}
+            <div className="absolute right-3 bottom-2 z-20">
+              <TornLabel variant="teal" rotation={2}>
+                <span
+                  className="text-[10px] tracking-[0.2em]"
+                  style={{ fontFamily: "var(--font-outfit)" }}
+                >
+                  GRADE {grade}
+                </span>
+              </TornLabel>
+            </div>
           </div>
-
-          <div className="flex flex-wrap items-start gap-x-2 gap-y-3 md:gap-x-3 md:gap-y-4">
-            {taglineImages && taglineImages.length > 0
-              ? taglineImages.map((src, i) => {
-                  const rotations = [-3, 2, -2, 3];
-                  const rot = rotations[i % rotations.length];
-                  const alt = taglines[i] ?? "";
-                  return (
-                    <div
-                      key={`${src}-${i}`}
-                      className="relative w-[200px] md:w-[280px]"
-                      style={{
-                        aspectRatio: taglineImageAspect,
-                        transform: `rotate(${rot}deg)`,
-                      }}
-                    >
-                      <Image
-                        src={src}
-                        alt={alt}
-                        fill
-                        className="object-contain"
-                        sizes="(max-width: 768px) 200px, 280px"
-                      />
-                    </div>
-                  );
-                })
-              : taglines.map((t, i) => {
-                  const variants = ["white", "pink", "teal", "red"] as const;
-                  const v = variants[i % variants.length];
-                  const rot = i % 2 === 0 ? -3 : 2;
-                  return (
-                    <TornLabel key={`${t}-${i}`} variant={v} rotation={rot}>
-                      <span className="text-sm md:text-lg">{t}</span>
-                    </TornLabel>
-                  );
-                })}
-          </div>
-        </div>
-
-        {/* 右上: 朱肉判子 */}
-        <div
-          className="absolute right-4 md:right-12 top-6 md:top-10 z-20 flex items-center justify-center select-none"
-          style={{
-            width: "clamp(88px, 11vw, 150px)",
-            height: "clamp(88px, 11vw, 150px)",
-            backgroundColor: "#D41E28",
-            transform: "rotate(-8deg)",
-            boxShadow: "4px 4px 0 rgba(17,17,17,0.15)",
-            clipPath: STAMP_CLIP_PATH,
-          }}
-          aria-label={`等級 ${grade}: ${GRADE_LABELS[grade]}`}
-        >
-          <span
-            className="text-white font-black"
-            style={{
-              fontFamily: "var(--font-noto-serif), serif",
-              fontSize: "clamp(30px, 4.5vw, 62px)",
-              lineHeight: 1,
-            }}
-          >
-            {GRADE_LABELS[grade]}
-          </span>
-        </div>
-
-        {/* 下段: 日付 / 節 / 等級バッジ */}
-        <div className="relative z-10 mt-10 md:mt-16 flex flex-wrap items-center gap-3 md:gap-4">
-          <TornLabel variant="white" rotation={1}>
-            <span
-              className="text-xs md:text-sm"
-              style={{ fontFamily: "var(--font-outfit)" }}
-            >
-              {today}
-            </span>
-          </TornLabel>
-          {stageLabel && (
-            <TornLabel variant="red" rotation={-1}>
-              <span className="text-xs md:text-sm">{stageLabel}</span>
-            </TornLabel>
-          )}
-          <TornLabel variant="teal" rotation={2}>
-            <span
-              className="text-[10px] md:text-xs tracking-[0.2em]"
-              style={{ fontFamily: "var(--font-outfit)" }}
-            >
-              GRADE {grade}
-            </span>
-          </TornLabel>
         </div>
       </div>
 
       {/* 下端: 破れた赤テープ */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-[28px] bg-[#D41E28] pointer-events-none"
-        style={{
-          clipPath:
-            "polygon(0 30%, 4% 20%, 10% 40%, 18% 15%, 26% 45%, 34% 10%, 42% 40%, 50% 18%, 58% 42%, 66% 16%, 74% 40%, 82% 14%, 90% 42%, 96% 20%, 100% 40%, 100% 100%, 0 100%)",
-        }}
-        aria-hidden
-      />
+      <TornDivider variant="top" height={22} />
     </section>
   );
 }

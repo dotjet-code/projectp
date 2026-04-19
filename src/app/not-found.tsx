@@ -6,29 +6,55 @@ export default function NotFound() {
   return (
     <>
       <Header />
-      <main className="pb-10">
-        <section className="mx-auto max-w-[720px] px-4 pt-16 pb-10 text-center">
-          <p className="text-6xl mb-4">🏁</p>
-          <h1 className="font-[family-name:var(--font-outfit)] text-3xl font-extrabold bg-gradient-to-r from-primary to-primary-blue bg-clip-text text-transparent">
+      <main className="pb-10 bg-[#F5F1E8] min-h-[60vh]">
+        <section className="mx-auto max-w-[1100px] px-4 pt-16 pb-10">
+          <div className="flex items-baseline gap-3 mb-3">
+            <span className="inline-block w-2 h-2 bg-[#D41E28]" />
+            <p
+              className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              ━ 404 / RETURNED TO PIT
+            </p>
+            <span className="flex-1 h-px bg-[#111]/30" aria-hidden />
+          </div>
+          <h1
+            className="text-[80px] md:text-[140px] font-black leading-[0.9] text-[#111] tabular-nums"
+            style={{ fontFamily: "var(--font-outfit)" }}
+          >
             404
           </h1>
-          <p className="mt-3 text-base font-bold text-foreground">
-            このページは Pit に戻されました
+          <p
+            className="mt-2 text-xl md:text-2xl font-black text-[#111]"
+            style={{ fontFamily: "var(--font-noto-serif), serif" }}
+          >
+            このページは <span className="text-[#D41E28]">Pit</span> に戻されました。
           </p>
-          <p className="mt-2 text-sm text-muted">
+          <p
+            className="mt-2 text-sm text-[#4A5060] max-w-xl leading-relaxed"
+            style={{ fontFamily: "var(--font-noto-serif), serif" }}
+          >
             お探しのページは存在しないか、別の場所に移動した可能性があります。
           </p>
 
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary-blue px-8 py-3 text-sm font-bold text-white shadow-[0_10px_15px_rgba(83,234,253,0.4)] hover:shadow-[0_10px_20px_rgba(83,234,253,0.5)] transition-all"
+              className="group inline-flex items-center gap-3 bg-[#D41E28] text-white px-8 py-3 text-base font-black hover:translate-y-0.5 transition-transform"
+              style={{
+                fontFamily: "var(--font-noto-serif), serif",
+                boxShadow: "5px 5px 0 rgba(17,17,17,0.22)",
+              }}
             >
-              🏠 トップへ戻る
+              <span>トップへ戻る</span>
+              <span className="text-xl group-hover:translate-x-1 transition-transform">
+                →
+              </span>
             </Link>
             <Link
               href="/ranking"
-              className="text-xs text-muted underline hover:text-primary-dark"
+              className="text-sm font-black text-[#D41E28] underline"
+              style={{ fontFamily: "var(--font-outfit)" }}
             >
               今のランキングを見る →
             </Link>

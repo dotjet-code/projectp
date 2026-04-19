@@ -129,18 +129,31 @@ export default async function MembersPage() {
               RUNNERS
             </p>
             <h1
-              className="mt-3 text-5xl md:text-7xl font-black leading-[0.9] tracking-tight"
+              className="mt-3 text-4xl md:text-6xl font-black leading-[0.95] tracking-tight"
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
-              12人の<br />
-              <span className="text-[#D41E28]">現在地。</span>
+              12人の<span className="text-[#D41E28]">現在地。</span>
             </h1>
-            <p
-              className="mt-6 text-base md:text-lg leading-relaxed max-w-2xl text-[#9BA8BF]"
-              style={{ fontFamily: "var(--font-noto-serif), serif" }}
-            >
-              毎月の成績で全員のポジションが変わる。上位 6 名が PLAYER、下位 6 名が PIT。
-            </p>
+            <div className="mt-6 max-w-2xl">
+              <p
+                className="text-lg md:text-2xl font-black leading-relaxed text-[#F5F1E8]"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                <span className="text-[#FFE600]">主役は、毎月入れ替わる。</span>
+                <br />
+                上位 6 が PLAYER、下位 6 が PIT。
+                <br />
+                ──今夜、君の推しはどこで戦っている？
+              </p>
+              <div
+                className="mt-4 h-2 max-w-[220px] bg-[#D41E28]"
+                style={{
+                  clipPath:
+                    "polygon(0 60%, 4% 20%, 10% 70%, 18% 30%, 28% 65%, 38% 25%, 48% 70%, 58% 30%, 68% 68%, 78% 28%, 86% 70%, 94% 34%, 100% 66%, 100% 100%, 0 100%)",
+                }}
+                aria-hidden
+              />
+            </div>
           </div>
         </section>
 
@@ -166,7 +179,7 @@ export default async function MembersPage() {
               className="text-center text-base md:text-lg font-black"
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
-              月間 3 指標（バズ・配信・収支）と月末特番の結果で、毎月 PLAYER / PIT が再編成される。
+              月間 4 指標（バズ・配信・収支・主役）と月末特番の結果で、毎月 PLAYER / PIT が再編成される。
             </p>
           </div>
         </section>

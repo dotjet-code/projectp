@@ -16,7 +16,7 @@ export default async function LiveInfoPage() {
   return (
     <>
       <Header />
-      <main className="pb-10">
+      <main className="pb-10 bg-[#F5F1E8]">
         {/* Hero */}
         <section className="relative bg-[#111] text-[#F5F1E8] px-6 py-12 md:py-16 overflow-hidden">
           <div
@@ -40,33 +40,63 @@ export default async function LiveInfoPage() {
             >
               ライブ<span className="text-[#D41E28]">応援。</span>
             </h1>
-            <p
-              className="mt-4 text-sm md:text-base leading-relaxed max-w-2xl text-[#9BA8BF]"
-              style={{ fontFamily: "var(--font-noto-serif), serif" }}
-            >
-              会場に来た者だけが投じられる一票。かけあがり のライブで、直接プッシュせよ。
-            </p>
+            <div className="mt-6 max-w-2xl">
+              <p
+                className="text-lg md:text-2xl font-black leading-relaxed text-[#F5F1E8]"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                <span className="text-[#FFE600]">会場に来た者だけが、投じられる一票。</span>
+                <br />
+                その日、その瞬間、君の手で順位を動かせ。
+              </p>
+              <div
+                className="mt-4 h-2 max-w-[220px] bg-[#D41E28]"
+                style={{
+                  clipPath:
+                    "polygon(0 60%, 4% 20%, 10% 70%, 18% 30%, 28% 65%, 38% 25%, 48% 70%, 58% 30%, 68% 68%, 78% 28%, 86% 70%, 94% 34%, 100% 66%, 100% 100%, 0 100%)",
+                }}
+                aria-hidden
+              />
+            </div>
           </div>
         </section>
 
         {/* 開催中のイベント */}
         {openEvents.length > 0 && (
-          <section className="mx-auto max-w-[720px] px-4 mt-6">
-            <div className="rounded-2xl bg-gradient-to-r from-live/10 to-[#fb64b6]/10 border-2 border-live/30 p-6 text-center">
-              <p className="text-xs font-bold text-[#e7000b] tracking-wider animate-pulse mb-2">
-                🔴 投票受付中
+          <section className="mx-auto max-w-[1100px] px-4 mt-6">
+            <div
+              className="relative bg-[#FFE600] border-2 border-[#111] p-6 text-center"
+              style={{ boxShadow: "5px 5px 0 rgba(17,17,17,0.22)" }}
+            >
+              <p
+                className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28] mb-3"
+                style={{ fontFamily: "var(--font-outfit)" }}
+              >
+                ━ NOW VOTING <span className="inline-block w-1.5 h-1.5 bg-[#D41E28] animate-pulse ml-1" />
               </p>
               {openEvents.map((ev) => (
                 <div key={ev.id} className="mb-4 last:mb-0">
-                  <h3 className="text-lg font-bold text-foreground">{ev.title}</h3>
-                  <p className="text-xs text-muted mt-1">
+                  <h3
+                    className="text-2xl md:text-3xl font-black text-[#111] leading-tight"
+                    style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                  >
+                    {ev.title}
+                  </h3>
+                  <p
+                    className="text-xs text-[#4A5060] mt-1 tabular-nums"
+                    style={{ fontFamily: "var(--font-outfit)" }}
+                  >
                     {ev.eventDate} {ev.venue && `· ${ev.venue}`}
                   </p>
                   <Link
                     href={`/event/${ev.id}`}
-                    className="mt-3 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-live to-[#fb64b6] px-8 py-3 text-base font-bold text-white shadow-lg"
+                    className="mt-4 inline-flex items-center gap-3 bg-[#D41E28] text-white px-8 py-3 text-base font-black hover:translate-y-0.5 transition-transform"
+                    style={{
+                      fontFamily: "var(--font-noto-serif), serif",
+                      boxShadow: "5px 5px 0 rgba(17,17,17,0.22)",
+                    }}
                   >
-                    💖 投票する →
+                    投票する <span className="text-xl">→</span>
                   </Link>
                 </div>
               ))}
@@ -75,92 +105,199 @@ export default async function LiveInfoPage() {
         )}
 
         {/* How it works */}
-        <section className="mx-auto max-w-[720px] px-4 mt-8">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-live to-[#fb64b6]" />
-            <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-[#e7000b] tracking-tight">
-              💖 ライブ当日の応援投票とは？
+        <section className="mx-auto max-w-[1100px] px-4 mt-10">
+          <div className="flex items-baseline gap-3 mb-5">
+            <span className="inline-block w-2 h-2 bg-[#D41E28]" />
+            <p
+              className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              ━ HOW IT WORKS
+            </p>
+            <h2
+              className="text-2xl md:text-3xl font-black text-[#111] leading-none"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              ライブ当日の応援投票とは？
             </h2>
+            <span className="flex-1 h-px bg-[#111]/30" aria-hidden />
           </div>
-          <div className="rounded-2xl bg-white/70 border border-white/80 p-6 shadow-sm">
-            <p className="text-sm leading-relaxed text-foreground">
-              Project P のライブイベントに来場したお客さんだけが参加できる、
-              <strong>会場限定の応援投票</strong>です。
-              来場時にお渡しする<strong>投票コード</strong>を使って、
-              スマホから推しメンバーに投票できます。
+          <div
+            className="bg-[#F5F1E8] border-2 border-[#111] px-6 py-5"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, rgba(17,17,17,0.10) 0.6px, transparent 1px)",
+              backgroundSize: "5px 5px",
+              boxShadow: "5px 5px 0 rgba(17,17,17,0.18)",
+            }}
+          >
+            <p
+              className="text-sm md:text-base leading-relaxed text-[#111]"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              かけあがり のライブイベントに来場した者だけが参加できる、
+              <b className="text-[#D41E28]">会場限定の応援投票</b>。
+              来場時に渡される<b>投票コード</b>を使って、
+              スマホから推しメンバーに票を投じる。
             </p>
           </div>
         </section>
 
         {/* Steps */}
-        <section className="mx-auto max-w-[720px] px-4 mt-10">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <section className="mx-auto max-w-[1100px] px-4 mt-10">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5">
             {[
-              { step: "1", title: "ライブに来場", desc: "会場で投票コード(PJ-XXXX)を受け取る", icon: "🎫" },
-              { step: "2", title: "コードを入力", desc: "投票ページで 4 桁のコードを入力", icon: "📱" },
-              { step: "3", title: "推しに投票！", desc: "チケット数ぶん投票。同じ人に複数票 OK", icon: "💖" },
+              { step: "01", title: "ライブに来場", desc: "会場で投票コード (PJ-XXXX) を受け取る", icon: "🎫" },
+              { step: "02", title: "コードを入力", desc: "投票ページで 4 桁のコードを入力", icon: "📱" },
+              { step: "03", title: "推しに投票", desc: "チケット数ぶん投票。同じ人に複数票 OK", icon: "💖" },
             ].map((item) => (
-              <div key={item.step} className="rounded-2xl bg-white/70 border border-white/80 p-5 text-center shadow-sm">
-                <span className="inline-flex size-10 items-center justify-center rounded-full bg-gradient-to-r from-live to-[#fb64b6] text-sm font-bold text-white shadow-md">
+              <div
+                key={item.step}
+                className="bg-[#F5F1E8] border-2 border-[#111] p-5 text-center"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(circle, rgba(17,17,17,0.08) 0.6px, transparent 1px)",
+                  backgroundSize: "5px 5px",
+                  boxShadow: "4px 4px 0 rgba(17,17,17,0.18)",
+                }}
+              >
+                <span
+                  className="inline-flex w-10 h-10 items-center justify-center bg-[#D41E28] text-base font-black text-white tabular-nums"
+                  style={{
+                    fontFamily: "var(--font-outfit)",
+                    boxShadow: "2px 2px 0 rgba(17,17,17,0.22)",
+                  }}
+                >
                   {item.step}
                 </span>
                 <p className="mt-3 text-2xl">{item.icon}</p>
-                <p className="mt-2 text-sm font-bold text-foreground">{item.title}</p>
-                <p className="mt-1 text-xs text-muted">{item.desc}</p>
+                <p
+                  className="mt-2 text-base font-black text-[#111]"
+                  style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                >
+                  {item.title}
+                </p>
+                <p
+                  className="mt-1 text-xs text-[#4A5060]"
+                  style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                >
+                  {item.desc}
+                </p>
               </div>
             ))}
           </div>
         </section>
 
         {/* Bonus */}
-        <section className="mx-auto max-w-[720px] px-4 mt-10">
-          <div className="rounded-2xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 p-6 text-center">
-            <p className="text-sm text-foreground leading-relaxed">
-              🎯 <strong>ファン会員</strong>としてログインしてからコードを入力すると、
-              <strong>予想スコアに応じて投票数が 2 倍・3 倍</strong>に！
+        <section className="mx-auto max-w-[1100px] px-4 mt-10">
+          <div className="bg-[#111] text-[#F5F1E8] border-2 border-[#111] px-6 py-5"
+            style={{ boxShadow: "5px 5px 0 rgba(17,17,17,0.22)" }}
+          >
+            <p
+              className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#FFE600] mb-2"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              ━ BONUS
+            </p>
+            <p
+              className="text-sm md:text-base leading-relaxed"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              <b className="text-[#FFE600]">ファン会員</b>としてログインしてからコードを入力すると、
+              予想スコアに応じて投票数が <b className="text-[#FFE600]">2 倍 · 3 倍</b> に。
             </p>
           </div>
         </section>
 
         {/* ライブ予定 */}
-        <section className="mx-auto max-w-[720px] px-4 mt-10">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-[#ffd230] to-[#f59e0b]" />
-            <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-[#b45309] tracking-tight">
-              📅 ライブ予定
+        <section className="mx-auto max-w-[1100px] px-4 mt-10">
+          <div className="flex items-baseline gap-3 mb-5">
+            <span className="inline-block w-2 h-2 bg-[#D41E28]" />
+            <p
+              className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              ━ SCHEDULE
+            </p>
+            <h2
+              className="text-2xl md:text-3xl font-black text-[#111] leading-none"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              ライブ予定
             </h2>
+            <span className="flex-1 h-px bg-[#111]/30" aria-hidden />
           </div>
           {upcomingEvents.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-6 text-center">
-              <p className="text-sm text-muted">次のライブ情報は近日公開</p>
+            <div className="bg-[#F5F1E8] border-2 border-dashed border-[#111]/40 p-8 text-center">
+              <p
+                className="text-sm text-[#4A5060]"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                次のライブ情報は近日公開
+              </p>
             </div>
           ) : (
             <div className="space-y-3">
               {upcomingEvents.map((ev) => (
                 <div
                   key={ev.id}
-                  className={`rounded-2xl border p-5 ${
+                  className={`border-2 px-5 py-4 ${
                     ev.status === "open"
-                      ? "border-live/30 bg-live/5"
-                      : "border-gray-200 bg-white"
+                      ? "border-[#D41E28] bg-[#FFE600]"
+                      : "border-[#111] bg-[#F5F1E8]"
                   }`}
+                  style={{ boxShadow: "3px 3px 0 rgba(17,17,17,0.18)" }}
                 >
-                  <div className="flex items-center justify-between">
-                    <div>
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-bold text-muted">{ev.eventDate}</span>
+                        <span
+                          className="text-[10px] font-black tabular-nums tracking-wider text-[#4A5060]"
+                          style={{ fontFamily: "var(--font-outfit)" }}
+                        >
+                          {ev.eventDate}
+                        </span>
                         {ev.status === "open" && (
-                          <span className="rounded-full bg-live px-2 py-0.5 text-[9px] font-bold text-white animate-pulse">投票受付中</span>
+                          <span
+                            className="bg-[#D41E28] text-white px-2 py-0.5 text-[9px] font-black tracking-wider animate-pulse"
+                            style={{ fontFamily: "var(--font-outfit)" }}
+                          >
+                            投票受付中
+                          </span>
                         )}
                         {ev.eventDate === today && ev.status === "draft" && (
-                          <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[9px] font-bold text-white">本日開催</span>
+                          <span
+                            className="bg-[#111] text-[#FFE600] px-2 py-0.5 text-[9px] font-black tracking-wider"
+                            style={{ fontFamily: "var(--font-outfit)" }}
+                          >
+                            本日開催
+                          </span>
                         )}
                       </div>
-                      <p className="text-sm font-bold text-foreground">{ev.title}</p>
-                      {ev.venue && <p className="text-xs text-muted">{ev.venue}</p>}
+                      <p
+                        className="text-base md:text-lg font-black text-[#111] truncate"
+                        style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                      >
+                        {ev.title}
+                      </p>
+                      {ev.venue && (
+                        <p
+                          className="text-xs text-[#4A5060]"
+                          style={{ fontFamily: "var(--font-outfit)" }}
+                        >
+                          {ev.venue}
+                        </p>
+                      )}
                     </div>
                     {ev.status === "open" && (
-                      <Link href={`/event/${ev.id}`} className="rounded-full bg-gradient-to-r from-live to-[#fb64b6] px-5 py-2 text-xs font-bold text-white">
+                      <Link
+                        href={`/event/${ev.id}`}
+                        className="shrink-0 inline-flex items-center gap-2 bg-[#D41E28] text-white px-5 py-2 text-xs font-black hover:translate-y-0.5 transition-transform"
+                        style={{
+                          fontFamily: "var(--font-noto-serif), serif",
+                          boxShadow: "3px 3px 0 rgba(17,17,17,0.22)",
+                        }}
+                      >
                         投票 →
                       </Link>
                     )}
@@ -171,12 +308,19 @@ export default async function LiveInfoPage() {
           )}
         </section>
 
-        <section className="mx-auto max-w-[720px] px-4 mt-10 text-center">
+        <section className="mx-auto max-w-[1100px] px-4 mt-12 text-center">
           <Link
             href="/ranking"
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary-blue px-10 py-3.5 text-base font-bold text-white shadow-[0_10px_15px_rgba(83,234,253,0.4)] transition-all"
+            className="group inline-flex items-center gap-3 bg-[#111] text-[#FFE600] px-10 py-4 text-base font-black hover:translate-y-0.5 transition-transform"
+            style={{
+              fontFamily: "var(--font-noto-serif), serif",
+              boxShadow: "5px 5px 0 rgba(17,17,17,0.22)",
+            }}
           >
-            📊 今のランキングを見る →
+            <span>今のランキングを見る</span>
+            <span className="text-2xl group-hover:translate-x-1 transition-transform">
+              →
+            </span>
           </Link>
         </section>
       </main>

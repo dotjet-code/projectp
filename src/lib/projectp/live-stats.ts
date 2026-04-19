@@ -4,6 +4,10 @@ import {
   getBalanceTotalsByStage,
   getSpecialTotalsByStage,
 } from "./balance-special";
+import {
+  getShuyakuTotalsByMember,
+  getPredictionMentionsByMember,
+} from "./shuyaku-vote";
 import { getActiveStage, type Stage } from "./stage";
 
 /**
@@ -36,6 +40,8 @@ export type RankedMember = Member & {
   hasLiveData: boolean;
   effectivePoints: number;
   specialPoints: number;
+  /** Supabase 上の UUID。連携前のメンバーは null */
+  supabaseId: string | null;
 };
 
 export type RankingContext = {
@@ -66,23 +72,29 @@ export async function getRankingContext(): Promise<RankingContext> {
   const supabase = createAdminClient();
   const activeStage = await getActiveStage();
 
-  // 1. 連携済み members を取得（boat_color も含む）
+  // 1. active な members を取得（boat_color + google_refresh_token も含む）
+  // UUID は主役指名など連携とは無関係な票で使うので全員分必要。
+  // YouTube 連携 (google_refresh_token あり) のみ snapshot 取得対象になる。
   const { data: rows } = await supabase
     .from("members")
-    .select("id, name, boat_color")
-    .eq("is_active", true)
-    .not("google_refresh_token", "is", null);
+    .select("id, name, boat_color, google_refresh_token")
+    .eq("is_active", true);
 
-  const connectedMembers = (rows ?? []) as Array<{
+  const allMembers = (rows ?? []) as Array<{
     id: string;
     name: string;
     boat_color: number | null;
+    google_refresh_token: string | null;
   }>;
   const nameToMemberId = new Map<string, string>();
   const nameToBoatColor = new Map<string, number | null>();
-  for (const r of connectedMembers) {
+  const connectedMembers: Array<{ id: string; name: string }> = [];
+  for (const r of allMembers) {
     nameToMemberId.set(r.name, r.id);
     nameToBoatColor.set(r.name, r.boat_color);
+    if (r.google_refresh_token) {
+      connectedMembers.push({ id: r.id, name: r.name });
+    }
   }
 
   // 2. 最新スナップショットを一括取得（Stage があれば期間内のものだけ）
@@ -117,13 +129,17 @@ export async function getRankingContext(): Promise<RankingContext> {
     }
   }
 
-  // 2.5 active Stage があれば収支・特別ポイントも取得
-  const balanceMap = activeStage
-    ? await getBalanceTotalsByStage(activeStage.id)
-    : new Map<string, number>();
-  const specialMap = activeStage
-    ? await getSpecialTotalsByStage(activeStage.id)
-    : new Map<string, number>();
+  // 2.5 active Stage があれば収支・特別ポイント・主役指名・予想登場数を取得
+  const [balanceMap, specialMap, shuyakuMap, predictionMap] = await Promise.all([
+    activeStage
+      ? getBalanceTotalsByStage(activeStage.id)
+      : Promise.resolve(new Map<string, number>()),
+    activeStage
+      ? getSpecialTotalsByStage(activeStage.id)
+      : Promise.resolve(new Map<string, number>()),
+    getShuyakuTotalsByMember(activeStage?.id ?? null),
+    getPredictionMentionsByMember(activeStage?.id ?? null),
+  ]);
 
   // 3. data.ts の 12人をマージ（ダミーは 0 で上書き）
   const merged: RankedMember[] = dummyMembers.map((m) => {
@@ -134,8 +150,12 @@ export async function getRankingContext(): Promise<RankingContext> {
     const concurrent = (snap?.live_view_total ?? 0) * 10;
     const revenue = memberId ? (balanceMap.get(memberId) ?? 0) : 0;
     const special = memberId ? (specialMap.get(memberId) ?? 0) : 0;
-    // 合計は buzz + concurrent + revenue。special は別レイヤーなので含めない
-    const total = buzz + concurrent + revenue;
+    // 主役 = 指名票 + 予想登場数
+    const shuyakuVotes = memberId ? (shuyakuMap.get(memberId) ?? 0) : 0;
+    const predictionMentions = memberId ? (predictionMap.get(memberId) ?? 0) : 0;
+    const shuyaku = shuyakuVotes + predictionMentions;
+    // 合計は buzz + concurrent + revenue + shuyaku。special は別レイヤーなので含めない
+    const total = buzz + concurrent + revenue + shuyaku;
 
     // Supabase に boat_color があればそれを優先、無ければ data.ts の値
     const bc = nameToBoatColor.get(m.name) ?? m.boatColor ?? null;
@@ -144,11 +164,12 @@ export async function getRankingContext(): Promise<RankingContext> {
       ...m,
       detail: {
         ...m.detail,
-        stats: { buzz, concurrent, revenue },
+        stats: { buzz, concurrent, revenue, shuyaku },
       },
       hasLiveData: Boolean(snap),
       effectivePoints: total,
       specialPoints: special,
+      supabaseId: memberId ?? null,
       points: total,
       boatColor: bc as 1 | 2 | 3 | 4 | 5 | 6 | null,
       isTrending: false,

@@ -36,26 +36,58 @@ export default async function EventVotePage({
   return (
     <>
       <Header />
-      <main className="pb-10">
-        <section className="relative overflow-hidden bg-gradient-to-b from-[#fdf2f8] via-[#fce7f3]/40 to-transparent pt-10 pb-6 text-center">
-          <p className="text-4xl mb-2">🎤</p>
-          <h1 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-live to-[#fb64b6] bg-clip-text text-transparent">
-            {event.title}
-          </h1>
-          <p className="mt-2 text-xs text-muted">
-            {event.eventDate}
-            {event.venue && ` · ${event.venue}`}
-          </p>
-          {event.status === "closed" && (
-            <p className="mt-3 rounded-full inline-block bg-gray-100 px-4 py-1.5 text-xs font-bold text-gray-700">
-              投票は締め切られました
+      <main className="pb-10 bg-[#F5F1E8]">
+        <section className="relative overflow-hidden bg-[#111] text-[#F5F1E8] px-6 pt-12 md:pt-16 pb-10">
+          <div
+            className="absolute inset-0 pointer-events-none opacity-25"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, #F5F1E8 0.7px, transparent 1px)",
+              backgroundSize: "7px 7px",
+            }}
+            aria-hidden
+          />
+          <div className="relative max-w-[1100px] mx-auto">
+            <div className="flex items-baseline gap-3 mb-3">
+              <span className="inline-block w-2 h-2 bg-[#D41E28] animate-pulse" />
+              <p
+                className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
+                style={{ fontFamily: "var(--font-outfit)" }}
+              >
+                ━ LIVE EVENT
+              </p>
+              <span className="flex-1 h-px bg-[#F5F1E8]/30" aria-hidden />
+            </div>
+            <h1
+              className="text-3xl md:text-5xl font-black leading-tight"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              {event.title}
+            </h1>
+            <p
+              className="mt-2 text-sm tabular-nums text-[#9BA8BF] tracking-wider"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              {event.eventDate}
+              {event.venue && ` · ${event.venue}`}
             </p>
-          )}
-          {event.status === "draft" && (
-            <p className="mt-3 rounded-full inline-block bg-amber-100 px-4 py-1.5 text-xs font-bold text-amber-700">
-              投票はまだ開始されていません
-            </p>
-          )}
+            {event.status === "closed" && (
+              <p
+                className="mt-4 inline-block bg-[#111] text-white border-2 border-white px-4 py-1.5 text-xs font-black tracking-wider"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                🔒 投票は締め切られました
+              </p>
+            )}
+            {event.status === "draft" && (
+              <p
+                className="mt-4 inline-block bg-[#FFE600] text-[#111] px-4 py-1.5 text-xs font-black tracking-wider"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                投票はまだ開始されていません
+              </p>
+            )}
+          </div>
         </section>
 
         <EventVoteClient

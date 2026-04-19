@@ -67,14 +67,32 @@ export default async function PredictionPage() {
             >
               順位<span className="text-[#D41E28]">予想。</span>
             </h1>
-            <p
-              className="mt-4 text-sm md:text-base leading-relaxed max-w-2xl text-[#9BA8BF]"
-              style={{ fontFamily: "var(--font-noto-serif), serif" }}
-            >
-              {stage
-                ? `「${stage.title ?? stage.name}」の最終順位を予想せよ。特番で確定した結果が、次の再編成を決める。`
-                : "現在進行中のステージなし。次のステージ開幕をお待ちください。"}
-            </p>
+            <div className="mt-6 max-w-2xl">
+              <p
+                className="text-lg md:text-2xl font-black leading-relaxed text-[#F5F1E8]"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                <span className="text-[#FFE600]">最終順位を、当ててみせろ。</span>
+                <br />
+                単勝 1pt から三連単 30pt まで。読み切った者だけが、年間王者の称号に近づく。
+              </p>
+              {stage && (
+                <p
+                  className="mt-3 text-xs md:text-sm font-bold tracking-wider text-[#9BA8BF]"
+                  style={{ fontFamily: "var(--font-outfit)" }}
+                >
+                  ━ {stage.title ?? stage.name}
+                </p>
+              )}
+              <div
+                className="mt-4 h-2 max-w-[220px] bg-[#D41E28]"
+                style={{
+                  clipPath:
+                    "polygon(0 60%, 4% 20%, 10% 70%, 18% 30%, 28% 65%, 38% 25%, 48% 70%, 58% 30%, 68% 68%, 78% 28%, 86% 70%, 94% 34%, 100% 66%, 100% 100%, 0 100%)",
+                }}
+                aria-hidden
+              />
+            </div>
           </div>
         </section>
 

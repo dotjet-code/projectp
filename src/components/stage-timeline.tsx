@@ -30,8 +30,10 @@ export function StageTimeline({ stage }: { stage: Stage | null }) {
       <div className="max-w-[1200px] mx-auto px-4 py-4">
         <div className="flex items-center gap-4 md:gap-8">
           {/* Timeline nodes */}
-          <div className="flex-1 relative h-6 flex items-center">
+          <div className="flex-1 relative h-10 flex items-center">
+            {/* 横線 */}
             <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-px bg-[#111]" />
+            {/* フェーズマーカー */}
             <div className="relative w-full flex justify-between">
               {PHASES.map((phase, i) => {
                 const isActive = i === current;
@@ -39,7 +41,7 @@ export function StageTimeline({ stage }: { stage: Stage | null }) {
                 return (
                   <div
                     key={phase.key}
-                    className="flex flex-col items-center gap-1"
+                    className="relative w-6 h-6 flex items-center justify-center"
                   >
                     <span
                       className={
@@ -52,7 +54,7 @@ export function StageTimeline({ stage }: { stage: Stage | null }) {
                       aria-hidden
                     />
                     <span
-                      className={`hidden sm:block text-[10px] font-bold tracking-wider ${
+                      className={`hidden sm:block absolute top-full mt-2 text-[10px] font-bold tracking-wider whitespace-nowrap ${
                         isActive ? "text-[#D41E28]" : "text-[#4A5060]"
                       }`}
                       style={{ fontFamily: "var(--font-outfit)" }}

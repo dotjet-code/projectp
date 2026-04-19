@@ -4,6 +4,8 @@ export interface MemberStats {
   buzz: number;
   concurrent: number;
   revenue: number;
+  /** 主役 = 指名票 + 順位予想登場数 (Sanrio 方式) */
+  shuyaku?: number;
 }
 
 export interface Activity {
@@ -38,7 +40,7 @@ export interface Member {
 
 export const members: Member[] = [
   {
-    id: 1, rank: 1, name: "塩見きら", slug: "shiomi-kira", role: "PLAYER", points: 2008, avatarUrl: "/members/shiomi-kira.jpg", isLive: true,
+    id: 1, rank: 1, name: "塩見きら", slug: "shiomi-kira", role: "PLAYER", points: 2008, avatarUrl: "/members/shiomi-kira.jpg?v=20260419", isLive: true,
     detail: {
       stats: { buzz: 806, concurrent: 455, revenue: 347 },
       positionForecast: "PLAYER圏内", positionMargin: "6位余裕", supportRate: 30,
@@ -128,7 +130,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 7, rank: 7, name: "セナモモカ", slug: "sena-momoka", role: "PIT", points: 1283, avatarUrl: "/members/sena-momoka.jpg",
+    id: 7, rank: 7, name: "セナモモカ", slug: "sena-momoka", role: "PIT", points: 1283, avatarUrl: "/members/sena-momoka.jpg?v=20260419",
     detail: {
       stats: { buzz: 420, concurrent: 280, revenue: 283 },
       positionForecast: "PIT圏内", positionMargin: "ボーダー付近", supportRate: 10,

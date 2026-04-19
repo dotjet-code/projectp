@@ -67,20 +67,37 @@ export default async function ResultsPage({
             </div>
           </section>
 
-          <section className="mx-auto max-w-[720px] px-4 mt-6">
-            <div className="rounded-2xl border border-[rgba(254,243,198,0.6)] bg-gradient-to-r from-[rgba(254,249,195,0.6)] to-[rgba(254,243,198,0.6)] p-8 text-center">
-              <p className="text-4xl mb-3">⏳</p>
-              <h2 className="text-lg font-bold text-foreground">
+          <section className="mx-auto max-w-[1100px] px-4 mt-8 bg-[#F5F1E8]">
+            <div
+              className="bg-[#F5F1E8] border-2 border-[#111] p-8 md:p-10 text-center"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle, rgba(17,17,17,0.10) 0.6px, transparent 1px)",
+                backgroundSize: "5px 5px",
+                boxShadow: "5px 5px 0 rgba(17,17,17,0.18)",
+              }}
+            >
+              <h2
+                className="text-2xl md:text-3xl font-black text-[#111]"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
                 まだ結果が確定していません
               </h2>
-              <p className="mt-3 text-sm text-muted leading-relaxed">
-                特番が終わり順位が確定すると、ここに最終結果が表示されます。
+              <p
+                className="mt-3 text-sm text-[#4A5060] leading-relaxed"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                特番が終わり順位が確定すると、ここに最終結果が表示される。
               </p>
               <Link
                 href="/ranking"
-                className="mt-4 inline-block text-xs underline text-primary-dark"
+                className="mt-5 inline-flex items-center gap-2 bg-[#D41E28] text-white px-6 py-2.5 text-sm font-black hover:translate-y-0.5 transition-transform"
+                style={{
+                  fontFamily: "var(--font-noto-serif), serif",
+                  boxShadow: "3px 3px 0 rgba(17,17,17,0.22)",
+                }}
               >
-                現在の暫定ランキングを見る
+                現在の暫定ランキングを見る →
               </Link>
             </div>
           </section>
@@ -102,7 +119,7 @@ export default async function ResultsPage({
   return (
     <>
       <Header />
-      <main className="pb-10">
+      <main className="pb-10 bg-[#F5F1E8]">
         {/* Hero */}
         <section className="relative bg-[#111] text-[#F5F1E8] px-6 py-12 md:py-16 overflow-hidden">
           <div
@@ -160,9 +177,12 @@ export default async function ResultsPage({
 
         {/* Stage selector */}
         {closedStages.length > 1 && (
-          <section className="mx-auto max-w-[964px] px-4 mt-4">
-            <p className="text-[10px] font-semibold text-muted tracking-wider mb-2">
-              過去のステージを見る
+          <section className="mx-auto max-w-[1100px] px-4 mt-6">
+            <p
+              className="text-[10px] font-black tracking-[0.32em] text-[#D41E28] mb-2"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              ━ PAST STAGES
             </p>
             <div className="flex flex-wrap items-center gap-2">
               {closedStages.map((s) => {
@@ -171,11 +191,12 @@ export default async function ResultsPage({
                   <Link
                     key={s.id}
                     href={`/results?stage=${s.id}`}
-                    className={`rounded-full border px-3 py-1 text-[11px] font-bold transition-colors ${
+                    className={`px-3 py-1.5 text-[11px] font-black border-2 tracking-wider transition-colors ${
                       isSelected
-                        ? "bg-black text-white border-black"
-                        : "border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
+                        ? "bg-[#111] text-[#FFE600] border-[#111]"
+                        : "border-[#111] text-[#111] bg-[#F5F1E8] hover:bg-white"
                     }`}
+                    style={{ fontFamily: "var(--font-noto-serif), serif" }}
                   >
                     {s.stageNumber !== null
                       ? `ステージ ${s.stageNumber}`
@@ -189,42 +210,64 @@ export default async function ResultsPage({
         )}
 
         {/* Final Ranking */}
-        <section className="mx-auto max-w-[964px] px-4 mt-6">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-[#ffd230] to-[#f59e0b]" />
-            <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-[#b45309] tracking-tight">
-              🏆 最終順位
+        <section className="mx-auto max-w-[1100px] px-4 mt-8">
+          <div className="flex items-baseline gap-3 mb-5">
+            <span className="inline-block w-2 h-2 bg-[#D41E28]" />
+            <p
+              className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              ━ FINAL ORDER
+            </p>
+            <h2
+              className="text-2xl md:text-3xl font-black text-[#111] leading-none"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              最終順位
             </h2>
+            <span className="flex-1 h-px bg-[#111]/30" aria-hidden />
           </div>
 
           {results.length === 0 ? (
-            <p className="text-sm text-muted">
+            <p
+              className="text-sm text-[#4A5060]"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
               このステージには集計データがありません。
             </p>
           ) : (
-            <div className="space-y-2">
+            <div className="border-t-[3px] border-[#111]">
               {results.map((r) => {
                 const isReorgLine = r.rank === 7;
                 return (
                   <div key={r.memberId}>
                     {isReorgLine && (
-                      <div className="relative my-3">
-                        <div className="border-t-2 border-dashed border-reorg" />
-                        <span className="absolute left-1/2 -translate-x-1/2 -top-3 rounded-full bg-gradient-to-r from-pit to-pit-end px-4 py-1 text-[11px] font-bold text-white tracking-wider shadow-[0_1px_3px_#fee685]">
-                          ⚡ 翌月再編成ライン ⚡
+                      <div className="relative my-2 py-2">
+                        <div className="border-t-2 border-dashed border-[#D41E28]" />
+                        <span
+                          className="absolute left-1/2 -translate-x-1/2 -top-1 bg-[#D41E28] text-white px-4 py-1 text-[10px] font-black tracking-wider"
+                          style={{
+                            fontFamily: "var(--font-outfit)",
+                            boxShadow: "2px 2px 0 rgba(17,17,17,0.22)",
+                          }}
+                        >
+                          ━ 翌月再編成ライン ━
                         </span>
                       </div>
                     )}
 
                     <Link
                       href={r.slug ? `/members/${r.slug}` : "/members"}
-                      className="flex items-center gap-3 rounded-2xl bg-white/70 border border-white/80 px-4 py-3 shadow-sm hover:shadow-md transition-all group"
+                      className="flex items-center gap-3 md:gap-4 px-3 py-3 border-b border-[#D5CFC0] hover:bg-white/60 transition-colors group"
                     >
                       <div className="w-8 shrink-0 text-center">
                         {r.rank <= 3 ? (
-                          <span className="text-xl">{medals[r.rank - 1]}</span>
+                          <span className="text-2xl">{medals[r.rank - 1]}</span>
                         ) : (
-                          <span className="font-[family-name:var(--font-outfit)] text-sm font-extrabold text-[#0092b8]">
+                          <span
+                            className="text-base font-black text-[#111] tabular-nums"
+                            style={{ fontFamily: "var(--font-outfit)" }}
+                          >
                             #{r.rank}
                           </span>
                         )}
@@ -234,61 +277,84 @@ export default async function ResultsPage({
                         <Image
                           src={r.avatarUrl}
                           alt={r.memberName}
-                          width={44}
-                          height={44}
-                          className="size-11 shrink-0 rounded-full object-cover object-top shadow-sm"
+                          width={48}
+                          height={48}
+                          className="w-12 h-12 shrink-0 object-cover border border-[#111]/40 grayscale contrast-125 group-hover:grayscale-0 group-hover:contrast-100 transition-[filter] duration-300"
+                          style={{ objectPosition: "50% 18%" }}
                         />
                       )}
 
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-foreground truncate">
+                        <p
+                          className="text-base font-black text-[#111] truncate leading-tight"
+                          style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                        >
                           {r.memberName}
                         </p>
-                        <div className="mt-0.5 flex items-center gap-1.5 flex-wrap">
+                        <div className="mt-1 flex items-center gap-1.5 flex-wrap">
                           <span
-                            className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider text-white font-[family-name:var(--font-outfit)] ${
+                            className={`inline-block px-1.5 py-0.5 text-[10px] font-black tracking-wider text-white ${
                               r.position === "PLAYER"
-                                ? "bg-gradient-to-r from-player to-player-end"
-                                : "bg-gradient-to-r from-pit to-pit-end"
+                                ? "bg-[#D41E28]"
+                                : "bg-[#4A5060]"
                             }`}
+                            style={{ fontFamily: "var(--font-outfit)" }}
                           >
                             {r.position}
                           </span>
                           {r.specialPoints > 0 && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-purple-100 border border-purple-200 px-1.5 py-0.5 text-[9px] font-bold text-purple-700 tracking-wider font-[family-name:var(--font-outfit)]">
+                            <span
+                              className="inline-flex items-center gap-1 bg-[#FFE600] text-[#111] px-1.5 py-0.5 text-[9px] font-black tracking-wider"
+                              style={{ fontFamily: "var(--font-outfit)" }}
+                            >
                               SPECIAL +{r.specialPoints.toLocaleString()}
                             </span>
                           )}
                         </div>
                       </div>
 
-                      <div className="hidden sm:flex items-center gap-3 text-[10px] text-muted">
+                      <div className="hidden sm:flex items-center gap-4 text-[10px]">
                         <div className="text-right">
-                          <p className="font-bold text-[#00d3f3]">
+                          <p
+                            className="font-black text-[#00BCFF] tabular-nums"
+                            style={{ fontFamily: "var(--font-outfit)" }}
+                          >
                             {r.buzzPoints.toLocaleString()}
                           </p>
-                          <p>バズ</p>
+                          <p className="text-[9px] text-[#4A5060]">バズ</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-[#2b7fff]">
+                          <p
+                            className="font-black text-[#1447E6] tabular-nums"
+                            style={{ fontFamily: "var(--font-outfit)" }}
+                          >
                             {r.livePoints.toLocaleString()}
                           </p>
-                          <p>配信</p>
+                          <p className="text-[9px] text-[#4A5060]">配信</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-[#a684ff]">
+                          <p
+                            className="font-black text-[#7A3DFF] tabular-nums"
+                            style={{ fontFamily: "var(--font-outfit)" }}
+                          >
                             {r.balancePoints.toLocaleString()}
                           </p>
-                          <p>収支</p>
+                          <p className="text-[9px] text-[#4A5060]">収支</p>
                         </div>
                       </div>
 
-                      <div className="w-16 sm:w-24 shrink-0 text-right">
-                        <span className="font-[family-name:var(--font-outfit)] text-lg font-black text-foreground">
+                      <div className="w-20 sm:w-24 shrink-0 text-right">
+                        <span
+                          className="text-2xl md:text-3xl font-black text-[#111] tabular-nums leading-none"
+                          style={{ fontFamily: "var(--font-outfit)" }}
+                        >
                           {r.totalPoints.toLocaleString()}
                         </span>
-                        <p className="text-[9px] text-muted font-[family-name:var(--font-outfit)]">
-                          pts
+                        <p
+                          className="text-[9px] text-[#4A5060] mt-0.5"
+                          style={{ fontFamily: "var(--font-outfit)" }}
+                        >
+                          pt
                         </p>
                       </div>
                     </Link>
@@ -301,116 +367,201 @@ export default async function ResultsPage({
 
         {/* Top predictors */}
         {topPredictors.length > 0 && (
-          <section className="mx-auto max-w-[720px] px-4 mt-12">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-purple to-[#c27aff]" />
-              <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-[#7008e7] tracking-tight">
-                🎯 的中者ランキング
+          <section className="mx-auto max-w-[1100px] px-4 mt-14">
+            <div className="flex items-baseline gap-3 mb-3">
+              <span className="inline-block w-2 h-2 bg-[#D41E28]" />
+              <p
+                className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
+                style={{ fontFamily: "var(--font-outfit)" }}
+              >
+                ━ HITS
+              </p>
+              <h2
+                className="text-2xl md:text-3xl font-black text-[#111] leading-none"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                的中者ランキング
               </h2>
+              <span className="flex-1 h-px bg-[#111]/30" aria-hidden />
             </div>
-            <p className="text-[10px] text-muted mb-3">
-              ステージ確定順位と 6 種類の賭式予想を突合して自動採点(最大 {MAX_PREDICTION_SCORE} 点)
+            <p
+              className="text-[11px] text-[#4A5060] mb-4"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              ステージ確定順位と 6 賭式予想を突合して自動採点（最大 {MAX_PREDICTION_SCORE} 点）。
             </p>
-            <ul className="rounded-2xl bg-white/70 border border-white/80 divide-y divide-gray-100 overflow-hidden">
+            <ul className="border-t-[3px] border-b-[3px] border-[#111] divide-y divide-[#111]/15 bg-[#F5F1E8]"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle, rgba(17,17,17,0.08) 0.6px, transparent 1px)",
+                backgroundSize: "5px 5px",
+              }}
+            >
               {topPredictors.map((p) => (
                 <li
                   key={p.rank}
-                  className="flex items-center justify-between px-4 py-2.5 text-xs"
+                  className="flex items-center justify-between px-4 py-3 text-sm"
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="w-6 text-center font-[family-name:var(--font-outfit)] font-extrabold text-[#7008e7] shrink-0">
+                    <span
+                      className="w-7 text-center text-base font-black text-[#111] shrink-0 tabular-nums"
+                      style={{ fontFamily: "var(--font-outfit)" }}
+                    >
                       {p.rank <= 3
                         ? ["🥇", "🥈", "🥉"][p.rank - 1]
                         : `#${p.rank}`}
                     </span>
                     {p.isFan ? (
-                      <span className="font-bold text-foreground truncate">
+                      <span
+                        className="font-black text-[#111] truncate"
+                        style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                      >
                         {p.displayName ?? "ファン会員"}
                       </span>
                     ) : (
-                      <span className="font-mono text-muted">
+                      <span className="font-mono text-[#4A5060] text-xs">
                         {p.cookieIdMasked}
                       </span>
                     )}
                     {p.hasReward && (
-                      <span className="rounded-full bg-amber-100 border border-amber-200 px-1.5 py-0.5 text-[9px] font-bold text-amber-700 shrink-0">
+                      <span
+                        className="bg-[#FFE600] text-[#111] px-1.5 py-0.5 text-[9px] font-black tracking-wider shrink-0"
+                        style={{ fontFamily: "var(--font-outfit)" }}
+                      >
                         🎁 景品獲得
                       </span>
                     )}
                     {p.entryType === "welcome" && (
-                      <span className="rounded-full bg-pink-100 border border-pink-200 px-1.5 py-0.5 text-[9px] font-bold text-pink-700 shrink-0">
+                      <span
+                        className="bg-[#ED2B86] text-white px-1.5 py-0.5 text-[9px] font-black tracking-wider shrink-0"
+                        style={{ fontFamily: "var(--font-outfit)" }}
+                      >
                         WELCOME
                       </span>
                     )}
                   </div>
                   <div className="text-right shrink-0">
-                    <span className="font-[family-name:var(--font-outfit)] text-sm font-black text-foreground">
+                    <span
+                      className="text-lg font-black text-[#111] tabular-nums"
+                      style={{ fontFamily: "var(--font-outfit)" }}
+                    >
                       {p.totalScore}
                     </span>
-                    <span className="text-[9px] text-muted ml-0.5">
+                    <span
+                      className="text-[10px] text-[#4A5060] ml-0.5"
+                      style={{ fontFamily: "var(--font-outfit)" }}
+                    >
                       /{MAX_PREDICTION_SCORE}
                     </span>
                   </div>
                 </li>
               ))}
             </ul>
-            <div className="mt-3 rounded-xl border border-[rgba(255,208,120,0.6)] bg-gradient-to-r from-[#fff7e6] to-[#ffe9c8] px-4 py-2.5 text-[11px] text-[#7a4a00]">
-              🎁 <b>会員登録すると景品対象に</b> ── 的中するとライブ会場投票のボーナス票やチェキ無料券。 <a href="/fan/login" className="underline font-bold">登録はこちら →</a>
+            <div
+              className="mt-4 bg-[#FFE600] border-l-4 border-[#D41E28] px-4 py-3 text-[12px] text-[#111]"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              <span className="text-[10px] font-black tracking-[0.3em] text-[#D41E28] mr-2"
+                style={{ fontFamily: "var(--font-outfit)" }}
+              >
+                ━ REWARD
+              </span>
+              <b>会員登録で景品対象</b> — 的中でライブ会場投票のボーナス票やチェキ無料券。
+              <a href="/fan/login" className="underline font-black ml-1 text-[#D41E28]">
+                登録はこちら →
+              </a>
             </div>
           </section>
         )}
 
         {/* Series 通算ランキング */}
         {seriesN && seriesPredictors.length > 0 && (
-          <section className="mx-auto max-w-[720px] px-4 mt-12">
-            <div className="flex items-center justify-between gap-3 mb-5">
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-amber-400 to-orange-500" />
-                <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-[#c2410c] tracking-tight">
-                  👑 Series {seriesN} 通算ランキング
+          <section className="mx-auto max-w-[1100px] px-4 mt-14">
+            <div className="flex items-baseline justify-between gap-3 mb-3">
+              <div className="flex items-baseline gap-3">
+                <span className="inline-block w-2 h-2 bg-[#D41E28]" />
+                <p
+                  className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
+                  style={{ fontFamily: "var(--font-outfit)" }}
+                >
+                  ━ SERIES {seriesN}
+                </p>
+                <h2
+                  className="text-2xl md:text-3xl font-black text-[#111] leading-none"
+                  style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                >
+                  通算ランキング
                 </h2>
               </div>
               <Link
                 href={`/ranking/predictors?series=${seriesN}`}
-                className="text-[11px] font-bold text-[#c2410c] underline"
+                className="text-[11px] font-black text-[#D41E28] underline"
+                style={{ fontFamily: "var(--font-outfit)" }}
               >
                 全体を見る →
               </Link>
             </div>
-            <p className="text-[10px] text-muted mb-3">
-              Series {seriesN} の全ステージの予想を合算した年間王者ランキング（ファン会員のみ・上位 10 件）
+            <p
+              className="text-[11px] text-[#4A5060] mb-4"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              Series {seriesN} 全ステージの予想を合算した年間王者ランキング（ファン会員のみ・上位 10 件）。
             </p>
-            <ul className="rounded-2xl bg-white/70 border border-white/80 divide-y divide-gray-100 overflow-hidden">
+            <ul className="border-t-[3px] border-b-[3px] border-[#111] divide-y divide-[#111]/15 bg-[#F5F1E8]"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle, rgba(17,17,17,0.08) 0.6px, transparent 1px)",
+                backgroundSize: "5px 5px",
+              }}
+            >
               {seriesPredictors.map((p) => (
                 <li
                   key={p.userId}
-                  className="flex items-center justify-between px-4 py-3 text-xs"
+                  className="flex items-center justify-between px-4 py-3 text-sm"
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="w-6 text-center font-[family-name:var(--font-outfit)] font-extrabold text-[#c2410c] shrink-0">
+                    <span
+                      className="w-7 text-center text-base font-black text-[#111] shrink-0 tabular-nums"
+                      style={{ fontFamily: "var(--font-outfit)" }}
+                    >
                       {p.rank <= 3
                         ? ["🥇", "🥈", "🥉"][p.rank - 1]
                         : `#${p.rank}`}
                     </span>
-                    <span className="font-bold text-foreground truncate">
+                    <span
+                      className="font-black text-[#111] truncate"
+                      style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                    >
                       {p.displayName ?? "ファン会員"}
                     </span>
                     {p.perfectCount > 0 && (
-                      <span className="rounded-full bg-amber-100 border border-amber-200 px-1.5 py-0.5 text-[9px] font-bold text-amber-700 shrink-0">
+                      <span
+                        className="bg-[#FFE600] text-[#111] px-1.5 py-0.5 text-[9px] font-black tracking-wider shrink-0"
+                        style={{ fontFamily: "var(--font-outfit)" }}
+                      >
                         完全的中 {p.perfectCount}
                       </span>
                     )}
                     {p.rewardCount > 0 && (
-                      <span className="text-[10px] text-muted shrink-0">
+                      <span
+                        className="text-[10px] text-[#4A5060] shrink-0"
+                        style={{ fontFamily: "var(--font-outfit)" }}
+                      >
                         🎁×{p.rewardCount}
                       </span>
                     )}
                   </div>
                   <div className="text-right shrink-0">
-                    <span className="font-[family-name:var(--font-outfit)] text-lg font-black text-foreground">
+                    <span
+                      className="text-xl font-black text-[#111] tabular-nums"
+                      style={{ fontFamily: "var(--font-outfit)" }}
+                    >
                       {p.totalScore}
                     </span>
-                    <span className="text-[9px] text-muted ml-0.5">
+                    <span
+                      className="text-[10px] text-[#4A5060] ml-0.5"
+                      style={{ fontFamily: "var(--font-outfit)" }}
+                    >
                       pt / {p.stageCount}stage
                     </span>
                   </div>
