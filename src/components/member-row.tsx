@@ -50,6 +50,61 @@ function BoatPlate({ rank }: { rank: number }) {
   );
 }
 
+/**
+ * モバイル用 EQ 風ミニ統計バー (4 指標を縦バーで)。
+ * デスクトップでは `md:hidden` で非表示、フル ScoreBar を別の列で表示する。
+ */
+function MiniStatsBars({
+  buzz,
+  conc,
+  rev,
+  shuyaku,
+  maxBuzz,
+  maxConc,
+  maxRev,
+  maxShuyaku,
+}: {
+  buzz: number;
+  conc: number;
+  rev: number;
+  shuyaku: number;
+  maxBuzz: number;
+  maxConc: number;
+  maxRev: number;
+  maxShuyaku: number;
+}) {
+  const bars = [
+    { value: buzz, max: maxBuzz, color: "#00BCFF", label: "バズ" },
+    { value: conc, max: maxConc, color: "#1447E6", label: "配信" },
+    { value: rev, max: maxRev, color: "#7A3DFF", label: "収支" },
+    { value: shuyaku, max: maxShuyaku, color: "#D41E28", label: "投票" },
+  ];
+  return (
+    <div
+      className="md:hidden flex items-end gap-[2px] h-3"
+      role="img"
+      aria-label="バズ・配信・収支・投票 の強度"
+    >
+      {bars.map((b, i) => {
+        const pct = Math.max(8, Math.min(100, (b.value / Math.max(b.max, 1)) * 100));
+        return (
+          <div
+            key={i}
+            className="w-[3px] bg-[#E0DCC8] flex items-end"
+            style={{ height: "100%" }}
+            title={`${b.label}: ${b.value.toLocaleString()}`}
+          >
+            <div
+              className="w-full"
+              style={{ height: `${pct}%`, backgroundColor: b.color }}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export function ScoreBar({
   label,
   value,
@@ -159,21 +214,34 @@ export function MemberRow({
         </span>
       </Link>
 
-      {/* 名前 + ロール (mobile は flex-1 で残り埋め) */}
+      {/* 名前 + ロール + モバイル用 EQ 風ミニ統計 */}
       <Link href={href} className="flex-1 md:flex-initial md:shrink-0 md:mr-3 md:w-40 min-w-0">
         <p className="text-sm md:text-lg font-bold text-[#111] truncate leading-tight">
           {member.name}
         </p>
-        <span
-          className={`inline-block mt-0.5 md:mt-1 text-[9px] md:text-[10px] font-black tracking-wider px-1.5 py-0.5 ${
-            member.role === "PLAYER"
-              ? "bg-[#D41E28] text-white"
-              : "bg-[#4A5060] text-white"
-          }`}
-          style={{ fontFamily: "var(--font-outfit)" }}
-        >
-          {member.role}
-        </span>
+        <div className="mt-0.5 md:mt-1 flex items-center gap-2">
+          <span
+            className={`inline-block text-[9px] md:text-[10px] font-black tracking-wider px-1.5 py-0.5 ${
+              member.role === "PLAYER"
+                ? "bg-[#D41E28] text-white"
+                : "bg-[#4A5060] text-white"
+            }`}
+            style={{ fontFamily: "var(--font-outfit)" }}
+          >
+            {member.role}
+          </span>
+          {/* モバイル専用: 4 指標を縦バー (EQ 風) で */}
+          <MiniStatsBars
+            buzz={member.detail.stats.buzz}
+            conc={member.detail.stats.concurrent}
+            rev={member.detail.stats.revenue}
+            shuyaku={member.detail.stats.shuyaku ?? 0}
+            maxBuzz={maxBuzz}
+            maxConc={maxConc}
+            maxRev={maxRev}
+            maxShuyaku={maxShuyaku}
+          />
+        </div>
       </Link>
 
       {/* === DATA (スコアバー 4本) === */}
