@@ -324,13 +324,14 @@ export function WelcomeChinchiroModal({ members }: Props) {
                 className="text-center text-base font-black text-[#111] leading-tight"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                最初の 1 票は、迷わず本命に。
+                推しを選んでサイコロを振ろう。
               </p>
               <p
-                className="mt-1 text-center text-[11px] text-[#4A5060]"
+                className="mt-1 text-center text-xs text-[#4A5060] leading-snug"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                この1票は通常投票とは別枠。同じ人に重ねられます。
+                選んだ人に、<span className="text-[#D41E28] font-black">出た目の数だけ票</span>が入ります。<br />
+                毎日 1 回、<span className="font-black">無料</span>で振れる応援サイコロ。
               </p>
 
               {/* DEV ONLY: 役を強制指定して振る (本番では表示されない) */}
