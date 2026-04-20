@@ -29,7 +29,36 @@ type Phase =
   | "result"     // 結果表示
   | "done";      // 閉じた後の余韻 (次訪問まで非表示)
 
-const DICE_FACES = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
+/**
+ * 赤地に白ピップのサイコロ面。value は 1-6。
+ * 3x3 グリッド上の位置に白い丸を配置する (伝統的なサイコロ目の配置)。
+ */
+function DiceFace({ value }: { value: number }) {
+  // 3x3 セル (1..9) の pip 位置:
+  //   1 2 3
+  //   4 5 6
+  //   7 8 9
+  const pipsByValue: Record<number, number[]> = {
+    1: [5],
+    2: [1, 9],
+    3: [1, 5, 9],
+    4: [1, 3, 7, 9],
+    5: [1, 3, 5, 7, 9],
+    6: [1, 3, 4, 6, 7, 9],
+  };
+  const pips = new Set(pipsByValue[value] ?? []);
+  return (
+    <div className="grid grid-cols-3 grid-rows-3 w-full h-full p-1.5 gap-0.5">
+      {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((pos) => (
+        <div key={pos} className="flex items-center justify-center">
+          {pips.has(pos) && (
+            <span className="w-2 h-2 rounded-full bg-white shadow-[0_0_2px_rgba(0,0,0,0.35)_inset]" />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 const HAND_COLOR: Record<string, { bg: string; fg: string }> = {
   pinzoro:  { bg: "#FFE600", fg: "#111111" },
@@ -512,20 +541,20 @@ export function WelcomeChinchiroModal({ members }: Props) {
                   : `${picked.name} に`}
               </p>
 
-              {/* サイコロ 3 個 */}
+              {/* サイコロ 3 個 — 賭博カジノ風の赤地に白ピップ */}
               <div className="relative mt-4 flex items-center justify-center gap-3">
                 {rollFaces.map((f, i) => (
                   <div
                     key={i}
-                    className="flex h-16 w-16 items-center justify-center border-2 border-[#111] bg-white text-5xl leading-none"
+                    className="h-16 w-16 border-2 border-[#111] bg-[#D41E28]"
                     style={{
-                      boxShadow: "3px 3px 0 rgba(17,17,17,0.22)",
+                      boxShadow: "3px 3px 0 rgba(17,17,17,0.3)",
                       transform: phase === "rolling" ? "rotate(6deg)" : "rotate(0deg)",
                       transition: phase === "rolling" ? "none" : "transform 180ms ease",
                     }}
                     aria-hidden
                   >
-                    {DICE_FACES[f]}
+                    <DiceFace value={f + 1} />
                   </div>
                 ))}
 
