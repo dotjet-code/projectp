@@ -128,18 +128,19 @@ export function Header() {
           </div>
         </nav>
 
-        {/* Mobile hamburger */}
+        {/* Mobile hamburger (WCAG: 最低 44×44 のタップ領域) */}
         <button
-          className="md:hidden flex size-10 items-center justify-center text-[#111] border border-[#111]"
+          className="md:hidden flex size-11 items-center justify-center text-[#111] border border-[#111]"
           onClick={() => setOpen(!open)}
-          aria-label="メニュー"
+          aria-label={open ? "メニューを閉じる" : "メニューを開く"}
+          aria-expanded={open}
         >
           {open ? (
-            <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
             </svg>
           ) : (
-            <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           )}

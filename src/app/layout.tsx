@@ -3,7 +3,6 @@ import { Outfit, Noto_Sans_JP, Noto_Serif_JP } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
-import "./animations.css";
 import { LiveStatusProvider } from "@/lib/projectp/live-status-client";
 
 const outfit = Outfit({

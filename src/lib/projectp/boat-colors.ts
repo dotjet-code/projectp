@@ -105,3 +105,19 @@ export function getBoatColor(n: number | null | undefined): BoatColorTheme | nul
   if (n === null || n === undefined) return null;
   return BOAT_COLORS[n as BoatColorNumber] ?? null;
 }
+
+/**
+ * 出馬表 / ランキング行で使う、レース公式の艇番プレート色。
+ * BOAT_COLORS とは別用途 (カード内の小さな「号艇」チップに使う実寸色)。
+ */
+export const BOAT_PLATES: Record<
+  BoatColorNumber,
+  { bg: string; border: string; fg: string }
+> = {
+  1: { bg: "#F5F5F0", border: "#111111", fg: "#111111" },
+  2: { bg: "#1A1A1A", border: "#1A1A1A", fg: "#F5F1E8" },
+  3: { bg: "#D41E28", border: "#D41E28", fg: "#FFFFFF" },
+  4: { bg: "#1E4BC8", border: "#1E4BC8", fg: "#FFFFFF" },
+  5: { bg: "#F2C81B", border: "#F2C81B", fg: "#111111" },
+  6: { bg: "#0F8F4A", border: "#0F8F4A", fg: "#FFFFFF" },
+};
