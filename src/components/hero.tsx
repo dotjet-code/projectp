@@ -205,7 +205,7 @@ export function Hero({
                     fill
                     priority
                     className="object-contain object-left"
-                    sizes="(max-width: 768px) 70vw, 380px"
+                    sizes="(max-width: 768px) 300px, 380px"
                   />
                 </div>
               ) : (
@@ -271,14 +271,23 @@ export function Hero({
                         "polygon(6% 2%, 14% 0, 28% 4%, 44% 0, 58% 3%, 72% 0, 86% 4%, 96% 2%, 100% 14%, 96% 28%, 100% 46%, 98% 62%, 100% 78%, 94% 92%, 86% 100%, 72% 96%, 58% 100%, 44% 96%, 28% 100%, 14% 96%, 4% 100%, 0 88%, 4% 72%, 0 56%, 4% 38%, 0 22%, 2% 10%)",
                     }}
                   />
+                  {/*
+                    ゼッケン: どんな背景画像でも読めるよう
+                    - ダーク系輪郭 (WebkitTextStroke)
+                    - 影で紙面から浮かせる
+                    で固定コントラストを確保する。
+                    mixBlendMode は背景次第で白×白になるので不採用。
+                  */}
                   <div
                     className="absolute right-2 bottom-4 font-black leading-none select-none"
                     style={{
                       color: "#F5F1E8",
                       fontFamily: "var(--font-outfit)",
                       fontSize: "clamp(110px, 14vw, 220px)",
-                      mixBlendMode: "difference",
                       fontWeight: 900,
+                      WebkitTextStroke: "2px #111111",
+                      textShadow:
+                        "4px 4px 0 rgba(17,17,17,0.35), 0 0 18px rgba(0,0,0,0.25)",
                     }}
                   >
                     {jerseyNumber}

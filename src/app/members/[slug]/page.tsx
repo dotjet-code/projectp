@@ -125,7 +125,14 @@ export default async function MemberDetailPage({
             <div className="flex flex-col md:flex-row items-start gap-8">
               {/* Portrait */}
               <div className="relative shrink-0">
-                <div className="relative w-[160px] h-[160px] md:w-[240px] md:h-[240px] border-2 border-[#F5F1E8]">
+                <div
+                  className="relative w-[160px] h-[160px] md:w-[240px] md:h-[240px] border-2 border-[#F5F1E8] overflow-hidden"
+                  style={{
+                    backgroundImage: "url(/members/haikei.jpeg)",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                >
                   <Image
                     src={base.avatarUrl}
                     alt={base.name}

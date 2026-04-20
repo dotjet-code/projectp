@@ -8,23 +8,12 @@ import {
   getRankedMembers,
   type RankedMember,
 } from "@/lib/projectp/live-stats";
+import { BOAT_PLATES, type BoatColorNumber } from "@/lib/projectp/boat-colors";
 
 export const dynamic = "force-dynamic";
 
-const BOAT_PLATES: Record<
-  number,
-  { bg: string; border: string }
-> = {
-  1: { bg: "#F5F5F0", border: "#111111" },
-  2: { bg: "#1A1A1A", border: "#1A1A1A" },
-  3: { bg: "#D41E28", border: "#D41E28" },
-  4: { bg: "#1E4BC8", border: "#1E4BC8" },
-  5: { bg: "#F2C81B", border: "#F2C81B" },
-  6: { bg: "#0F8F4A", border: "#0F8F4A" },
-};
-
 function MemberCard({ member, rank }: { member: RankedMember; rank: number }) {
-  const plate = rank <= 6 ? BOAT_PLATES[rank] : null;
+  const plate = rank <= 6 ? BOAT_PLATES[rank as BoatColorNumber] : null;
 
   return (
     <Link
@@ -52,8 +41,15 @@ function MemberCard({ member, rank }: { member: RankedMember; rank: number }) {
         )}
       </div>
 
-      {/* 写真 */}
-      <div className="relative aspect-square border-b border-[#111]">
+      {/* 写真 (透過 PNG の背面に haikei.jpeg を敷く) */}
+      <div
+        className="relative aspect-square border-b border-[#111] overflow-hidden"
+        style={{
+          backgroundImage: "url(/members/haikei.jpeg)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
         <Image
           src={member.avatarUrl}
           alt=""
@@ -166,7 +162,7 @@ export default async function MembersPage() {
             accent="red"
             aside={<span>順位順</span>}
           />
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
             {active.map((member, i) => (
               <MemberCard key={member.id} member={member} rank={i + 1} />
             ))}

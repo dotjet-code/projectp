@@ -34,7 +34,10 @@ export async function MemberGrid() {
   const pits = active.slice(6);
 
   return (
-    <section className="mx-auto max-w-[1200px] px-4 mt-16">
+    <section
+      id="today-starters"
+      className="mx-auto max-w-[1200px] px-4 mt-16 scroll-mt-20"
+    >
       <SectionHeading
         title={
           <>

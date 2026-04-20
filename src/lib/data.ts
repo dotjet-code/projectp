@@ -40,7 +40,7 @@ export interface Member {
 
 export const members: Member[] = [
   {
-    id: 1, rank: 1, name: "塩見きら", slug: "shiomi-kira", role: "PLAYER", points: 2008, avatarUrl: "/members/shiomi-kira.jpg?v=20260419", isLive: true,
+    id: 1, rank: 1, name: "塩見きら", slug: "shiomi-kira", role: "PLAYER", points: 2008, avatarUrl: "/members/shiomi-kira.png", isLive: true,
     detail: {
       stats: { buzz: 806, concurrent: 455, revenue: 347 },
       positionForecast: "PLAYER圏内", positionMargin: "6位余裕", supportRate: 30,
@@ -55,7 +55,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 2, rank: 2, name: "ねこみ。", slug: "nekomi", role: "PLAYER", points: 1884, avatarUrl: "/members/nekomi.jpg",
+    id: 2, rank: 2, name: "ねこみ。", slug: "nekomi", role: "PLAYER", points: 1884, avatarUrl: "/members/nekomi.png",
     detail: {
       stats: { buzz: 720, concurrent: 410, revenue: 354 },
       positionForecast: "PLAYER圏内", positionMargin: "安定", supportRate: 25,
@@ -70,7 +70,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 3, rank: 3, name: "阿久津真央", slug: "akutsu-mao", role: "PLAYER", points: 1833, avatarUrl: "/members/akutsu-mao.jpg", isTrending: true,
+    id: 3, rank: 3, name: "阿久津真央", slug: "akutsu-mao", role: "PLAYER", points: 1833, avatarUrl: "/members/akutsu-mao.png", isTrending: true,
     detail: {
       stats: { buzz: 690, concurrent: 380, revenue: 363 },
       positionForecast: "PLAYER圏内", positionMargin: "安定", supportRate: 22,
@@ -85,7 +85,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 4, rank: 4, name: "カガミルイ", slug: "kagami-rui", role: "PLAYER", points: 1720, avatarUrl: "/members/kagami-rui.jpg",
+    id: 4, rank: 4, name: "カガミルイ", slug: "kagami-rui", role: "PLAYER", points: 1720, avatarUrl: "/members/kagami-rui.png",
     detail: {
       stats: { buzz: 580, concurrent: 420, revenue: 320 },
       positionForecast: "PLAYER圏内", positionMargin: "やや安心", supportRate: 18,
@@ -100,7 +100,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 5, rank: 5, name: "栗田みほ", slug: "kurita-miho", role: "PLAYER", points: 1655, avatarUrl: "/members/kurita-miho.jpg", isLive: true,
+    id: 5, rank: 5, name: "栗田みほ", slug: "kurita-miho", role: "PLAYER", points: 1655, avatarUrl: "/members/kurita-miho.png", isLive: true,
     detail: {
       stats: { buzz: 520, concurrent: 390, revenue: 345 },
       positionForecast: "PLAYER圏内", positionMargin: "ギリギリ", supportRate: 15,
@@ -130,7 +130,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 7, rank: 7, name: "セナモモカ", slug: "sena-momoka", role: "PIT", points: 1283, avatarUrl: "/members/sena-momoka.jpg?v=20260419",
+    id: 7, rank: 7, name: "セナモモカ", slug: "sena-momoka", role: "PIT", points: 1283, avatarUrl: "/members/sena-momoka.png",
     detail: {
       stats: { buzz: 420, concurrent: 280, revenue: 283 },
       positionForecast: "PIT圏内", positionMargin: "ボーダー付近", supportRate: 10,
@@ -145,7 +145,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 8, rank: 8, name: "清宮みゆ", slug: "kiyomiya-miyu", role: "PIT", points: 1120, avatarUrl: "/members/kiyomiya-miyu.jpg", isTrending: true,
+    id: 8, rank: 8, name: "清宮みゆ", slug: "kiyomiya-miyu", role: "PIT", points: 1120, avatarUrl: "/members/kiyomiya-miyu.png", isTrending: true,
     detail: {
       stats: { buzz: 380, concurrent: 250, revenue: 240 },
       positionForecast: "PIT圏内", positionMargin: "上昇中", supportRate: 8,
@@ -160,7 +160,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 9, rank: 9, name: "城乃せん", slug: "shirono-sen", role: "PIT", points: 1058, avatarUrl: "/members/shirono-sen.jpg", isLive: true,
+    id: 9, rank: 9, name: "城乃せん", slug: "shirono-sen", role: "PIT", points: 1058, avatarUrl: "/members/shirono-sen.png", isLive: true,
     detail: {
       stats: { buzz: 350, concurrent: 230, revenue: 228 },
       positionForecast: "PIT圏内", positionMargin: "維持", supportRate: 7,
@@ -175,7 +175,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 10, rank: 10, name: "さくらぎみずき", slug: "sakuragi-mizuki", role: "PIT", points: 980, avatarUrl: "/members/sakuragi-mizuki.jpg",
+    id: 10, rank: 10, name: "さくらぎみずき", slug: "sakuragi-mizuki", role: "PIT", points: 980, avatarUrl: "/members/sakuragi-mizuki.png",
     detail: {
       stats: { buzz: 310, concurrent: 220, revenue: 200 },
       positionForecast: "PIT圏内", positionMargin: "維持", supportRate: 5,
@@ -190,7 +190,7 @@ export const members: Member[] = [
     },
   },
   {
-    id: 11, rank: 11, name: "ありよりのあみ", slug: "ariyorino-ami", role: "PIT", points: 890, avatarUrl: "/members/ariyorino-ami.jpg",
+    id: 11, rank: 11, name: "ありよりのあみ", slug: "ariyorino-ami", role: "PIT", points: 890, avatarUrl: "/members/ariyorino-ami.png",
     detail: {
       stats: { buzz: 280, concurrent: 190, revenue: 220 },
       positionForecast: "PIT圏内", positionMargin: "維持", supportRate: 4,
