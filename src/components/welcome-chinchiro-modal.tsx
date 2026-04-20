@@ -330,9 +330,34 @@ export function WelcomeChinchiroModal({ members }: Props) {
                 className="mt-1 text-center text-xs text-[#4A5060] leading-snug"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                選んだ人に、<span className="text-[#D41E28] font-black">出た目の数だけ票</span>が入ります。<br />
-                毎日 1 回、<span className="font-black">無料</span>で振れる応援サイコロ。
+                3 個の賽の<span className="font-black">役</span>で票数が決まる
+                <span className="font-black">チンチロ方式</span>。<br />
+                一撃 <span className="text-[#D41E28] font-black">100 票</span>
+                のピンゾロも。毎日 1 回・<span className="font-black">無料</span>。
               </p>
+
+              {/* 役の早見 (idle 段階でも開けるようにして期待感を煽る) */}
+              <details className="mt-2 text-[10px] text-[#4A5060]">
+                <summary
+                  className="cursor-pointer text-center font-black tracking-wide"
+                  style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                >
+                  ▶ 役と票数を見る
+                </summary>
+                <ul
+                  className="mt-1 grid grid-cols-2 gap-x-3 gap-y-0.5 px-2"
+                  style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                >
+                  <li>
+                    <span className="font-black text-[#D41E28]">ピンゾロ</span> (1-1-1): 100 票
+                  </li>
+                  <li>シゴロ (4-5-6): 8 票</li>
+                  <li>ゾロ目: 出目 × 2 票</li>
+                  <li>通常役: 1〜6 票</li>
+                  <li>ヒフミ: 全員に 1 票</li>
+                  <li>目なし: 振り直し</li>
+                </ul>
+              </details>
 
               {/* DEV ONLY: 役を強制指定して振る (本番では表示されない) */}
               {devMode && members[0] && (
