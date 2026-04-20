@@ -89,6 +89,9 @@ function buildShareText(args: {
 }
 
 export function WelcomeChinchiroModal({ members }: Props) {
+  // マウント完了フラグ。クライアント専用 UI を SSR 時に出さないことで
+  // hydration mismatch を完全に回避する。
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [phase, setPhase] = useState<Phase>("idle");
   const [picked, setPicked] = useState<ChinchiroMember | null>(null);
@@ -103,20 +106,20 @@ export function WelcomeChinchiroModal({ members }: Props) {
   const [shareError, setShareError] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [devMode, setDevMode] = useState<boolean>(false);
+  const [forceOpen, setForceOpen] = useState<boolean>(false);
   const animRef = useRef<number | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
 
   // 初回: 今日振ってなければ 500ms 後に表示
   // ?chinchiro=1 で強制表示 (モバイル等の疎通確認用)
   useEffect(() => {
+    setMounted(true);
     let cancelled = false;
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("chinchiro") === "1") {
-        setDevMode(true);
-        setOpen(true);
-        return;
-      }
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("chinchiro") === "1") {
+      setForceOpen(true);
+      setOpen(true);
+      return;
     }
     fetch("/api/public/shuyaku-vote/chinchiro", { cache: "no-store" })
       .then((r) => r.json())
@@ -285,13 +288,11 @@ export function WelcomeChinchiroModal({ members }: Props) {
     }, 50);
   };
 
-  // デバッグ用: モーダルが閉じていても、コンポーネントが mount していることを
-  // 確認する小さな浮遊ボタン。タップで強制表示。
-  // ?chinchiro=1 か CHINCHIRO_DEV_MODE=1 のどちらかの時だけ出す。
-  const debugButtonEnabled =
-    devMode ||
-    (typeof window !== "undefined" &&
-      new URLSearchParams(window.location.search).get("chinchiro") === "1");
+  // SSR 時は何も描画しない (hydration mismatch 完全回避)
+  if (!mounted) return null;
+
+  // デバッグ用: モーダルが閉じていても mount 確認できる浮遊ボタン。
+  const debugButtonEnabled = devMode || forceOpen;
 
   if (!open) {
     if (!debugButtonEnabled) return null;
