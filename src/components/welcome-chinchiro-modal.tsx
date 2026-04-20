@@ -30,8 +30,9 @@ type Phase =
   | "done";      // 閉じた後の余韻 (次訪問まで非表示)
 
 /**
- * 赤地に白ピップのサイコロ面。value は 1-6。
- * 3x3 グリッド上の位置に白い丸を配置する (伝統的なサイコロ目の配置)。
+ * 白地に黒ピップのサイコロ面。value は 1-6。
+ * 日本のサイコロ慣習で、1 の目だけは赤にする。
+ * 3x3 グリッド上の位置に丸を配置する (伝統的なサイコロ目の配置)。
  */
 function DiceFace({ value }: { value: number }) {
   // 3x3 セル (1..9) の pip 位置:
@@ -47,12 +48,17 @@ function DiceFace({ value }: { value: number }) {
     6: [1, 3, 4, 6, 7, 9],
   };
   const pips = new Set(pipsByValue[value] ?? []);
+  // 1 の目だけ赤 (日本の伝統的な色使い)。それ以外は黒。
+  const pipColor = value === 1 ? "#D41E28" : "#111111";
   return (
     <div className="grid grid-cols-3 grid-rows-3 w-full h-full p-1.5 gap-0.5">
       {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((pos) => (
         <div key={pos} className="flex items-center justify-center">
           {pips.has(pos) && (
-            <span className="w-2 h-2 rounded-full bg-white shadow-[0_0_2px_rgba(0,0,0,0.35)_inset]" />
+            <span
+              className={`rounded-full ${value === 1 ? "w-3.5 h-3.5" : "w-2 h-2"}`}
+              style={{ backgroundColor: pipColor }}
+            />
           )}
         </div>
       ))}
@@ -541,14 +547,14 @@ export function WelcomeChinchiroModal({ members }: Props) {
                   : `${picked.name} に`}
               </p>
 
-              {/* サイコロ 3 個 — 賭博カジノ風の赤地に白ピップ */}
+              {/* サイコロ 3 個 — 白地に黒ピップ (1 の目だけ赤) */}
               <div className="relative mt-4 flex items-center justify-center gap-3">
                 {rollFaces.map((f, i) => (
                   <div
                     key={i}
-                    className="h-16 w-16 border-2 border-[#111] bg-[#D41E28]"
+                    className="h-16 w-16 border-2 border-[#111] bg-white"
                     style={{
-                      boxShadow: "3px 3px 0 rgba(17,17,17,0.3)",
+                      boxShadow: "3px 3px 0 rgba(17,17,17,0.25)",
                       transform: phase === "rolling" ? "rotate(6deg)" : "rotate(0deg)",
                       transition: phase === "rolling" ? "none" : "transform 180ms ease",
                     }}
