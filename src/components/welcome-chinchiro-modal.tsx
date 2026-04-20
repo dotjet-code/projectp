@@ -291,7 +291,12 @@ export function WelcomeChinchiroModal({ members }: Props) {
     >
       <div
         ref={dialogRef}
-        className="relative w-full max-w-[420px] max-h-[90dvh] overflow-y-auto border-2 border-[#111] bg-[#F5F1E8] shadow-[6px_6px_0_rgba(0,0,0,0.3)]"
+        className="relative w-full max-w-[420px] overflow-y-auto border-2 border-[#111] bg-[#F5F1E8] shadow-[6px_6px_0_rgba(0,0,0,0.3)]"
+        style={{
+          // iOS Safari/Chrome 15.3 以下で dvh 未サポート。vh で統一して
+          // 旧デバイスでもモーダルが viewport 外に飛ばないようにする。
+          maxHeight: "90vh",
+        }}
       >
         {/* 上部赤帯 */}
         <div
