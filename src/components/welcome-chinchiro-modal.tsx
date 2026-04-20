@@ -627,15 +627,15 @@ export function WelcomeChinchiroModal({ members }: Props) {
                     }}
                     autoFocus
                   >
-                    {finalDice ? "さらに投票する →" : "閉じる"}
+                    {finalDice ? "まだまだ、応援できる →" : "閉じる"}
                   </button>
-                  {finalDice && (
+                  {finalDice && picked && (
                     <p
                       className="text-[10px] text-[#4A5060] text-center leading-snug"
                       style={{ fontFamily: "var(--font-noto-serif), serif" }}
                     >
-                      この子も、他のメンバーも、<br />
-                      1 人 1 票ずつ追加で投票できます。
+                      {picked.name} にも、他の子にも。<br />
+                      <span className="font-black">無料</span>で 1 人 1 票ずつ。
                     </p>
                   )}
                 </div>
