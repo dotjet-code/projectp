@@ -635,7 +635,8 @@ export function WelcomeChinchiroModal({ members }: Props) {
                       style={{ fontFamily: "var(--font-noto-serif), serif" }}
                     >
                       {picked.name} にも、他の子にも。<br />
-                      <span className="font-black">無料</span>で 1 人 1 票ずつ。
+                      全員に 1 日 1 回、<span className="font-black">サイコロで 1〜6 票</span>。
+                      <span className="font-black">無料</span>。
                     </p>
                   )}
                 </div>
