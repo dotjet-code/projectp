@@ -285,7 +285,28 @@ export function WelcomeChinchiroModal({ members }: Props) {
     }, 50);
   };
 
-  if (!open) return null;
+  // デバッグ用: モーダルが閉じていても、コンポーネントが mount していることを
+  // 確認する小さな浮遊ボタン。タップで強制表示。
+  // ?chinchiro=1 か CHINCHIRO_DEV_MODE=1 のどちらかの時だけ出す。
+  const debugButtonEnabled =
+    devMode ||
+    (typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("chinchiro") === "1");
+
+  if (!open) {
+    if (!debugButtonEnabled) return null;
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="fixed bottom-4 right-4 z-[100] bg-[#D41E28] text-white px-3 py-2 text-xs font-black shadow-[3px_3px_0_rgba(0,0,0,0.3)]"
+        style={{ fontFamily: "var(--font-noto-serif), serif" }}
+        aria-label="賽を振るモーダルを開く"
+      >
+        🎲 賽を振る
+      </button>
+    );
+  }
 
   const handStyle = HAND_COLOR[handKey] ?? HAND_COLOR.normal;
   const stampChar = STAMP_CHARS[handKey];
