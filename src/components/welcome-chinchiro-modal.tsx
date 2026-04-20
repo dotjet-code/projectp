@@ -107,6 +107,8 @@ export function WelcomeChinchiroModal({ members }: Props) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [devMode, setDevMode] = useState<boolean>(false);
   const [forceOpen, setForceOpen] = useState<boolean>(false);
+  // DEV: 次に振る役を予約する。null の時は通常ランダム。
+  const [devQueuedHand, setDevQueuedHand] = useState<string | null>(null);
   const animRef = useRef<number | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
 
@@ -186,8 +188,9 @@ export function WelcomeChinchiroModal({ members }: Props) {
     setRollFaces([finalValues[0] - 1, finalValues[1] - 1, finalValues[2] - 1]);
   };
 
-  const handlePick = async (m: ChinchiroMember, forceHand?: string) => {
+  const handlePick = async (m: ChinchiroMember, forceHandOverride?: string) => {
     if (phase !== "idle") return;
+    const forceHand = forceHandOverride ?? devQueuedHand ?? undefined;
     setPicked(m);
     setPhase("rolling");
     setErrorMsg(null);
@@ -395,35 +398,54 @@ export function WelcomeChinchiroModal({ members }: Props) {
                 </ul>
               </details>
 
-              {/* DEV ONLY: 役を強制指定して振る (本番では表示されない) */}
-              {devMode && members[0] && (
+              {/* DEV ONLY: 次に振る役を予約する (本番では表示されない) */}
+              {devMode && (
                 <div className="mt-3 rounded border border-dashed border-[#D41E28] bg-[#FFE600]/40 p-2">
                   <p
                     className="text-[10px] font-black tracking-widest text-[#D41E28]"
                     style={{ fontFamily: "var(--font-outfit)" }}
                   >
-                    🧪 DEV: 役を強制指定 (1番目のメンバーに振る)
+                    🧪 DEV: 次に振る役を予約 → その後に推しをタップ
                   </p>
                   <div className="mt-1 flex flex-wrap gap-1">
                     {[
+                      { key: null,      label: "ランダム" },
                       { key: "pinzoro", label: "ピンゾロ" },
                       { key: "zorome",  label: "ゾロ目" },
                       { key: "shigoro", label: "シゴロ" },
                       { key: "normal",  label: "通常役" },
                       { key: "hifumi",  label: "ヒフミ" },
                       { key: "menashi", label: "目なし" },
-                    ].map((h) => (
-                      <button
-                        key={h.key}
-                        type="button"
-                        onClick={() => handlePick(members[0], h.key)}
-                        className="flex-1 min-w-[60px] border border-[#111] bg-white px-1 py-1 text-[10px] font-black hover:bg-[#FFE600]"
-                        style={{ fontFamily: "var(--font-noto-serif), serif" }}
-                      >
-                        {h.label}
-                      </button>
-                    ))}
+                    ].map((h) => {
+                      const selected = devQueuedHand === h.key;
+                      return (
+                        <button
+                          key={h.key ?? "random"}
+                          type="button"
+                          onClick={() => setDevQueuedHand(h.key)}
+                          className={`flex-1 min-w-[60px] border border-[#111] px-1 py-1 text-[10px] font-black transition-colors ${
+                            selected
+                              ? "bg-[#111] text-[#FFE600]"
+                              : "bg-white hover:bg-[#FFE600]"
+                          }`}
+                          style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                        >
+                          {h.label}
+                          {selected && " ✓"}
+                        </button>
+                      );
+                    })}
                   </div>
+                  <p
+                    className="mt-1 text-[9px] text-[#4A5060] text-center"
+                    style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                  >
+                    現在: {devQueuedHand
+                      ? `【${
+                          { pinzoro: "ピンゾロ", zorome: "ゾロ目", shigoro: "シゴロ", normal: "通常役", hifumi: "ヒフミ", menashi: "目なし" }[devQueuedHand]
+                        }】で振る`
+                      : "ランダム (通常)"}
+                  </p>
                 </div>
               )}
 
