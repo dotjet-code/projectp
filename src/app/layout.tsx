@@ -26,22 +26,22 @@ const notoSerifJP = Noto_Serif_JP({
 export const metadata: Metadata = {
   metadataBase: new URL("https://projectp-six.vercel.app"),
   title: {
-    default: "かけあがり",
-    template: "%s | かけあがり",
+    default: "かけあがり！",
+    template: "%s | かけあがり！",
   },
   description:
     "主役はまだ空席。12人が数字で競い、勝ち上がるのは誰だ。かけあがりは、次のステージに立つ6人を決める競争型エンタメプロジェクト。",
   openGraph: {
-    title: "かけあがり",
+    title: "かけあがり！",
     description: "主役はまだ空席。12人が数字で競い、勝ち上がるのは誰だ。",
     url: "https://projectp-six.vercel.app",
-    siteName: "かけあがり",
+    siteName: "かけあがり！",
     locale: "ja_JP",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "かけあがり",
+    title: "かけあがり！",
     description: "主役はまだ空席。12人が数字で競い、勝ち上がるのは誰だ。",
   },
   robots: {

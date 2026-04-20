@@ -568,7 +568,7 @@ export function GuideClient() {
           className="text-3xl md:text-5xl font-black leading-tight text-[#111]"
           style={{ fontFamily: "var(--font-noto-serif), serif" }}
         >
-          かけあがり ガイド
+          かけあがり！ ガイド
         </h1>
         <div className="mt-5 max-w-2xl">
           <p
