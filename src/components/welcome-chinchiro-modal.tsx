@@ -107,8 +107,17 @@ export function WelcomeChinchiroModal({ members }: Props) {
   const dialogRef = useRef<HTMLDivElement | null>(null);
 
   // 初回: 今日振ってなければ 500ms 後に表示
+  // ?chinchiro=1 で強制表示 (モバイル等の疎通確認用)
   useEffect(() => {
     let cancelled = false;
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("chinchiro") === "1") {
+        setDevMode(true);
+        setOpen(true);
+        return;
+      }
+    }
     fetch("/api/public/shuyaku-vote/chinchiro", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => {
