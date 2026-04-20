@@ -94,7 +94,7 @@ export function Header() {
             className="text-lg font-black text-[#111] tracking-tight"
             style={{ fontFamily: "var(--font-noto-serif), serif" }}
           >
-            かけあがり
+            かけあがり！
           </span>
         </Link>
 

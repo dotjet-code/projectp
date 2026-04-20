@@ -41,7 +41,7 @@ export function Footer() {
                 className="text-2xl font-black text-[#F5F1E8] tracking-tight"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                かけあがり
+                かけあがり！
               </span>
             </div>
             <p

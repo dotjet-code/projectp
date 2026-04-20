@@ -152,7 +152,7 @@ function BrandTitle({ text }: { text: string }) {
 
 export function Hero({
   stageLabel,
-  brandTitle = "かけあがり",
+  brandTitle = "かけあがり！",
   titleImage,
   titleImageAspect = 1920 / 600,
   taglines = DEFAULT_TAGLINES,

@@ -30,7 +30,7 @@ export default function AboutPage() {
               className="mt-4 text-5xl md:text-8xl font-black tracking-tight leading-[0.9]"
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
-              かけあがり<br />
+              かけあがり！<br />
               <span className="text-[#D41E28]">とは？</span>
             </h1>
             <div className="mt-6 max-w-2xl">
