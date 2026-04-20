@@ -9,6 +9,7 @@ import { Footer } from "@/components/footer";
 import { TornDivider } from "@/components/torn-divider";
 import { MissionStatement } from "@/components/mission-statement";
 import { PredictionCTA } from "@/components/prediction-cta";
+import { WelcomeChinchiroModal } from "@/components/welcome-chinchiro-modal";
 import { getActiveStage } from "@/lib/projectp/stage";
 import { getRankedMembers } from "@/lib/projectp/live-stats";
 
@@ -106,8 +107,22 @@ export default async function Home() {
 
   const flash = buildNewsFlash(ranked);
 
+  // ウェルカム賽用のメンバー (supabase 未連携 = supabaseId null は除外)
+  const chinchiroMembers = ranked
+    .filter((m) => m.supabaseId && m.name !== "Coming Soon")
+    .slice(0, 12)
+    .map((m, i) => ({
+      id: m.supabaseId as string,
+      name: m.name,
+      avatarUrl: m.avatarUrl,
+      rank: i + 1,
+    }));
+
   return (
     <>
+      {chinchiroMembers.length > 0 && (
+        <WelcomeChinchiroModal members={chinchiroMembers} />
+      )}
       <Header />
       <StageTimeline stage={stage} />
       <main>
