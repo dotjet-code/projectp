@@ -616,18 +616,29 @@ export function WelcomeChinchiroModal({ members }: Props) {
 
               {/* 閉じるは結果確定後のみ */}
               {phase === "result" && (
-                <button
-                  type="button"
-                  onClick={handleClose}
-                  className="mt-5 inline-flex items-center gap-2 bg-[#111] px-6 py-3 text-sm font-black text-[#FFE600] transition-transform active:translate-y-0.5"
-                  style={{
-                    fontFamily: "var(--font-noto-serif), serif",
-                    boxShadow: "4px 4px 0 rgba(17,17,17,0.22)",
-                  }}
-                  autoFocus
-                >
-                  {finalDice ? "他のメンバーにも投票する" : "閉じる"}
-                </button>
+                <div className="mt-5 flex flex-col items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={handleClose}
+                    className="inline-flex items-center gap-2 bg-[#111] px-6 py-3 text-sm font-black text-[#FFE600] transition-transform active:translate-y-0.5"
+                    style={{
+                      fontFamily: "var(--font-noto-serif), serif",
+                      boxShadow: "4px 4px 0 rgba(17,17,17,0.22)",
+                    }}
+                    autoFocus
+                  >
+                    {finalDice ? "さらに投票する →" : "閉じる"}
+                  </button>
+                  {finalDice && (
+                    <p
+                      className="text-[10px] text-[#4A5060] text-center leading-snug"
+                      style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                    >
+                      この子も、他のメンバーも、<br />
+                      1 人 1 票ずつ追加で投票できます。
+                    </p>
+                  )}
+                </div>
               )}
 
               {/* 役の早見 (畳み) */}
