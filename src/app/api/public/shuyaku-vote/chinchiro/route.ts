@@ -38,12 +38,13 @@ const RATE_LIMIT_PER_HOUR = 30;
 const RATE_LIMIT_KIND = "shuyaku.chinchiro";
 
 /**
- * 確認用テストモード。NODE_ENV=development でのみ有効。
+ * 確認用テストモード。明示的に CHINCHIRO_DEV_MODE=1 をセットしたときだけ有効。
  * true のあいだ: 1 日 1 回制限を無視してモーダルが毎回開き、
  *                 振るたびに前回の行を削除して上書きする。
- * 本番では常に false。
+ *                 モーダルに役強制ボタン (ピンゾロ / シゴロ 等) が表示される。
+ * 本番/通常の local dev ではどちらも常に false (1 日 1 回制約が効く)。
  */
-const DEV_ALWAYS_OPEN = process.env.NODE_ENV === "development";
+const DEV_ALWAYS_OPEN = process.env.CHINCHIRO_DEV_MODE === "1";
 
 function todayJst(): string {
   const now = new Date();
