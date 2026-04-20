@@ -11,12 +11,13 @@ const nextConfig: NextConfig = {
   },
   // LAN 越しにスマホ等から dev サーバを覗きに来るときに
   // HMR/チャンクが block されないようにする (dev 時のみ有効)。
+  // Next.js の allowedDevOrigins は CIDR 非対応 / exact host or ワイルドカード。
   allowedDevOrigins: [
-    "192.168.0.0/16",
-    "10.0.0.0/8",
-    "172.16.0.0/12",
-    "100.64.0.0/10", // Tailscale CGNAT
+    "192.168.11.36",
     "localhost",
+    "127.0.0.1",
+    "100.*.*.*", // Tailscale CGNAT 帯
+    "192.168.*.*", // 家庭 LAN 一般帯
   ],
 };
 
