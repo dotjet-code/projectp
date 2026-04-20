@@ -266,6 +266,14 @@ export function WelcomeChinchiroModal({ members }: Props) {
   const handleClose = () => {
     setPhase("done");
     setOpen(false);
+    // モーダル閉じ後、本日の出走 (MemberGrid) までスムーズスクロール。
+    // setTimeout で body.overflow 解除 + モーダル unmount を待ってから実行。
+    setTimeout(() => {
+      const target = document.getElementById("today-starters");
+      if (!target) return;
+      const y = target.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }, 50);
   };
 
   if (!open) return null;
