@@ -186,6 +186,11 @@ export function MemberRow({
         <div
           className="shrink-0 md:mr-4 relative w-10 h-10 md:w-16 md:h-16 overflow-hidden border border-[#D5CFC0]"
           aria-hidden
+          style={{
+            backgroundImage: "url(/members/haikei.jpeg)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
         >
           <Image
             src={member.avatarUrl}

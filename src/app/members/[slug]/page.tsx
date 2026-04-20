@@ -111,22 +111,8 @@ export default async function MemberDetailPage({
     <>
       <Header />
       <main className="pb-10">
-        {/* Hero (かけあがり スタイル: 背景画像 + 被写体左、情報右) */}
+        {/* Hero (かけあがり スタイル: 黒ベタ + 被写体左、情報右) */}
         <section className="relative bg-[#111] text-[#F5F1E8] overflow-hidden">
-          {/* 背景画像 + 暗所オーバーレイ (文字可読性担保) */}
-          <Image
-            src="/members/haikei.jpeg"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center pointer-events-none select-none"
-            aria-hidden
-          />
-          <div
-            className="absolute inset-0 bg-[#111]/65 pointer-events-none"
-            aria-hidden
-          />
           <div
             className="absolute top-0 left-0 right-0 h-2 bg-[#D41E28]"
             style={{
@@ -135,11 +121,18 @@ export default async function MemberDetailPage({
             }}
             aria-hidden
           />
-          <div className="relative max-w-[1200px] mx-auto px-4 md:px-6 py-10 md:py-14">
+          <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-10 md:py-14">
             <div className="flex flex-col md:flex-row items-start gap-8">
               {/* Portrait */}
               <div className="relative shrink-0">
-                <div className="relative w-[160px] h-[160px] md:w-[240px] md:h-[240px] border-2 border-[#F5F1E8]">
+                <div
+                  className="relative w-[160px] h-[160px] md:w-[240px] md:h-[240px] border-2 border-[#F5F1E8] overflow-hidden"
+                  style={{
+                    backgroundImage: "url(/members/haikei.jpeg)",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                >
                   <Image
                     src={base.avatarUrl}
                     alt={base.name}

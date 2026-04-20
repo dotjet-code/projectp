@@ -371,7 +371,12 @@ export function WelcomeChinchiroModal({ members }: Props) {
                     key={m.id}
                     type="button"
                     onClick={() => handlePick(m)}
-                    className="group relative aspect-square overflow-hidden border border-[#111] bg-white transition-transform active:translate-y-0.5 focus-visible:outline-2 focus-visible:outline-[#D41E28] focus-visible:outline-offset-2"
+                    className="group relative aspect-square overflow-hidden border border-[#111] transition-transform active:translate-y-0.5 focus-visible:outline-2 focus-visible:outline-[#D41E28] focus-visible:outline-offset-2"
+                    style={{
+                      backgroundImage: "url(/members/haikei.jpeg)",
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }}
                     aria-label={`${m.name} を選んで賽を振る`}
                   >
                     <Image
@@ -398,7 +403,14 @@ export function WelcomeChinchiroModal({ members }: Props) {
           {(phase === "rolling" || phase === "result") && picked && (
             <div className="flex flex-col items-center">
               {/* 選ばれた人 */}
-              <div className="relative w-24 h-24 overflow-hidden border-2 border-[#111]">
+              <div
+                className="relative w-24 h-24 overflow-hidden border-2 border-[#111]"
+                style={{
+                  backgroundImage: "url(/members/haikei.jpeg)",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              >
                 <Image
                   src={picked.avatarUrl}
                   alt=""

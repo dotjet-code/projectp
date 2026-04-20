@@ -41,8 +41,15 @@ function MemberCard({ member, rank }: { member: RankedMember; rank: number }) {
         )}
       </div>
 
-      {/* 写真 */}
-      <div className="relative aspect-square border-b border-[#111]">
+      {/* 写真 (透過 PNG の背面に haikei.jpeg を敷く) */}
+      <div
+        className="relative aspect-square border-b border-[#111] overflow-hidden"
+        style={{
+          backgroundImage: "url(/members/haikei.jpeg)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
         <Image
           src={member.avatarUrl}
           alt=""
