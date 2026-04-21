@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { LiveStatusProvider } from "@/lib/projectp/live-status-client";
+import { SITE_URL } from "@/lib/site-url";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -24,7 +25,7 @@ const notoSerifJP = Noto_Serif_JP({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://projectp-six.vercel.app"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "かけあがり！",
     template: "%s | かけあがり！",
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "かけあがり！",
     description: "主役はまだ空席。数字で競い、上位6名だけが次のステージに立つ。",
-    url: "https://projectp-six.vercel.app",
+    url: SITE_URL,
     siteName: "かけあがり！",
     locale: "ja_JP",
     type: "website",

@@ -1,14 +1,16 @@
 export default function MemberLoading() {
   return (
-    <div className="mx-auto max-w-[996px] px-4 pt-16 pb-10">
-      <div className="animate-pulse flex flex-col sm:flex-row items-center sm:items-start gap-6">
-        <div className="size-[140px] sm:size-[180px] rounded-[24px] bg-gray-200" />
-        <div className="flex-1 space-y-3 pt-2">
-          <div className="h-6 w-24 rounded bg-gray-200" />
-          <div className="h-8 w-40 rounded bg-gray-200" />
-          <div className="h-3 w-full max-w-[380px] rounded bg-gray-100" />
-          <div className="h-3 w-full max-w-[380px] rounded bg-gray-100" />
-          <div className="h-3 w-full max-w-[380px] rounded bg-gray-100" />
+    <div className="bg-[#F5F1E8] min-h-[60vh]">
+      <div className="mx-auto max-w-[1200px] px-4 pt-16 pb-10">
+        <div className="animate-pulse flex flex-col sm:flex-row items-start gap-6">
+          <div className="w-[140px] sm:w-[180px] h-[140px] sm:h-[180px] border-2 border-[#111] bg-[#111]/10" />
+          <div className="flex-1 space-y-3 pt-2">
+            <div className="h-6 w-24 bg-[#111]/10" />
+            <div className="h-10 w-64 bg-[#111]/15" />
+            <div className="h-3 w-full max-w-[380px] bg-[#111]/10" />
+            <div className="h-3 w-full max-w-[380px] bg-[#111]/10" />
+            <div className="h-3 w-full max-w-[300px] bg-[#111]/10" />
+          </div>
         </div>
       </div>
     </div>

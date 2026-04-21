@@ -73,7 +73,7 @@ export function Footer() {
             </div>
           </div>
 
-          {/* 出走表マーク + 更新時刻 */}
+          {/* 号艇カラーマーク */}
           <div className="flex flex-col items-start md:items-end gap-3">
             <div className="flex items-center gap-1" aria-hidden>
               {BOAT_COLORS.map((c, i) => (
@@ -84,12 +84,6 @@ export function Footer() {
                 />
               ))}
             </div>
-            <p
-              className="text-[10px] tracking-[0.25em] text-[#9BA8BF]"
-              style={{ fontFamily: "var(--font-outfit)" }}
-            >
-              6 LANES · 12 RUNNERS
-            </p>
           </div>
         </div>
 

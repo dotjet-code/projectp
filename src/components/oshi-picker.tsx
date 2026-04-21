@@ -83,7 +83,7 @@ export function OshiPicker({ members }: OshiPickerProps) {
           </div>
           <Link
             href={`/members/${oshiMember.slug}`}
-            className="shrink-0 inline-flex items-center gap-1 bg-[#D41E28] text-white px-3 py-1.5 text-xs font-black"
+            className="shrink-0 inline-flex items-center min-h-[40px] gap-1 bg-[#D41E28] text-white px-4 py-1.5 text-xs font-black"
             style={{
               fontFamily: "var(--font-noto-serif), serif",
             }}

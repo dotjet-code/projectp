@@ -470,21 +470,11 @@ export function WelcomeChinchiroModal({ members }: Props) {
                 推しを選んでサイコロを振ろう。
               </p>
               <p
-                className="mt-1 text-center text-xs text-[#4A5060] leading-snug"
+                className="mt-1.5 text-center text-xs text-[#4A5060] leading-snug"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                3 個の賽の<span className="font-black">役</span>で票数が決まる
-                <span className="font-black">チンチロ方式</span>。<br />
-                一撃 <span className="text-[#D41E28] font-black">100 票</span>
-                のピンゾロも。毎日 1 回・<span className="font-black">無料</span>。
-              </p>
-              <p
-                className="mt-2 text-center text-[10px] text-[#4A5060] leading-relaxed"
-                style={{ fontFamily: "var(--font-noto-serif), serif" }}
-              >
-                出た票はそのまま推しの
-                <span className="font-black">ランキング</span>
-                に加算されます。
+                毎日 1 回・<span className="font-black">無料</span>・
+                ピンゾロで <span className="text-[#D41E28] font-black">100 票</span>
               </p>
 
               {/* 役の早見 (idle 段階でも開けるようにして期待感を煽る) */}

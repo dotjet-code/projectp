@@ -28,7 +28,7 @@ function FanAuthLink({ onNavigate }: { onNavigate?: () => void }) {
       <Link
         href="/fan/me"
         onClick={onNavigate}
-        className="relative inline-flex items-center gap-1 bg-[#D41E28] text-white px-3 py-1.5 text-xs font-black"
+        className="relative inline-flex items-center min-h-[40px] gap-1 bg-[#D41E28] text-white px-3 py-1.5 text-xs font-black"
         style={{ fontFamily: "var(--font-noto-serif), serif" }}
       >
         マイページ
@@ -47,7 +47,7 @@ function FanAuthLink({ onNavigate }: { onNavigate?: () => void }) {
     <Link
       href="/fan/login"
       onClick={onNavigate}
-      className="inline-flex items-center border border-[#111] bg-[#F5F1E8] text-[#111] px-3 py-1.5 text-xs font-black hover:bg-[#111] hover:text-[#F5F1E8] transition-colors"
+      className="inline-flex items-center min-h-[40px] border border-[#111] bg-[#F5F1E8] text-[#111] px-3 py-1.5 text-xs font-black hover:bg-[#111] hover:text-[#F5F1E8] transition-colors"
       style={{ fontFamily: "var(--font-noto-serif), serif" }}
     >
       会員ログイン

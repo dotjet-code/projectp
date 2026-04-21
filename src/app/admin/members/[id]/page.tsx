@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getMemberStageHistory } from "@/lib/projectp/stage";
+import { SITE_URL } from "@/lib/site-url";
 import { InviteButton } from "./invite-button";
 import { CopyInput } from "./copy-input";
 
@@ -65,7 +66,7 @@ export default async function AdminMemberDetailPage({
   const stageHistory = await getMemberStageHistory(m.name).catch(() => []);
 
   // 認可 URL
-  const connectUrl = `https://projectp-six.vercel.app/api/auth/google/start?member_id=${m.id}`;
+  const connectUrl = `${SITE_URL}/api/auth/google/start?member_id=${m.id}`;
 
   // recent_video_ids
   const videoIds = Array.isArray(m.recent_video_ids)

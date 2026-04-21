@@ -67,7 +67,7 @@ export default async function PredictorsRankingPage({
               className="text-xs md:text-sm font-black tracking-[0.35em] text-[#FFE600]"
               style={{ fontFamily: "var(--font-outfit)" }}
             >
-              ANNUAL HALL OF HITS
+              TOP PREDICTORS
             </p>
             <h1
               className="mt-3 text-4xl md:text-6xl font-black leading-[0.95] tracking-tight"

@@ -1,11 +1,8 @@
-"use client";
-
-import { useState } from "react";
 import type { RankedMember } from "@/lib/projectp/live-stats";
 import { SectionHeading } from "@/components/section-heading";
 import { MemberRow } from "@/components/member-row";
-
-type TabType = "all" | "player" | "pit";
+import Image from "next/image";
+import Link from "next/link";
 
 function PassLineDivider() {
   return (
@@ -20,6 +17,8 @@ function PassLineDivider() {
   );
 }
 
+const MEDALS = ["🥇", "🥈", "🥉"] as const;
+
 export function RankingClient({
   members,
   stageLabel,
@@ -27,20 +26,12 @@ export function RankingClient({
   members: RankedMember[];
   stageLabel?: string;
 }) {
-  const [tab, setTab] = useState<TabType>("all");
-
   const sortedMembers = [...members].sort((a, b) => {
     const aComing = a.name === "Coming Soon" ? 1 : 0;
     const bComing = b.name === "Coming Soon" ? 1 : 0;
     if (aComing !== bComing) return aComing - bComing;
     return a.rank - b.rank;
   });
-  const filteredMembers =
-    tab === "all"
-      ? sortedMembers
-      : sortedMembers.filter((m) =>
-          tab === "player" ? m.role === "PLAYER" : m.role === "PIT"
-        );
 
   const maxBuzz = Math.max(...members.map((m) => m.detail.stats.buzz), 1);
   const maxConc = Math.max(...members.map((m) => m.detail.stats.concurrent), 1);
@@ -49,6 +40,8 @@ export function RankingClient({
     ...members.map((m) => m.detail.stats.shuyaku ?? 0),
     1,
   );
+
+  const top3 = sortedMembers.slice(0, 3);
 
   return (
     <main className="pb-20">
@@ -82,7 +75,7 @@ export function RankingClient({
             >
               <span className="text-[#FFE600]">いま、走っているのは誰だ。</span>
               <br />
-              バズ・配信・収支・投票 ── 4 つの数字が、来月の主役を決める。
+              バズ・配信・収支・投票 ── 4 つの数字が、次の主役を決める。
             </p>
             {stageLabel && (
               <p
@@ -104,45 +97,75 @@ export function RankingClient({
         </div>
       </section>
 
-      {/* Tabs */}
-      <section className="max-w-[1200px] mx-auto px-4 mt-10">
-        <div className="flex items-stretch border border-[#111]">
-          {(
-            [
-              { key: "all" as TabType, label: "総合", count: members.length },
-              { key: "player" as TabType, label: "PLAYER", count: members.filter((m) => m.role === "PLAYER").length },
-              { key: "pit" as TabType, label: "PIT", count: members.filter((m) => m.role === "PIT").length },
-            ]
-          ).map((t, i) => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 text-sm font-black tracking-wide transition-colors ${
-                i > 0 ? "border-l border-[#111]" : ""
-              } ${
-                tab === t.key
-                  ? "bg-[#D41E28] text-white"
-                  : "bg-[#F5F1E8] text-[#111] hover:bg-white"
-              }`}
-              style={{ fontFamily: "var(--font-noto-serif), serif" }}
-            >
-              <span>{t.label}</span>
-              <span
-                className="text-xs opacity-80 tabular-nums"
-                style={{ fontFamily: "var(--font-outfit)" }}
+      {/* TOP 3 (表彰台) */}
+      {top3.length > 0 && (
+        <section className="max-w-[1200px] mx-auto px-4 mt-10">
+          <SectionHeading
+            title="TOP 3"
+            eyebrow="CURRENT TOP 3"
+            accent="red"
+          />
+          <div className="grid grid-cols-3 gap-2 md:gap-4">
+            {top3.map((m, i) => (
+              <Link
+                key={m.id}
+                href={`/members/${m.slug}`}
+                className={`flex flex-col items-center text-center bg-[#F5F1E8] border-2 border-[#111] px-3 py-5 md:py-6 transition-transform active:translate-y-0.5 hover:bg-[#FFE600] ${i === 0 ? "md:py-8" : ""}`}
+                style={{ boxShadow: "4px 4px 0 rgba(17,17,17,0.22)" }}
               >
-                ({t.count})
-              </span>
-            </button>
-          ))}
-        </div>
-      </section>
+                <span className="text-3xl md:text-4xl leading-none mb-2" aria-hidden>
+                  {MEDALS[i]}
+                </span>
+                <div className="relative w-16 h-16 md:w-20 md:h-20 overflow-hidden border-2 border-[#111] mb-3">
+                  <Image
+                    src={m.avatarUrl}
+                    alt={m.name}
+                    fill
+                    sizes="(max-width: 768px) 64px, 80px"
+                    className="object-cover"
+                    style={{ objectPosition: "50% 18%" }}
+                  />
+                </div>
+                <p
+                  className="text-xs md:text-base font-black text-[#111] leading-tight"
+                  style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                >
+                  {m.name}
+                </p>
+                <p
+                  className="mt-1 text-base md:text-xl font-black text-[#D41E28] tabular-nums leading-none"
+                  style={{ fontFamily: "var(--font-outfit)" }}
+                >
+                  {m.effectivePoints.toLocaleString()}
+                  <span className="ml-0.5 text-[10px] md:text-xs text-[#4A5060]">
+                    pt
+                  </span>
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Ranking Table */}
-      <section className="max-w-[1200px] mx-auto px-4 mt-8">
+      <section className="max-w-[1200px] mx-auto px-4 mt-12">
+        <SectionHeading
+          title="総合順位"
+          eyebrow="CURRENT STANDINGS"
+          accent="red"
+          aside={
+            <span className="text-[#4A5060]">
+              4 指標の合計ポイント順。
+              <span className="inline-block ml-1 text-[#D41E28] font-bold">
+                7 位以下は次月 PIT
+              </span>
+              。
+            </span>
+          }
+        />
         <div className="border-t-[3px] border-[#111]">
-          {filteredMembers.map((member) => {
-            const isReorgLine = tab === "all" && member.rank === 7;
+          {sortedMembers.map((member) => {
+            const isReorgLine = member.rank === 7;
             return (
               <div key={member.id}>
                 {isReorgLine && <PassLineDivider />}
@@ -169,7 +192,10 @@ export function RankingClient({
         />
         <div className="border-[3px] border-[#111] bg-[#F5F1E8] px-6 py-8">
           <div className="flex items-center gap-3 mb-2">
-            <span className="inline-block w-2 h-2 bg-[#FFE600] animate-pulse" aria-hidden />
+            <span
+              className="inline-block w-2 h-2 bg-[#FFE600] animate-pulse"
+              aria-hidden
+            />
             <span
               className="text-xs font-black tracking-[0.3em] text-[#4A5060]"
               style={{ fontFamily: "var(--font-outfit)" }}

@@ -234,10 +234,9 @@ function StarterRoster({ members }: { members: PublicMember[] }) {
         className="text-xs md:text-sm leading-relaxed text-[#4A5060] mb-5"
         style={{ fontFamily: "var(--font-noto-serif), serif" }}
       >
-        本日の出走メンバー。サイコロを振って「この子を主役に」と
-        <span className="text-[#D41E28] font-black">即時投票</span>
-        できる。投票数は別枠で「主役」スコアに反映される。
-        <span className="ml-1 text-[#4A5060]/80">（同じ人には 1 日 1 回まで）</span>
+        順位予想の候補一覧。それぞれのメンバーに
+        <span className="text-[#D41E28] font-black">主役指名</span>
+        をタップで即時投票できる (1〜6 票ランダム、同じ人には 1 日 1 回まで)。
       </p>
 
       {/* 二重罫線 */}
@@ -511,7 +510,7 @@ function BetSection({
             className="inline-flex items-baseline gap-1 px-2 py-0.5 bg-[#111] text-[#FFE600]"
             style={{ fontFamily: "var(--font-outfit)" }}
           >
-            <span className="text-[10px] font-black tracking-[0.2em]">PAY</span>
+            <span className="text-[10px] font-black tracking-[0.2em]">配当</span>
             <span className="text-base font-black tabular-nums">+{config.points}</span>
             <span className="text-[10px]">pt</span>
           </span>
@@ -914,7 +913,7 @@ export function PredictionClient({
               <button
                 type="button"
                 onClick={() => setEntryType("normal")}
-                className={`px-4 py-2 text-xs font-black tracking-wider border-2 transition-colors ${
+                className={`inline-flex items-center justify-center min-h-[44px] px-4 py-2 text-xs font-black tracking-wider border-2 transition-colors ${
                   entryType === "normal"
                     ? "bg-[#111] text-[#FFE600] border-[#111]"
                     : "bg-white text-[#111] border-[#111] hover:bg-[#F5F1E8]"
@@ -926,12 +925,13 @@ export function PredictionClient({
               <button
                 type="button"
                 onClick={() => setEntryType("welcome")}
-                className={`px-4 py-2 text-xs font-black tracking-wider border-2 border-l-0 transition-colors ${
+                className={`inline-flex items-center justify-center min-h-[44px] px-4 py-2 text-xs font-black tracking-wider border-2 border-l-0 transition-colors ${
                   entryType === "welcome"
                     ? "bg-[#D41E28] text-white border-[#D41E28]"
                     : "bg-white text-[#111] border-[#111] hover:bg-[#F5F1E8]"
                 }`}
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                title="初めての提出者を対象にした特別エントリー"
               >
                 初回限定
               </button>

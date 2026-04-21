@@ -161,7 +161,7 @@ function OverviewTab() {
           </p>
           <p className="text-sm leading-relaxed mt-2 text-[#111]">
             毎月の「ステージ」で<b>バズ・配信・収支・投票</b>の 4 指標を競い、上位 6 名が <b>PLAYER</b>（ステージの主役）、
-            下位 6 名が <b>PIT</b>（待機組）に振り分けられる。月末の特番で順位が確定し、翌月の編成が決まる。
+            それ以外が <b>PIT</b>（待機組）に振り分けられる。月末の特番で順位が確定し、翌月の編成が決まる。
           </p>
         </Card>
       </Section>
@@ -605,7 +605,7 @@ export function GuideClient() {
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
-              className={`px-4 py-2.5 text-sm font-black tracking-wider border-2 border-b-0 -mb-[3px] transition-colors ${
+              className={`inline-flex items-center min-h-[44px] px-4 py-2.5 text-sm font-black tracking-wider border-2 border-b-0 -mb-[3px] transition-colors ${
                 tab === t.key
                   ? "bg-[#111] text-[#FFE600] border-[#111]"
                   : "bg-[#F5F1E8] border-[#111] text-[#4A5060] hover:bg-white"

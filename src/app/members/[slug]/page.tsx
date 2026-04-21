@@ -196,9 +196,10 @@ export default async function MemberDetailPage({
                     <span
                       className="inline-flex items-center gap-2 text-[10px] font-black tracking-[0.2em] text-[#0F8F4A]"
                       style={{ fontFamily: "var(--font-outfit)" }}
+                      title="データは 1 時間ごとに自動更新"
                     >
                       <span className="size-1.5 rounded-full bg-[#0F8F4A] animate-pulse" />
-                      LIVE DATA ACTIVE
+                      最新データ反映中
                     </span>
                   ) : (
                     <span

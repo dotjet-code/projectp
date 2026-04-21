@@ -165,13 +165,7 @@ export default function AboutPage() {
                     className="text-5xl md:text-7xl font-black leading-none tabular-nums"
                     style={{ fontFamily: "var(--font-outfit)" }}
                   >
-                    1-6
-                  </span>
-                  <span
-                    className="text-lg md:text-xl font-bold"
-                    style={{ fontFamily: "var(--font-noto-serif), serif" }}
-                  >
-                    位
+                    TOP 6
                   </span>
                 </div>
                 <p
@@ -196,13 +190,7 @@ export default function AboutPage() {
                     className="text-5xl md:text-7xl font-black leading-none tabular-nums"
                     style={{ fontFamily: "var(--font-outfit)" }}
                   >
-                    7-12
-                  </span>
-                  <span
-                    className="text-lg md:text-xl font-bold"
-                    style={{ fontFamily: "var(--font-noto-serif), serif" }}
-                  >
-                    位
+                    7位〜
                   </span>
                 </div>
                 <p
@@ -262,7 +250,7 @@ export default function AboutPage() {
               {[
                 { num: "01", label: "振り返り", desc: "4 指標の推移と順位変動を全員で確認" },
                 { num: "02", label: "最終決戦", desc: "最終順位に影響する特別企画を実施" },
-                { num: "03", label: "新編成", desc: "PLAYER 6 名 / PIT 6 名が決定、翌月スタート" },
+                { num: "03", label: "新編成", desc: "上位 6 名が PLAYER に昇格、翌月スタート" },
               ].map((item) => (
                 <div
                   key={item.num}

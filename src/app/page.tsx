@@ -69,29 +69,29 @@ function buildNewsFlash(
   const recent: FlashRow[] = [];
   if (top1) {
     recent.push({
-      time: "3h 前",
-      text: `${top1.name} 首位キープ (${top1.effectivePoints.toLocaleString()}pt)`,
+      time: "#1",
+      text: `${top1.name} (${top1.effectivePoints.toLocaleString()}pt)`,
       accent: "red",
     });
   }
   if (top2) {
     recent.push({
-      time: "5h 前",
-      text: `${top2.name} 2 位浮上 (${top2.effectivePoints.toLocaleString()}pt)`,
-      accent: "red",
+      time: "#2",
+      text: `${top2.name} (${top2.effectivePoints.toLocaleString()}pt)`,
+      accent: "pink",
     });
   }
   if (top3) {
     recent.push({
-      time: "8h 前",
-      text: `${top3.name} 表彰台に届く (${top3.effectivePoints.toLocaleString()}pt)`,
+      time: "#3",
+      text: `${top3.name} (${top3.effectivePoints.toLocaleString()}pt)`,
       accent: "pink",
     });
   }
   if (top4) {
     recent.push({
-      time: "昨日",
-      text: `${top4.name} 4 位を確保 (${top4.effectivePoints.toLocaleString()}pt)`,
+      time: "#4",
+      text: `${top4.name} (${top4.effectivePoints.toLocaleString()}pt)`,
       accent: "teal",
     });
   }

@@ -137,7 +137,7 @@ export default async function MembersPage() {
               >
                 <span className="text-[#FFE600]">主役は、毎月入れ替わる。</span>
                 <br />
-                上位 6 が PLAYER、下位 6 が PIT。
+                上位 6 名が次のステージに立つ。
                 <br />
                 ──今夜、君の推しはどこで戦っている？
               </p>

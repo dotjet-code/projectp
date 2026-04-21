@@ -1,5 +1,7 @@
 "use client";
 
+import { SITE_URL } from "@/lib/site-url";
+
 export function ShareButtons({
   text,
   path,
@@ -10,7 +12,7 @@ export function ShareButtons({
   const url =
     typeof window !== "undefined"
       ? `${window.location.origin}${path}`
-      : `https://projectp-six.vercel.app${path}`;
+      : `${SITE_URL}${path}`;
 
   const twitterHref = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
     text
