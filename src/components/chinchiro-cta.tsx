@@ -61,9 +61,9 @@ export function ChinchiroCTA({
                   className="relative inline-block"
                   style={{
                     background:
-                      "linear-gradient(180deg, transparent 60%, #D41E28 60%)",
+                      "linear-gradient(180deg, transparent 55%, rgba(212,30,40,0.7) 55%)",
                     paddingInline: "4px",
-                    color: "#F5F1E8",
+                    color: "#111",
                   }}
                 >
                   賽を振れ

@@ -41,17 +41,14 @@ export async function MemberGrid() {
       <SectionHeading
         title={
           <>
-            <span className="inline-block">本日の</span>
-            <span className="inline-block">出走</span>
+            <span className="inline-block">現在の</span>
+            <span className="inline-block">順位</span>
           </>
         }
-        eyebrow="TODAY'S STARTERS"
+        eyebrow="CURRENT STANDINGS"
         aside={
           <span>
             月末の結果で全員のポジションが変わる。
-            <span className="block md:inline md:ml-2 text-[#4A5060]">
-              <span className="text-[#D41E28] font-bold">主役</span>は毎日サイコロで（同じ人には 1 日 1 回まで）。
-            </span>
           </span>
         }
       />

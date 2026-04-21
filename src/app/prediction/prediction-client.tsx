@@ -234,7 +234,7 @@ function StarterRoster({ members }: { members: PublicMember[] }) {
         className="text-xs md:text-sm leading-relaxed text-[#4A5060] mb-5"
         style={{ fontFamily: "var(--font-noto-serif), serif" }}
       >
-        本日の出走 12 名。サイコロを振って「この子を主役に」と
+        本日の出走メンバー。サイコロを振って「この子を主役に」と
         <span className="text-[#D41E28] font-black">即時投票</span>
         できる。投票数は別枠で「主役」スコアに反映される。
         <span className="ml-1 text-[#4A5060]/80">（同じ人には 1 日 1 回まで）</span>

@@ -202,8 +202,8 @@ function OverviewTab() {
 
       <Section title="👥 登場人物">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Card icon="⭐" title="メンバー（12 名）">
-            数字を競い合うプロジェクトの主役。バズ・配信・収支のポイントで順位が決まる。
+          <Card icon="⭐" title="メンバー">
+            数字を競い合うプロジェクトの主役。バズ・配信・収支のポイントで順位が決まり、上位 6 名が PLAYER に。
           </Card>
           <Card icon="🎟️" title="ファン会員">
             順位予想を提出し、的中すると景品がもらえる。ライブ投票にも参加できる。
@@ -223,7 +223,7 @@ function OverviewTab() {
             className="text-xs text-[#4A5060] mb-3"
             style={{ fontFamily: "var(--font-noto-serif), serif" }}
           >
-            全 12 名から 6 種類の賭式で予想。
+            全メンバーから 6 種類の賭式で予想。
           </p>
           <div className="space-y-1.5">
             {[

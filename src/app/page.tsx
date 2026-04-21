@@ -3,7 +3,6 @@ import { Hero } from "@/components/hero";
 import { NewsFlash } from "@/components/news-flash";
 import { StageTimeline } from "@/components/stage-timeline";
 import { MemberGrid } from "@/components/member-grid";
-import { Rankings } from "@/components/rankings";
 import { TodaysLive } from "@/components/todays-live";
 import { Footer } from "@/components/footer";
 import { TornDivider } from "@/components/torn-divider";
@@ -187,8 +186,6 @@ export default async function Home() {
           sub="的中したら、君もランクイン。"
           spacing="compact"
         />
-        <TornDivider variant="top" height={18} color="#111111" />
-        <Rankings />
         <TornDivider variant="top" height={18} color="#111111" />
         <TodaysLive />
         <TornDivider variant="bottom" height={18} color="#111111" />

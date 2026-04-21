@@ -75,7 +75,7 @@ export default function AboutPage() {
                 className="text-sm leading-relaxed text-[#4A5060]"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                勝ち取った 6 名は「かけっこ！」のメインメンバーとしてステージに立つ。
+                勝ち取った 6 名は、次月のメインステージの主役として活動する。
               </p>
             </div>
           </section>
@@ -185,7 +185,7 @@ export default function AboutPage() {
                   style={{ fontFamily: "var(--font-noto-serif), serif" }}
                 >
                   <li>— メインステージに立つ権利を持つ</li>
-                  <li>—「かけっこ！」の正規メンバーとして活動</li>
+                  <li>— メインステージの正規メンバーとして活動</li>
                   <li>— 優先的な露出・企画参加の機会</li>
                   <li>— 成績が落ちれば、翌月は PIT に降格</li>
                 </ul>
@@ -316,14 +316,35 @@ export default function AboutPage() {
           </section>
 
           {/* CTA */}
-          <section className="text-center">
-            <Link
-              href="/members"
-              className="inline-flex items-center gap-3 bg-[#D41E28] text-white px-10 py-4 text-lg font-black hover:translate-y-[-2px] transition-transform"
+          <section className="text-center space-y-4">
+            <div className="flex flex-wrap justify-center gap-3">
+              <Link
+                href="/members"
+                className="inline-flex items-center gap-3 bg-[#D41E28] text-white px-8 py-3.5 text-base md:text-lg font-black transition-transform active:translate-y-0.5"
+                style={{
+                  fontFamily: "var(--font-noto-serif), serif",
+                  boxShadow: "5px 5px 0 rgba(17,17,17,0.22)",
+                }}
+              >
+                メンバーを見る →
+              </Link>
+              <Link
+                href="/prediction"
+                className="inline-flex items-center gap-3 border-2 border-[#111] bg-white text-[#111] px-8 py-3.5 text-base md:text-lg font-black transition-transform active:translate-y-0.5 hover:bg-[#FFE600]"
+                style={{
+                  fontFamily: "var(--font-noto-serif), serif",
+                  boxShadow: "5px 5px 0 rgba(17,17,17,0.22)",
+                }}
+              >
+                予想してみる
+              </Link>
+            </div>
+            <p
+              className="text-xs text-[#4A5060]"
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
-              メンバーを見る →
-            </Link>
+              予想は無料・登録不要で試せます
+            </p>
           </section>
         </div>
       </main>
