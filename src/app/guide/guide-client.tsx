@@ -157,7 +157,7 @@ function OverviewTab() {
       <Section title="🏁 かけあがり とは？">
         <Card icon="✦" title="競争型エンタメプロジェクト">
           <p className="text-sm leading-relaxed text-[#111]">
-            かけあがり は、<b className="text-[#D41E28]">12 人のメンバーが数字で競い合い、主役の座を勝ち取る</b>競争型エンタメプロジェクト。
+            かけあがり は、<b className="text-[#D41E28]">メンバーが数字で競い合い、上位 6 名だけが主役の座を勝ち取る</b>競争型エンタメプロジェクト。
           </p>
           <p className="text-sm leading-relaxed mt-2 text-[#111]">
             毎月の「ステージ」で<b>バズ・配信・収支・投票</b>の 4 指標を競い、上位 6 名が <b>PLAYER</b>（ステージの主役）、
@@ -560,7 +560,7 @@ export function GuideClient() {
             className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
             style={{ fontFamily: "var(--font-outfit)" }}
           >
-            ━ HOW TO PLAY
+            ━ 遊びかた
           </p>
           <span className="flex-1 h-px bg-[#111]/30" aria-hidden />
         </div>

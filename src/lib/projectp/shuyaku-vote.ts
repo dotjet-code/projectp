@@ -119,10 +119,10 @@ export function judgeChinchiro(
   }
   // 通常役 (2 個そろい + 1 個独立 → 独立の目の数)
   if (a === b && b !== c) {
-    return { dice, hand: "normal", value: c, handLabel: `${a}の対 + ${c}` };
+    return { dice, hand: "normal", value: c, handLabel: `${c}の目` };
   }
   if (b === c && a !== b) {
-    return { dice, hand: "normal", value: a, handLabel: `${b}の対 + ${a}` };
+    return { dice, hand: "normal", value: a, handLabel: `${a}の目` };
   }
   // 全バラで役なし (振り直し候補)
   return { dice, hand: "menashi", value: 0, handLabel: "目なし" };
@@ -462,4 +462,122 @@ export async function getPredictionMentionsByMember(
     }
   }
   return counts;
+}
+
+export interface ChinchiroCookieStats {
+  /** 総献上票数 (全期間、cookie 単位) */
+  totalValue: number;
+  /** 振った合計日数 */
+  totalRolls: number;
+  /** 今日振っているか (振っていれば当日の total_value) */
+  rolledToday: { totalValue: number; streakDays: number } | null;
+  /** 最も多く献上したメンバー (id, 票数) */
+  topMember: { memberId: string; value: number } | null;
+}
+
+export interface SupporterRank {
+  /** 自分の順位 (1-indexed) */
+  rank: number;
+  /** 全応援者数 (賽を 1 度でも振った cookie 数) */
+  totalParticipants: number;
+  /** あなたの総献上票数 */
+  myValue: number;
+  /** 1 位の総献上票数 (目標として表示) */
+  topValue: number;
+}
+
+/**
+ * 指定 cookie の「応援者ランキング」での位置を返す。
+ * 集計対象は chinchiro_rolls の total_value 合計 (cookie 単位)。
+ */
+export async function getSupporterRank(
+  cookieId: string,
+): Promise<SupporterRank | null> {
+  const supabase = createAdminClient();
+  const { data: rows } = await supabase
+    .from("chinchiro_rolls")
+    .select("cookie_id, total_value");
+
+  if (!rows || rows.length === 0) return null;
+
+  const totals = new Map<string, number>();
+  for (const r of rows as Array<{ cookie_id: string; total_value: number }>) {
+    const v = typeof r.total_value === "number" ? r.total_value : 0;
+    totals.set(r.cookie_id, (totals.get(r.cookie_id) ?? 0) + v);
+  }
+
+  const sorted = [...totals.entries()].sort((a, b) => b[1] - a[1]);
+  const myValue = totals.get(cookieId) ?? 0;
+  const rank = sorted.findIndex(([cid]) => cid === cookieId) + 1;
+  if (rank === 0) return null;
+
+  return {
+    rank,
+    totalParticipants: sorted.length,
+    myValue,
+    topValue: sorted[0]?.[1] ?? 0,
+  };
+}
+
+/**
+ * 指定 cookie の全期間ちんちろ統計。マイページで「あなたの賽記録」表示に使う。
+ * ストリーク日数は shuyaku_votes_chinchiro テーブル (chinchiro_rolls) から当日分を読み、
+ * 過去の total_value は合算する。
+ */
+export async function getChinchiroStatsByCookie(
+  cookieId: string,
+): Promise<ChinchiroCookieStats> {
+  const supabase = createAdminClient();
+  const voteDate = todayJst();
+
+  const [{ data: rolls }, { data: todays }, { data: votes }] = await Promise.all([
+    supabase
+      .from("chinchiro_rolls")
+      .select("total_value, vote_date")
+      .eq("cookie_id", cookieId),
+    supabase
+      .from("chinchiro_rolls")
+      .select("total_value, streak_days")
+      .eq("cookie_id", cookieId)
+      .eq("vote_date", voteDate)
+      .maybeSingle(),
+    supabase
+      .from("shuyaku_votes")
+      .select("member_id, value")
+      .eq("cookie_id", cookieId)
+      .eq("kind", "chinchiro"),
+  ]);
+
+  const totalValue = ((rolls ?? []) as Array<{ total_value: number }>).reduce(
+    (s, r) => s + (typeof r.total_value === "number" ? r.total_value : 0),
+    0,
+  );
+  const totalRolls = (rolls ?? []).length;
+  const rolledToday = todays
+    ? {
+        totalValue: (todays.total_value as number) ?? 0,
+        streakDays: (todays.streak_days as number) ?? 1,
+      }
+    : null;
+
+  // 推し別に集計
+  const memberTotals = new Map<string, number>();
+  for (const v of (votes ?? []) as Array<{
+    member_id: string;
+    value: number;
+  }>) {
+    memberTotals.set(
+      v.member_id,
+      (memberTotals.get(v.member_id) ?? 0) +
+        (typeof v.value === "number" ? v.value : 0),
+    );
+  }
+  let topMember: { memberId: string; value: number } | null = null;
+  for (const [memberId, value] of memberTotals) {
+    if (!topMember || value > topMember.value) {
+      topMember = { memberId, value };
+    }
+  }
+
+  return { totalValue, totalRolls, rolledToday, topMember };
 }

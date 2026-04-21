@@ -736,6 +736,7 @@ export function PredictionClient({
   const [flash, setFlash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [draftRestored, setDraftRestored] = useState(false);
+  const [justSubmitted, setJustSubmitted] = useState(false);
 
   const stageId = stage?.id ?? null;
 
@@ -818,6 +819,7 @@ export function PredictionClient({
   const allFilled = BETS.every(
     (b) => bets[b.key].every(Boolean) && bets[b.key].length === b.slotCount,
   );
+  const canSubmit = allFilled;
 
   async function handleSubmit() {
     setSubmitting(true);
@@ -841,6 +843,7 @@ export function PredictionClient({
       const j = await res.json();
       if (!res.ok) throw new Error(j.error ?? `HTTP ${res.status}`);
       setFlash("予想を提出しました ✓");
+      setJustSubmitted(true);
       if (stageId) clearDraft(stageId);
       setDraftRestored(false);
       const g = await fetch("/api/public/prediction", { cache: "no-store" });
@@ -890,7 +893,7 @@ export function PredictionClient({
                 className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
                 style={{ fontFamily: "var(--font-outfit)" }}
               >
-                ━ NOW PLAYING
+                ━ 開催中
               </p>
               <p
                 className="mt-2 text-xl md:text-2xl font-black text-[#111] leading-tight"
@@ -972,7 +975,7 @@ export function PredictionClient({
             <span className="text-[11px] font-black tracking-[0.3em] mr-2"
               style={{ fontFamily: "var(--font-outfit)" }}
             >
-              ━ REWARD
+              ━ 特典
             </span>
             <span className="text-sm font-black">会員登録で景品対象</span>
             <span className="text-xs ml-2 text-[#4A5060]">
@@ -991,7 +994,7 @@ export function PredictionClient({
             <span className="text-[11px] font-black tracking-[0.3em] mr-2"
               style={{ fontFamily: "var(--font-outfit)" }}
             >
-              ━ DRAFT
+              ━ 下書き
             </span>
             <span className="text-sm font-black">未提出の下書きを復元しました。</span>
             <span className="text-xs ml-2 opacity-90">
@@ -1083,24 +1086,34 @@ export function PredictionClient({
             読み込み中...
           </div>
         ) : !isLoggedIn ? (
-          <a
-            href="/fan/login"
-            className="group inline-flex items-center gap-3 bg-[#D41E28] text-white px-10 py-4 text-lg font-black hover:translate-y-0.5 transition-transform"
-            style={{
-              fontFamily: "var(--font-noto-serif), serif",
-              boxShadow: "6px 6px 0 rgba(17,17,17,0.22)",
-            }}
-          >
-            <span>会員登録して予想する</span>
-            <span className="text-2xl group-hover:translate-x-1 transition-transform">
-              →
-            </span>
-          </a>
+          <div className="flex flex-col items-center md:items-start gap-2">
+            <a
+              href="/fan/login?next=/prediction"
+              className={`group inline-flex items-center gap-3 px-10 py-4 text-lg font-black transition-transform ${canSubmit ? "bg-[#D41E28] text-white hover:translate-y-0.5" : "bg-[#4A5060] text-white opacity-60 pointer-events-none"}`}
+              style={{
+                fontFamily: "var(--font-noto-serif), serif",
+                boxShadow: "6px 6px 0 rgba(17,17,17,0.22)",
+              }}
+            >
+              <span>会員登録して予想する</span>
+              <span className="text-2xl group-hover:translate-x-1 transition-transform">
+                →
+              </span>
+            </a>
+            {canSubmit && (
+              <p
+                className="text-[11px] text-[#4A5060] tracking-wide"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                ✓ 下書き保存済み — 登録後、この予想がそのまま復元されます
+              </p>
+            )}
+          </div>
         ) : (
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={submitting || !allFilled}
+            disabled={submitting || !canSubmit}
             className="group inline-flex items-center gap-3 bg-[#D41E28] text-white px-10 py-4 text-lg font-black hover:translate-y-0.5 transition-transform disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
             style={{
               fontFamily: "var(--font-noto-serif), serif",
@@ -1110,11 +1123,11 @@ export function PredictionClient({
             <span>
               {submitting
                 ? "提出中..."
-                : allFilled
+                : canSubmit
                   ? "予想を提出する"
                   : "全ての賭式を埋めてください"}
             </span>
-            {!submitting && allFilled && (
+            {!submitting && canSubmit && (
               <span className="text-2xl group-hover:translate-x-1 transition-transform">
                 →
               </span>
@@ -1128,8 +1141,16 @@ export function PredictionClient({
         >
           {isLoggedIn
             ? "ファン会員限定: 1 ステージ 1 予想 / 何度でも上書き可 / 的中で景品対象"
-            : "予想の提出にはファン会員ログインが必要です"}
+            : "会員登録で、あなたの予想が順位を動かす。的中で景品も。"}
         </p>
+
+        {justSubmitted && (
+          <PredictionShareCTA
+            bets={bets}
+            members={members}
+            stageTitle={stage.title ?? stage.name}
+          />
+        )}
       </section>
 
       {/* === 票読み === */}
@@ -1137,6 +1158,92 @@ export function PredictionClient({
         <SummarySection summary={summary} members={members} />
       )}
     </>
+  );
+}
+
+// =====================================================================
+// 予想提出後シェア CTA
+// =====================================================================
+function PredictionShareCTA({
+  bets,
+  members,
+  stageTitle,
+}: {
+  bets: Bets;
+  members: PublicMember[];
+  stageTitle: string;
+}) {
+  const memberById = new Map(members.map((m) => [m.id, m]));
+  const fukushoName =
+    bets.fukusho[0] && memberById.get(bets.fukusho[0])?.name;
+  const tanshoName =
+    bets.tansho[0] && memberById.get(bets.tansho[0])?.name;
+
+  const headline = tanshoName
+    ? `本命は ${tanshoName}。`
+    : fukushoName
+      ? `${fukushoName} に賭けた。`
+      : "予想を提出した。";
+
+  const shareText = `🎯 ${headline}\n${stageTitle} — かけあがり！で予想してきた。\n#かけあがり予想`;
+  const shareUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/prediction`
+      : "/prediction";
+
+  const xUrl = `https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+  const lineUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+
+  return (
+    <div
+      className="mt-8 mx-auto max-w-[600px] bg-[#FFE600] border-2 border-[#111] p-5 md:p-6"
+      style={{ boxShadow: "6px 6px 0 rgba(17,17,17,0.22)" }}
+    >
+      <p
+        className="text-[10px] md:text-xs font-black tracking-[0.3em] text-[#D41E28]"
+        style={{ fontFamily: "var(--font-outfit)" }}
+      >
+        ━ シェアして応援を呼ぶ
+      </p>
+      <p
+        className="mt-2 text-lg md:text-2xl font-black leading-tight text-[#111]"
+        style={{ fontFamily: "var(--font-noto-serif), serif" }}
+      >
+        {headline}
+      </p>
+      <p
+        className="mt-1 text-[12px] text-[#111]/80 leading-snug"
+        style={{ fontFamily: "var(--font-noto-serif), serif" }}
+      >
+        仲間にもシェアすれば、推しの周りが盛り上がる。
+      </p>
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <a
+          href={xUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 bg-[#111] text-white px-4 py-2 text-xs font-black"
+          style={{
+            fontFamily: "var(--font-noto-serif), serif",
+            boxShadow: "3px 3px 0 rgba(17,17,17,0.22)",
+          }}
+        >
+          <span>X でシェア</span>
+        </a>
+        <a
+          href={lineUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 bg-[#06C755] text-white px-4 py-2 text-xs font-black"
+          style={{
+            fontFamily: "var(--font-noto-serif), serif",
+            boxShadow: "3px 3px 0 rgba(17,17,17,0.22)",
+          }}
+        >
+          <span>LINE で送る</span>
+        </a>
+      </div>
+    </div>
   );
 }
 

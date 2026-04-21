@@ -17,7 +17,7 @@ export async function MemberStageHistory({
           className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
           style={{ fontFamily: "var(--font-outfit)" }}
         >
-          ━ HISTORY
+          ━ 履歴
         </p>
         <h2
           className="text-2xl md:text-3xl font-black text-[#111] leading-none"

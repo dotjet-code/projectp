@@ -141,7 +141,7 @@ export async function getRankingContext(): Promise<RankingContext> {
     getPredictionMentionsByMember(activeStage?.id ?? null),
   ]);
 
-  // 3. data.ts の 12人をマージ（ダミーは 0 で上書き）
+  // 3. data.ts のメンバーをマージ（ダミーは 0 で上書き）
   const merged: RankedMember[] = dummyMembers.map((m) => {
     const memberId = nameToMemberId.get(m.name);
     const snap = memberId ? snapshotsByMemberId.get(memberId) : undefined;

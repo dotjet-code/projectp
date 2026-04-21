@@ -9,9 +9,13 @@ import { Footer } from "@/components/footer";
 import { TornDivider } from "@/components/torn-divider";
 import { MissionStatement } from "@/components/mission-statement";
 import { PredictionCTA } from "@/components/prediction-cta";
+import { ChinchiroCTA } from "@/components/chinchiro-cta";
+import { HowItWorks } from "@/components/how-it-works";
+import { OshiPicker } from "@/components/oshi-picker";
 import { WelcomeChinchiroModal } from "@/components/welcome-chinchiro-modal";
 import { getActiveStage } from "@/lib/projectp/stage";
 import { getRankedMembers } from "@/lib/projectp/live-stats";
+import { getTodayActivityStats } from "@/lib/projectp/activity-stats";
 
 // 実データ反映のためプリレンダリング無効化
 export const dynamic = "force-dynamic";
@@ -97,9 +101,14 @@ function buildNewsFlash(
 }
 
 export default async function Home() {
-  const [stage, ranked] = await Promise.all([
+  const [stage, ranked, activity] = await Promise.all([
     getActiveStage().catch(() => null),
     getRankedMembers().catch(() => []),
+    getTodayActivityStats().catch(() => ({
+      chinchiroRolls: 0,
+      chinchiroVotes: 0,
+      topHandToday: null,
+    })),
   ]);
   const stageLabel = stage
     ? `${stage.stageNumber ? `ステージ ${stage.stageNumber}` : ""}${stage.title ? ` 「${stage.title}」` : ""} 開催中`
@@ -149,20 +158,15 @@ export default async function Home() {
             />
           }
         />
-        <MissionStatement />
-        <TornDivider variant="bottom" height={18} />
-        <PredictionCTA
-          variant="cream"
-          label="今すぐ予想する"
-          sub="無料 · 登録不要 · 1分で完了"
-          spacing="compact"
-        />
+        <HowItWorks activity={activity} />
+        <OshiPicker members={ranked.filter((m) => m.name !== "Coming Soon")} />
+        <ChinchiroCTA />
         <TornDivider variant="top" height={18} />
         <MemberGrid />
         <TornDivider variant="bottom" height={18} color="#111111" />
         <PredictionCTA
           variant="black"
-          eyebrow="━ PLACE YOUR BET"
+          eyebrow="━ 予想"
           headline={
             <p>
               顔ぶれは、見えた。
@@ -187,6 +191,8 @@ export default async function Home() {
         <Rankings />
         <TornDivider variant="top" height={18} color="#111111" />
         <TodaysLive />
+        <TornDivider variant="bottom" height={18} color="#111111" />
+        <MissionStatement />
       </main>
       <Footer />
     </>

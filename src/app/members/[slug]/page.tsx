@@ -121,7 +121,14 @@ export default async function MemberDetailPage({
             }}
             aria-hidden
           />
-          <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-10 md:py-14">
+          <div className="max-w-[1200px] mx-auto px-4 md:px-6 pt-6 md:pt-8 pb-10 md:pb-14">
+            <Link
+              href="/members"
+              className="inline-flex items-center gap-1 text-[#F5F1E8]/70 hover:text-[#FFE600] text-xs font-black transition-colors mb-4"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              ← メンバー一覧へ
+            </Link>
             <div className="flex flex-col md:flex-row items-start gap-8">
               {/* Portrait */}
               <div className="relative shrink-0">

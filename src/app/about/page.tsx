@@ -40,7 +40,7 @@ export default function AboutPage() {
               >
                 <span className="text-[#FFE600]">数字で勝ち取り、数字で奪われる。</span>
                 <br />
-                12 人が毎月、主役の座を懸けて駆け上がる。
+                毎月、主役の座を懸けて駆け上がる。上位 6 名だけが、次のステージに立てる。
               </p>
               <div
                 className="mt-4 h-2 max-w-[220px] bg-[#D41E28]"
@@ -63,7 +63,7 @@ export default function AboutPage() {
                 className="text-base md:text-lg leading-relaxed text-[#111]"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                かけあがり は、<strong className="text-[#D41E28]">12 人のメンバーが毎月の成績で競い合い、上位 6 名が「PLAYER」として次のメインステージに立つ</strong>競争型エンタメプロジェクト。
+                かけあがり は、<strong className="text-[#D41E28]">メンバーが毎月の成績で競い合い、上位 6 名が「PLAYER」として次のメインステージに立つ</strong>競争型エンタメプロジェクト。
               </p>
               <p
                 className="text-base leading-relaxed text-[#111]"
@@ -256,7 +256,7 @@ export default function AboutPage() {
               className="text-base md:text-lg leading-relaxed text-[#111] max-w-3xl mb-6"
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
-              毎月末、12 人全員が集合する特別配信番組。ここで月間の戦いが最終確定し、翌月の PLAYER / PIT 編成が発表される。
+              毎月末、メンバー全員が集合する特別配信番組。ここで月間の戦いが最終確定し、翌月の PLAYER / PIT 編成が発表される。
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-t-[3px] border-[#111]">
               {[

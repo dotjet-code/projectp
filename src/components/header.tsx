@@ -60,9 +60,7 @@ const navItems = [
   { label: "メンバー", href: "/members" },
   { label: "順位予想", href: "/prediction" },
   { label: "ランキング", href: "/ranking" },
-  { label: "予想王", href: "/ranking/predictors" },
-  { label: "ライブ応援", href: "/live/vote" },
-  { label: "結果発表", href: "/results" },
+  { label: "ガイド", href: "/guide" },
 ];
 
 function isActivePath(pathname: string, href: string): boolean {

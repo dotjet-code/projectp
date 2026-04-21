@@ -115,21 +115,6 @@ export const members: Member[] = [
     },
   },
   {
-    id: 6, rank: 11, name: "Coming Soon", slug: "saito-riko", role: "PLAYER", points: 0, avatarUrl: "/members/coming-soon.svg",
-    detail: {
-      stats: { buzz: 480, concurrent: 360, revenue: 350 },
-      positionForecast: "PLAYER圏内", positionMargin: "ボーダー付近", supportRate: 12,
-      buzzStatus: "通常", streamingStatus: "オフライン",
-      activities: [
-        { time: "昨日", text: "ASMR配信が好評 🎧" },
-        { time: "2日前", text: "コスプレ写真が話題に 📸" },
-        { time: "4日前", text: "ファンミーティング開催 🤗" },
-        { time: "6日前", text: "オリジナル楽曲を発表 🎤" },
-      ],
-      monthlyPoints: [240, 280, 320, 350, 380, 370],
-    },
-  },
-  {
     id: 7, rank: 7, name: "セナモモカ", slug: "sena-momoka", role: "PIT", points: 1283, avatarUrl: "/members/sena-momoka.png",
     detail: {
       stats: { buzz: 420, concurrent: 280, revenue: 283 },
@@ -202,21 +187,6 @@ export const members: Member[] = [
         { time: "1週間前", text: "チャレンジ動画が好評 💪" },
       ],
       monthlyPoints: [140, 160, 180, 200, 220, 210],
-    },
-  },
-  {
-    id: 12, rank: 12, name: "Coming Soon", slug: "maeda-sumika", role: "PIT", points: 0, avatarUrl: "/members/coming-soon.svg",
-    detail: {
-      stats: { buzz: 240, concurrent: 170, revenue: 150 },
-      positionForecast: "PIT圏内", positionMargin: "下位", supportRate: 3,
-      buzzStatus: "通常", streamingStatus: "オフライン",
-      activities: [
-        { time: "昨日", text: "初心者向けゲーム配信 🎮" },
-        { time: "3日前", text: "自己紹介動画をリニューアル 📹" },
-        { time: "5日前", text: "ファンレターに返信配信 💌" },
-        { time: "1週間前", text: "目標宣言動画を投稿 🎯" },
-      ],
-      monthlyPoints: [100, 120, 140, 160, 180, 160],
     },
   },
 ];

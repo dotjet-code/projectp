@@ -52,7 +52,7 @@ function MemberCard({ member, rank }: { member: RankedMember; rank: number }) {
       >
         <Image
           src={member.avatarUrl}
-          alt=""
+          alt={member.name}
           fill
           className="object-cover md:grayscale md:contrast-125 md:group-hover:grayscale-0 transition-[filter]"
           style={{ objectPosition: "50% 18%" }}
@@ -102,7 +102,6 @@ function MemberCard({ member, rank }: { member: RankedMember; rank: number }) {
 
 export default async function MembersPage() {
   const members = await getRankedMembers();
-  const active = members.filter((m) => m.name !== "Coming Soon");
 
   return (
     <>
@@ -129,7 +128,7 @@ export default async function MembersPage() {
               className="mt-3 text-4xl md:text-6xl font-black leading-[0.95] tracking-tight"
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
-              12人の<span className="text-[#D41E28]">現在地。</span>
+              ランナーの<span className="text-[#D41E28]">現在地。</span>
             </h1>
             <div className="mt-6 max-w-2xl">
               <p
@@ -163,7 +162,7 @@ export default async function MembersPage() {
             aside={<span>順位順</span>}
           />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
-            {active.map((member, i) => (
+            {members.map((member, i) => (
               <MemberCard key={member.id} member={member} rank={i + 1} />
             ))}
           </div>

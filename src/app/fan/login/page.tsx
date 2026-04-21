@@ -22,7 +22,7 @@ export default function FanLoginPage() {
               className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
               style={{ fontFamily: "var(--font-outfit)" }}
             >
-              ━ FAN PASS
+              ━ ファン会員
             </p>
             <span className="flex-1 h-px bg-[#111]/30" aria-hidden />
           </div>

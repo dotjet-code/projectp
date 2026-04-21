@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -13,6 +14,12 @@ import {
   listPredictionsForUser,
 } from "@/lib/projectp/prediction";
 import type { BetKey } from "@/lib/projectp/prediction";
+import {
+  getChinchiroStatsByCookie,
+  getSupporterRank,
+} from "@/lib/projectp/shuyaku-vote";
+import { VOTE_COOKIE } from "@/lib/projectp/vote-cookie";
+import { StreakBadge, getStreakTier } from "@/components/streak-badge";
 import { DisplayNameForm, FanMeActions } from "./actions";
 import { PredictionDraftBanner } from "./draft-banner";
 import { RewardQR } from "./reward-qr";
@@ -40,12 +47,22 @@ export default async function FanMePage() {
     redirect("/admin");
   }
 
-  const [profile, rewards, history, standing] = await Promise.all([
-    getFanProfile(user.id),
-    listRewardsForUser(user.id),
-    listPredictionsForUser(user.id),
-    getFanSeriesStanding(user.id),
-  ]);
+  const cookieStore = await cookies();
+  const voteCookieId = cookieStore.get(VOTE_COOKIE)?.value ?? null;
+
+  const [profile, rewards, history, standing, chinchiroStats, supporterRank] =
+    await Promise.all([
+      getFanProfile(user.id),
+      listRewardsForUser(user.id),
+      listPredictionsForUser(user.id),
+      getFanSeriesStanding(user.id),
+      voteCookieId
+        ? getChinchiroStatsByCookie(voteCookieId).catch(() => null)
+        : Promise.resolve(null),
+      voteCookieId
+        ? getSupporterRank(voteCookieId).catch(() => null)
+        : Promise.resolve(null),
+    ]);
 
   // メンバー名解決用
   const adminClient = createAdminClient();
@@ -65,17 +82,57 @@ export default async function FanMePage() {
   return (
     <>
       <Header />
-      <main className="pb-16">
-        <section className="pt-12 pb-6 text-center">
-          <p className="text-4xl mb-2">🎟️</p>
-          <h1 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-primary to-primary-blue bg-clip-text text-transparent">
-            マイページ
-          </h1>
+      <main className="pb-16 bg-[#F5F1E8] min-h-[60vh]">
+        <section className="relative bg-[#111] text-[#F5F1E8] px-6 py-10 md:py-12 overflow-hidden">
+          <div
+            className="absolute top-0 left-0 right-0 h-2 bg-[#D41E28]"
+            style={{
+              clipPath:
+                "polygon(0 30%, 4% 20%, 10% 40%, 18% 15%, 26% 45%, 34% 10%, 42% 40%, 50% 18%, 58% 42%, 66% 16%, 74% 40%, 82% 14%, 90% 42%, 96% 20%, 100% 40%, 100% 100%, 0 100%)",
+            }}
+            aria-hidden
+          />
+          <div className="max-w-[1200px] mx-auto">
+            <div className="flex items-baseline gap-3 mb-2">
+              <span className="inline-block w-2 h-2 bg-[#FFE600] animate-pulse" />
+              <p
+                className="text-[10px] md:text-xs font-black tracking-[0.35em] text-[#FFE600]"
+                style={{ fontFamily: "var(--font-outfit)" }}
+              >
+                ━ あなたの戦歴
+              </p>
+            </div>
+            <h1
+              className="text-3xl md:text-5xl font-black leading-tight tracking-tight"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              マイ<span className="text-[#D41E28]">ページ</span>
+            </h1>
+            {supporterRank && (
+              <p
+                className="mt-3 text-sm md:text-base text-[#F5F1E8]/90"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                応援者ランキング{" "}
+                <b
+                  className="text-[#FFE600] text-xl md:text-2xl"
+                  style={{ fontFamily: "var(--font-outfit)" }}
+                >
+                  #{supporterRank.rank}
+                </b>{" "}
+                / {supporterRank.totalParticipants.toLocaleString()} 人中
+                <span className="text-[#F5F1E8]/60 text-xs ml-2">
+                  ({supporterRank.myValue.toLocaleString()} 票献上 · 1位は{" "}
+                  {supporterRank.topValue.toLocaleString()} 票)
+                </span>
+              </p>
+            )}
+          </div>
         </section>
 
         <PredictionDraftBanner />
 
-        <section className="mx-auto max-w-[520px] px-4">
+        <section className="mx-auto max-w-[520px] px-4 mt-6">
           <div className="rounded-2xl bg-white/80 border border-white/80 p-6 shadow-sm space-y-4">
             <div>
               <p className="text-[10px] font-semibold tracking-wider text-muted">
@@ -142,6 +199,131 @@ export default async function FanMePage() {
                 </div>
               </div>
             </a>
+          </section>
+        )}
+
+        {chinchiroStats && chinchiroStats.totalRolls > 0 && (
+          <section className="mx-auto max-w-[520px] px-4 mt-6">
+            <div
+              className="relative bg-[#F5F1E8] border-2 border-[#111] p-5"
+              style={{ boxShadow: "5px 5px 0 rgba(17,17,17,0.18)" }}
+            >
+              <div className="flex items-baseline gap-3 mb-3">
+                <span className="inline-block w-2 h-2 bg-[#D41E28]" />
+                <p
+                  className="text-[10px] font-black tracking-[0.32em] text-[#D41E28]"
+                  style={{ fontFamily: "var(--font-outfit)" }}
+                >
+                  ━ 賽記録
+                </p>
+                <span className="flex-1 h-px bg-[#111]/30" aria-hidden />
+              </div>
+              <div
+                className="grid grid-cols-3 gap-3 text-center"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                <div>
+                  <p className="text-[9px] text-[#4A5060] tracking-wider">
+                    総献上票
+                  </p>
+                  <p
+                    className="mt-1 text-2xl font-black text-[#D41E28]"
+                    style={{ fontFamily: "var(--font-outfit)" }}
+                  >
+                    {chinchiroStats.totalValue.toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[9px] text-[#4A5060] tracking-wider">
+                    振った日数
+                  </p>
+                  <p
+                    className="mt-1 text-2xl font-black text-[#111]"
+                    style={{ fontFamily: "var(--font-outfit)" }}
+                  >
+                    {chinchiroStats.totalRolls}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[9px] text-[#4A5060] tracking-wider">
+                    連続
+                  </p>
+                  <p
+                    className="mt-1 text-2xl font-black text-[#111]"
+                    style={{ fontFamily: "var(--font-outfit)" }}
+                  >
+                    {chinchiroStats.rolledToday
+                      ? chinchiroStats.rolledToday.streakDays
+                      : 0}
+                    <span className="text-xs ml-1">日</span>
+                  </p>
+                  <div className="mt-1">
+                    <StreakBadge
+                      days={
+                        chinchiroStats.rolledToday
+                          ? chinchiroStats.rolledToday.streakDays
+                          : 0
+                      }
+                      size="sm"
+                    />
+                  </div>
+                </div>
+              </div>
+              {chinchiroStats.rolledToday &&
+                getStreakTier(chinchiroStats.rolledToday.streakDays)
+                  .nextInDays && (
+                  <p
+                    className="mt-3 text-center text-[11px] text-[#4A5060]"
+                    style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                  >
+                    あと{" "}
+                    <b className="text-[#D41E28]">
+                      {
+                        getStreakTier(
+                          chinchiroStats.rolledToday.streakDays,
+                        ).nextInDays
+                      }
+                    </b>{" "}
+                    日で{" "}
+                    {
+                      getStreakTier(chinchiroStats.rolledToday.streakDays)
+                        .nextLabel
+                    }{" "}
+                    ランク
+                  </p>
+                )}
+              {chinchiroStats.topMember && (
+                <p
+                  className="mt-3 text-center text-[11px] text-[#4A5060]"
+                  style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                >
+                  最も献上したのは{" "}
+                  <b className="text-[#111]">
+                    {memberNameById.get(chinchiroStats.topMember.memberId) ??
+                      "?"}
+                  </b>
+                  ({chinchiroStats.topMember.value.toLocaleString()} 票)
+                </p>
+              )}
+              {!chinchiroStats.rolledToday && (
+                <a
+                  href="/?chinchiro=1"
+                  className="mt-4 inline-flex items-center justify-center w-full bg-[#D41E28] text-white px-4 py-2.5 text-sm font-black"
+                  style={{
+                    fontFamily: "var(--font-noto-serif), serif",
+                    boxShadow: "3px 3px 0 rgba(17,17,17,0.22)",
+                  }}
+                >
+                  🎲 今日の賽を振る →
+                </a>
+              )}
+              <p
+                className="mt-2 text-[9px] text-center text-[#4A5060]/80"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                ※このブラウザでの記録 (Cookie ベース)
+              </p>
+            </div>
           </section>
         )}
 

@@ -321,17 +321,17 @@ export function Hero({
               </span>
             </div>
 
-            {/* タグラインラベル群 (人物の左側に積む) */}
+            {/* タグラインラベル群 (モバイルは 1 枚、デスクトップは最大 2 枚まで) */}
             <div className="absolute left-0 top-4 md:top-6 z-10 flex flex-col items-start gap-2 md:gap-3 w-[42%] md:w-[38%]">
               {taglineImages && taglineImages.length > 0
-                ? taglineImages.map((src, i) => {
-                    const rotations = [-3, 2, -2];
+                ? taglineImages.slice(0, 2).map((src, i) => {
+                    const rotations = [-3, 2];
                     const rot = rotations[i % rotations.length];
                     const alt = taglines[i] ?? "";
                     return (
                       <div
                         key={`${src}-${i}`}
-                        className="relative w-full max-w-[200px]"
+                        className={`relative w-full max-w-[200px] ${i > 0 ? "hidden md:block" : ""}`}
                         style={{
                           aspectRatio: taglineImageAspect,
                           transform: `rotate(${rot}deg)`,
@@ -347,28 +347,21 @@ export function Hero({
                       </div>
                     );
                   })
-                : taglines.map((t, i) => {
+                : taglines.slice(0, 2).map((t, i) => {
                     const variants = ["white", "pink", "teal", "red"] as const;
                     const v = variants[i % variants.length];
                     const rot = i % 2 === 0 ? -3 : 2;
                     return (
-                      <TornLabel key={`${t}-${i}`} variant={v} rotation={rot}>
+                      <TornLabel
+                        key={`${t}-${i}`}
+                        variant={v}
+                        rotation={rot}
+                        className={i > 0 ? "hidden md:inline-block" : ""}
+                      >
                         <span className="text-sm md:text-base">{t}</span>
                       </TornLabel>
                     );
                   })}
-            </div>
-
-            {/* GRADE タグ (右下、メタ情報) */}
-            <div className="absolute right-3 bottom-2 z-20">
-              <TornLabel variant="teal" rotation={2}>
-                <span
-                  className="text-[10px] tracking-[0.2em]"
-                  style={{ fontFamily: "var(--font-outfit)" }}
-                >
-                  GRADE {grade}
-                </span>
-              </TornLabel>
             </div>
           </div>
         </div>

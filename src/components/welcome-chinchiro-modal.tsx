@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { StreakBadge, getStreakTier } from "@/components/streak-badge";
 
 /**
  * 「今日の賽」ウェルカムポップアップ (チンチロ式ボーナス票) ベスト版。
  *
  * - 1 日 1 回。振っていなければ自動で開く。
- * - 12 人から 1 人選ぶ → 3 個サイコロが回転 → 役と票数が表示される。
+ * - メンバーから 1 人選ぶ → 3 個サイコロが回転 → 役と票数が表示される。
  * - ピンゾロ 100 票、ヒフミは全員に 1 票ずつお裾分け。
  * - 連続日数 (streak) 表示、シェアで +1 票報酬、判子演出付き。
  * - スキップ不可 (閉じるは結果確定後のみ)。a11y のため ESC は閉じない。
@@ -147,6 +148,40 @@ export function WelcomeChinchiroModal({ members }: Props) {
   const animRef = useRef<number | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
 
+  // 本日既に振っている場合に、その結果を復元する共通処理。
+  // 手動 open (CTA 経由) / 自動 open どちらでも、振り終えていれば結果画面を表示する。
+  const restoreTodayRoll = (d: {
+    rolledToday?: {
+      hand?: string;
+      handLabel?: string;
+      dice?: number[];
+      pickedMemberId?: string;
+      totalValue?: number;
+      streakDays?: number;
+      sharedAt?: string | null;
+    } | null;
+  }) => {
+    const r = d?.rolledToday;
+    if (!r || !r.dice || r.dice.length !== 3) return false;
+    const dice: [number, number, number] = [
+      r.dice[0] ?? 1,
+      r.dice[1] ?? 1,
+      r.dice[2] ?? 1,
+    ];
+    const foundMember =
+      members.find((m) => m.id === r.pickedMemberId) ?? null;
+    if (foundMember) setPicked(foundMember);
+    setFinalDice(dice);
+    setHandKey((r.hand as string) ?? "normal");
+    setHandLabel(r.handLabel ?? "");
+    setVoteValue(r.totalValue ?? 0);
+    setTotalValue(r.totalValue ?? 0);
+    setStreakDays(r.streakDays ?? 1);
+    setShareClaimed(Boolean(r.sharedAt));
+    setPhase("result");
+    return true;
+  };
+
   // 初回: 今日振ってなければ 500ms 後に表示
   // ?chinchiro=1 で強制表示 (モバイル等の疎通確認用)
   useEffect(() => {
@@ -165,13 +200,46 @@ export function WelcomeChinchiroModal({ members }: Props) {
         setDevMode(Boolean(d?.devAlwaysOpen));
         if (!d?.rolledToday) {
           setTimeout(() => !cancelled && setOpen(true), 500);
+        } else {
+          // 既に振っている → 結果を復元しておく (手動 open 時に活用)
+          restoreTodayRoll(d);
         }
       })
       .catch(() => {});
     return () => {
       cancelled = true;
     };
+
   }, []);
+
+  // 任意の場所から window 経由で手動オープン可能にする (上部 CTA など)
+  useEffect(() => {
+    const onOpen = async () => {
+      // idle で finalDice も無いとき = まだ一度も振っていない可能性。サーバに確認。
+      // done (閉じた後) に再オープンされた場合も finalDice が残っていれば result に戻す。
+      if (phase !== "result" && phase !== "rolling") {
+        if (finalDice && picked) {
+          // セッション内で振り終えて閉じた → 状態は残っているので result に戻す
+          setPhase("result");
+        } else {
+          // state が空 = まだ振ってない or ページ再読込後。サーバで確認し、あれば復元
+          try {
+            const r = await fetch("/api/public/shuyaku-vote/chinchiro", {
+              cache: "no-store",
+            });
+            const d = await r.json();
+            restoreTodayRoll(d);
+          } catch {
+            // ignore
+          }
+        }
+      }
+      setOpen(true);
+    };
+    window.addEventListener("chinchiro:open", onOpen);
+    return () => window.removeEventListener("chinchiro:open", onOpen);
+
+  }, [phase, finalDice, picked]);
 
   // フォーカストラップ + ESC 無効化 (スキップ不可)
   useEffect(() => {
@@ -268,7 +336,7 @@ export function WelcomeChinchiroModal({ members }: Props) {
     }
   };
 
-  const handleShare = async () => {
+  const handleShare = async (platform: "x" | "line" = "x") => {
     if (!picked || !finalDice) return;
     setShareError(null);
 
@@ -285,14 +353,15 @@ export function WelcomeChinchiroModal({ members }: Props) {
     const ogUrl = `/api/og/chinchiro?hand=${handKey}&value=${totalValue}&name=${encodeURIComponent(
       name,
     )}&d1=${finalDice[0]}&d2=${finalDice[1]}&d3=${finalDice[2]}`;
-    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-      text,
-    )}&url=${encodeURIComponent(
+    const fullUrl =
       typeof window !== "undefined"
         ? `${window.location.origin}${ogUrl}`
-        : ogUrl,
-    )}`;
-    window.open(tweetUrl, "_blank", "noopener,noreferrer");
+        : ogUrl;
+    const shareUrl =
+      platform === "line"
+        ? `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(fullUrl)}&text=${encodeURIComponent(text)}`
+        : `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(fullUrl)}`;
+    window.open(shareUrl, "_blank", "noopener,noreferrer");
 
     // サーバに 役と同額の +N 票報酬を要求 (1 回のみ成功)
     try {
@@ -408,6 +477,14 @@ export function WelcomeChinchiroModal({ members }: Props) {
                 <span className="font-black">チンチロ方式</span>。<br />
                 一撃 <span className="text-[#D41E28] font-black">100 票</span>
                 のピンゾロも。毎日 1 回・<span className="font-black">無料</span>。
+              </p>
+              <p
+                className="mt-2 text-center text-[10px] text-[#4A5060] leading-relaxed"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                出た票はそのまま推しの
+                <span className="font-black">ランキング</span>
+                に加算されます。
               </p>
 
               {/* 役の早見 (idle 段階でも開けるようにして期待感を煽る) */}
@@ -647,8 +724,8 @@ export function WelcomeChinchiroModal({ members }: Props) {
                       )}
                     </div>
 
-                    {/* ストリーク表示 */}
-                    <div className="mt-3 flex items-center justify-center gap-2 text-[#111]">
+                    {/* ストリーク表示 + ティアバッジ */}
+                    <div className="mt-3 flex items-center justify-center gap-2 text-[#111] flex-wrap">
                       <span className="text-base" aria-hidden>🎲</span>
                       <span
                         className="text-sm font-black"
@@ -656,12 +733,20 @@ export function WelcomeChinchiroModal({ members }: Props) {
                       >
                         連続 <span className="text-[#D41E28]">{streakDays}</span> 日目
                       </span>
-                      {streakDays >= 7 && (
-                        <span className="text-xs px-1.5 py-0.5 bg-[#FFE600] text-[#111] font-black">
-                          HOT
-                        </span>
-                      )}
+                      <StreakBadge days={streakDays} size="md" />
                     </div>
+                    {getStreakTier(streakDays).nextInDays && (
+                      <p
+                        className="mt-1 text-center text-[10px] text-[#4A5060]"
+                        style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                      >
+                        あと{" "}
+                        <b className="text-[#D41E28]">
+                          {getStreakTier(streakDays).nextInDays}
+                        </b>{" "}
+                        日で {getStreakTier(streakDays).nextLabel}
+                      </p>
+                    )}
                   </>
                 )}
                 {phase === "rolling" && (
@@ -685,20 +770,42 @@ export function WelcomeChinchiroModal({ members }: Props) {
               {/* シェアボタン: 特別な役で +1 票 */}
               {phase === "result" && !errorMsg && shareable && (
                 <div className="mt-4 w-full">
-                  <button
-                    type="button"
-                    onClick={handleShare}
-                    disabled={shareClaimed}
-                    className="w-full bg-[#1DA1F2] px-4 py-3 text-sm font-black text-white transition-transform active:translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
-                    style={{
-                      fontFamily: "var(--font-noto-serif), serif",
-                      boxShadow: "4px 4px 0 rgba(17,17,17,0.22)",
-                    }}
-                  >
-                    {shareClaimed
-                      ? `✓ シェア報酬 +${totalValue} 票 受領済み`
-                      : `X でシェアして ${picked.name} に +${totalValue} 票`}
-                  </button>
+                  {shareClaimed ? (
+                    <p
+                      className="w-full bg-[#4A5060] px-4 py-3 text-sm font-black text-white text-center"
+                      style={{
+                        fontFamily: "var(--font-noto-serif), serif",
+                        boxShadow: "4px 4px 0 rgba(17,17,17,0.22)",
+                      }}
+                    >
+                      ✓ シェア報酬 +{totalValue} 票 受領済み
+                    </p>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleShare("x")}
+                        className="bg-[#111] px-3 py-3 text-xs md:text-sm font-black text-white transition-transform active:translate-y-0.5"
+                        style={{
+                          fontFamily: "var(--font-noto-serif), serif",
+                          boxShadow: "4px 4px 0 rgba(17,17,17,0.22)",
+                        }}
+                      >
+                        X で +{totalValue} 票
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleShare("line")}
+                        className="bg-[#06C755] px-3 py-3 text-xs md:text-sm font-black text-white transition-transform active:translate-y-0.5"
+                        style={{
+                          fontFamily: "var(--font-noto-serif), serif",
+                          boxShadow: "4px 4px 0 rgba(17,17,17,0.22)",
+                        }}
+                      >
+                        LINE で +{totalValue} 票
+                      </button>
+                    </div>
+                  )}
                   {shareError && (
                     <p className="mt-1 text-center text-[10px] text-[#D41E28]">
                       {shareError}
