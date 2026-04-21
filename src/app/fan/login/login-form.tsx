@@ -179,7 +179,11 @@ export function FanLoginForm() {
             googleSubmitting ||
             (Boolean(TURNSTILE_SITE_KEY) && !turnstileToken)
           }
-          className="w-full rounded-full bg-gradient-to-r from-primary to-primary-blue px-5 py-2.5 text-sm font-bold text-white shadow-sm disabled:opacity-40"
+          className="w-full bg-[#D41E28] text-white px-5 py-3 text-sm font-black disabled:opacity-40 transition-transform active:translate-y-0.5"
+          style={{
+            fontFamily: "var(--font-noto-serif), serif",
+            boxShadow: "4px 4px 0 rgba(17,17,17,0.22)",
+          }}
         >
           {submitting ? "送信中..." : "ログインリンクを送る"}
         </button>

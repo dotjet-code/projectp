@@ -40,16 +40,26 @@ export function PredictionDraftBanner() {
     <section className="mx-auto max-w-[520px] px-4 mt-6">
       <Link
         href="/prediction"
-        className="block rounded-2xl border-2 border-primary/30 bg-gradient-to-r from-[#ecfeff] to-[#f0f9ff] p-5 shadow-sm hover:shadow-md transition-shadow"
+        className="block bg-[#FFE600] border-2 border-[#D41E28] p-4 transition-transform active:translate-y-0.5"
+        style={{ boxShadow: "5px 5px 0 rgba(17,17,17,0.22)" }}
       >
-        <p className="text-[10px] font-semibold tracking-wider text-primary-dark">
-          ⚠️ 予想はまだ未提出です
+        <p
+          className="text-[10px] font-black tracking-[0.32em] text-[#D41E28]"
+          style={{ fontFamily: "var(--font-outfit)" }}
+        >
+          ━ 下書きあり
         </p>
-        <p className="mt-1 text-sm font-bold text-foreground">
-          こちらを押して予想を確定させてください
+        <p
+          className="mt-1 text-sm font-black text-[#111]"
+          style={{ fontFamily: "var(--font-noto-serif), serif" }}
+        >
+          予想はまだ未提出です
         </p>
-        <p className="mt-2 text-xs font-bold text-primary-dark">
-          予想ページへ →
+        <p
+          className="mt-1 text-xs text-[#111]"
+          style={{ fontFamily: "var(--font-noto-serif), serif" }}
+        >
+          タップで続きから提出できます →
         </p>
       </Link>
     </section>
