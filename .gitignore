@@ -6,3 +6,6 @@ node_modules
 tsconfig.tsbuildinfo
 supabase/.temp
 .vercel
+
+# Claude Code worktrees (local only)
+.claude/worktrees/
