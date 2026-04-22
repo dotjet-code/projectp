@@ -81,7 +81,7 @@ export default async function SeriesPage({
               className="text-[10px] font-black tracking-[0.32em] text-[#D41E28] mb-2"
               style={{ fontFamily: "var(--font-outfit)" }}
             >
-              ━ INCLUDED STAGES
+              ━ 含まれるステージ
             </p>
             <ul className="flex flex-wrap items-center gap-2">
               {data.stages.map((s) => (
@@ -106,7 +106,7 @@ export default async function SeriesPage({
               className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
               style={{ fontFamily: "var(--font-outfit)" }}
             >
-              ━ CUMULATIVE
+              ━ 通算
             </p>
             <h2
               className="text-2xl md:text-3xl font-black text-[#111] leading-none"

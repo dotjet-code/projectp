@@ -25,7 +25,7 @@ export function ShuyakuRuleNotice() {
           className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
           style={{ fontFamily: "var(--font-outfit)" }}
         >
-          ━ HOW TO VOTE
+          ━ 投票のしかた
         </p>
         <p
           className="mt-1 text-sm md:text-base font-black leading-snug text-[#111]"

@@ -89,16 +89,28 @@ export default async function ResultsPage({
               >
                 特番が終わり順位が確定すると、ここに最終結果が表示される。
               </p>
-              <Link
-                href="/ranking"
-                className="mt-5 inline-flex items-center gap-2 bg-[#D41E28] text-white px-6 py-2.5 text-sm font-black hover:translate-y-0.5 transition-transform"
-                style={{
-                  fontFamily: "var(--font-noto-serif), serif",
-                  boxShadow: "3px 3px 0 rgba(17,17,17,0.22)",
-                }}
-              >
-                現在の暫定ランキングを見る →
-              </Link>
+              <div className="mt-5 flex flex-wrap items-center gap-3">
+                <Link
+                  href="/prediction"
+                  className="inline-flex items-center gap-2 bg-[#D41E28] text-white px-6 py-2.5 text-sm font-black hover:translate-y-0.5 transition-transform"
+                  style={{
+                    fontFamily: "var(--font-noto-serif), serif",
+                    boxShadow: "3px 3px 0 rgba(17,17,17,0.22)",
+                  }}
+                >
+                  順位予想を提出する →
+                </Link>
+                <Link
+                  href="/ranking"
+                  className="inline-flex items-center gap-2 border-2 border-[#111] bg-white text-[#111] px-6 py-2.5 text-sm font-black hover:bg-[#FFE600] transition-colors"
+                  style={{
+                    fontFamily: "var(--font-noto-serif), serif",
+                    boxShadow: "3px 3px 0 rgba(17,17,17,0.22)",
+                  }}
+                >
+                  現在の暫定ランキング
+                </Link>
+              </div>
             </div>
           </section>
         </main>
@@ -182,7 +194,7 @@ export default async function ResultsPage({
               className="text-[10px] font-black tracking-[0.32em] text-[#D41E28] mb-2"
               style={{ fontFamily: "var(--font-outfit)" }}
             >
-              ━ PAST STAGES
+              ━ 過去ステージ
             </p>
             <div className="flex flex-wrap items-center gap-2">
               {closedStages.map((s) => {
@@ -191,7 +203,7 @@ export default async function ResultsPage({
                   <Link
                     key={s.id}
                     href={`/results?stage=${s.id}`}
-                    className={`px-3 py-1.5 text-[11px] font-black border-2 tracking-wider transition-colors ${
+                    className={`inline-flex items-center min-h-[44px] px-3 py-2 text-[11px] font-black border-2 tracking-wider transition-colors ${
                       isSelected
                         ? "bg-[#111] text-[#FFE600] border-[#111]"
                         : "border-[#111] text-[#111] bg-[#F5F1E8] hover:bg-white"
@@ -217,7 +229,7 @@ export default async function ResultsPage({
               className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
               style={{ fontFamily: "var(--font-outfit)" }}
             >
-              ━ FINAL ORDER
+              ━ 最終順位
             </p>
             <h2
               className="text-2xl md:text-3xl font-black text-[#111] leading-none"
@@ -374,7 +386,7 @@ export default async function ResultsPage({
                 className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
                 style={{ fontFamily: "var(--font-outfit)" }}
               >
-                ━ HITS
+                ━ 的中
               </p>
               <h2
                 className="text-2xl md:text-3xl font-black text-[#111] leading-none"
@@ -464,7 +476,7 @@ export default async function ResultsPage({
               <span className="text-[10px] font-black tracking-[0.3em] text-[#D41E28] mr-2"
                 style={{ fontFamily: "var(--font-outfit)" }}
               >
-                ━ REWARD
+                ━ 特典
               </span>
               <b>会員登録で景品対象</b> — 的中でライブ会場投票のボーナス票やチェキ無料券。
               <a href="/fan/login" className="underline font-black ml-1 text-[#D41E28]">
@@ -484,7 +496,7 @@ export default async function ResultsPage({
                   className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
                   style={{ fontFamily: "var(--font-outfit)" }}
                 >
-                  ━ SERIES {seriesN}
+                  ━ シリーズ {seriesN}
                 </p>
                 <h2
                   className="text-2xl md:text-3xl font-black text-[#111] leading-none"

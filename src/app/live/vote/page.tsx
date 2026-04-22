@@ -72,7 +72,7 @@ export default async function LiveInfoPage() {
                 className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28] mb-3"
                 style={{ fontFamily: "var(--font-outfit)" }}
               >
-                ━ NOW VOTING <span className="inline-block w-1.5 h-1.5 bg-[#D41E28] animate-pulse ml-1" />
+                ━ 投票受付中 <span className="inline-block w-1.5 h-1.5 bg-[#D41E28] animate-pulse ml-1" />
               </p>
               {openEvents.map((ev) => (
                 <div key={ev.id} className="mb-4 last:mb-0">
@@ -112,7 +112,7 @@ export default async function LiveInfoPage() {
               className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
               style={{ fontFamily: "var(--font-outfit)" }}
             >
-              ━ HOW IT WORKS
+              ━ 仕組み
             </p>
             <h2
               className="text-2xl md:text-3xl font-black text-[#111] leading-none"
@@ -197,7 +197,7 @@ export default async function LiveInfoPage() {
               className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#FFE600] mb-2"
               style={{ fontFamily: "var(--font-outfit)" }}
             >
-              ━ BONUS
+              ━ ボーナス
             </p>
             <p
               className="text-sm md:text-base leading-relaxed"
@@ -217,7 +217,7 @@ export default async function LiveInfoPage() {
               className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
               style={{ fontFamily: "var(--font-outfit)" }}
             >
-              ━ SCHEDULE
+              ━ 予定
             </p>
             <h2
               className="text-2xl md:text-3xl font-black text-[#111] leading-none"

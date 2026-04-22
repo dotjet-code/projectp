@@ -121,7 +121,14 @@ export default async function MemberDetailPage({
             }}
             aria-hidden
           />
-          <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-10 md:py-14">
+          <div className="max-w-[1200px] mx-auto px-4 md:px-6 pt-6 md:pt-8 pb-10 md:pb-14">
+            <Link
+              href="/members"
+              className="inline-flex items-center gap-1 text-[#F5F1E8]/70 hover:text-[#FFE600] text-xs font-black transition-colors mb-4"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              ← メンバー一覧へ
+            </Link>
             <div className="flex flex-col md:flex-row items-start gap-8">
               {/* Portrait */}
               <div className="relative shrink-0">
@@ -189,9 +196,10 @@ export default async function MemberDetailPage({
                     <span
                       className="inline-flex items-center gap-2 text-[10px] font-black tracking-[0.2em] text-[#0F8F4A]"
                       style={{ fontFamily: "var(--font-outfit)" }}
+                      title="データは 1 時間ごとに自動更新"
                     >
                       <span className="size-1.5 rounded-full bg-[#0F8F4A] animate-pulse" />
-                      LIVE DATA ACTIVE
+                      最新データ反映中
                     </span>
                   ) : (
                     <span
@@ -278,14 +286,26 @@ export default async function MemberDetailPage({
         {/* 自己紹介 */}
         {profile?.bio && (
           <section className="mx-auto max-w-[964px] px-4 mt-10">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-primary to-primary-cyan" />
-              <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-primary-dark tracking-tight">
-                ✍️ 自己紹介
-              </h2>
+            <div className="flex items-baseline gap-3 mb-4">
+              <span className="inline-block w-2 h-2 bg-[#D41E28]" />
+              <p
+                className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
+                style={{ fontFamily: "var(--font-outfit)" }}
+              >
+                ━ 自己紹介
+              </p>
+              <span className="flex-1 h-px bg-[#111]/30" aria-hidden />
             </div>
-            <div className="rounded-2xl bg-white/70 border border-white/80 px-6 py-5 shadow-sm">
-              <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+            <div
+              className="bg-[#F5F1E8] border-2 border-[#111] px-6 py-5"
+              style={{
+                boxShadow: "5px 5px 0 rgba(17,17,17,0.18)",
+              }}
+            >
+              <p
+                className="text-sm text-[#111] leading-relaxed whitespace-pre-wrap"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
                 {profile.bio}
               </p>
             </div>
@@ -303,11 +323,15 @@ export default async function MemberDetailPage({
 
         {/* SNS */}
         <section className="mx-auto max-w-[964px] px-4 mt-10">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-primary to-primary-blue" />
-            <h2 className="font-[family-name:var(--font-outfit)] text-xl font-extrabold text-primary-dark tracking-tight">
-              📱 SNS / チャンネル
-            </h2>
+          <div className="flex items-baseline gap-3 mb-4">
+            <span className="inline-block w-2 h-2 bg-[#D41E28]" />
+            <p
+              className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              ━ SNS・チャンネル
+            </p>
+            <span className="flex-1 h-px bg-[#111]/30" aria-hidden />
           </div>
 
           {/* YouTube card */}
@@ -317,41 +341,50 @@ export default async function MemberDetailPage({
             return (
               <Tag
                 {...(ytUrl ? { href: ytUrl, target: "_blank", rel: "noopener noreferrer" } : {})}
-                className="block rounded-2xl bg-gradient-to-r from-[#dc2626] to-[#ef4444] p-5 shadow-sm mb-4"
+                className="block bg-[#D41E28] text-white border-2 border-[#111] p-5 mb-4 transition-transform active:translate-y-0.5"
+                style={{
+                  boxShadow: "5px 5px 0 rgba(17,17,17,0.25)",
+                }}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="flex size-10 items-center justify-center rounded-full bg-white/20">
+                    <div className="flex size-10 items-center justify-center bg-white/20">
                       <svg className="size-6 text-white" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z" />
                       </svg>
                     </div>
                     <div>
-                      <p className="text-[10px] font-semibold text-white/70 tracking-wider font-[family-name:var(--font-outfit)]">
-                        YouTube チャンネル
+                      <p
+                        className="text-[10px] font-black text-white/80 tracking-[0.25em]"
+                        style={{ fontFamily: "var(--font-outfit)" }}
+                      >
+                        YOUTUBE
                       </p>
-                      <p className="text-sm font-bold text-white">
+                      <p
+                        className="text-sm md:text-base font-black text-white"
+                        style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                      >
                         {base.name} 公式チャンネル
                       </p>
-                      <p className="text-[11px] text-white/60">
+                      <p className="text-[11px] text-white/80">
                         配信・動画をチェック
                       </p>
                     </div>
                   </div>
-                  <svg className="size-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  <span className="text-white/80 text-xl font-black" aria-hidden>
+                    →
+                  </span>
                 </div>
               </Tag>
             );
           })()}
 
           {/* Social links */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-3">
             {[
-              { label: "X", url: profile?.sns_x, desc: "つぶやきをチェック", svg: <svg className="size-7 text-foreground" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg> },
-              { label: "Instagram", url: profile?.sns_instagram, desc: "写真をチェック", svg: <svg className="size-7 text-[#e1306c]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="5" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" /></svg> },
-              { label: "TikTok", url: profile?.sns_tiktok, desc: "ショート動画", svg: <svg className="size-7 text-foreground" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.98a8.18 8.18 0 004.76 1.52V7.08a4.83 4.83 0 01-1-.39z" /></svg> },
+              { label: "X", url: profile?.sns_x, desc: "投稿", svg: <svg className="size-6 text-[#111]" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg> },
+              { label: "Instagram", url: profile?.sns_instagram, desc: "写真", svg: <svg className="size-6 text-[#e1306c]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="5" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" /></svg> },
+              { label: "TikTok", url: profile?.sns_tiktok, desc: "ショート", svg: <svg className="size-6 text-[#111]" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.98a8.18 8.18 0 004.76 1.52V7.08a4.83 4.83 0 01-1-.39z" /></svg> },
             ].map((s) => {
               const hasUrl = s.url && s.url.startsWith("http");
               const Tag = hasUrl ? "a" : "div";
@@ -359,11 +392,15 @@ export default async function MemberDetailPage({
                 <Tag
                   key={s.label}
                   {...(hasUrl ? { href: s.url!, target: "_blank", rel: "noopener noreferrer" } : {})}
-                  className="flex flex-col items-center gap-2 rounded-2xl bg-white/70 border border-white/80 py-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                  className={`flex flex-col items-center justify-center gap-1.5 bg-[#F5F1E8] border-2 border-[#111] py-4 min-h-[84px] transition-transform ${hasUrl ? "hover:bg-[#FFE600] cursor-pointer active:translate-y-0.5" : "opacity-50"}`}
+                  style={{
+                    boxShadow: "3px 3px 0 rgba(17,17,17,0.18)",
+                    fontFamily: "var(--font-noto-serif), serif",
+                  }}
                 >
                   {s.svg}
-                  <span className="text-xs font-bold text-foreground">{s.label}</span>
-                  <span className="text-[10px] text-muted">{s.desc}</span>
+                  <span className="text-xs font-black text-[#111]">{s.label}</span>
+                  <span className="text-[10px] text-[#4A5060]">{s.desc}</span>
                 </Tag>
               );
             })}
@@ -374,19 +411,31 @@ export default async function MemberDetailPage({
         <section className="mx-auto max-w-[964px] px-4 mt-10 text-center">
           <Link
             href="/live/vote"
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-live to-[#fb64b6] px-10 py-3.5 text-base font-bold text-white shadow-[0_10px_15px_rgba(255,100,103,0.3)] transition hover:shadow-[0_10px_20px_rgba(255,100,103,0.4)]"
+            className="inline-flex items-center gap-3 bg-[#D41E28] text-white px-10 py-4 text-base md:text-lg font-black transition-transform active:translate-y-0.5"
+            style={{
+              fontFamily: "var(--font-noto-serif), serif",
+              boxShadow: "6px 6px 0 rgba(17,17,17,0.22)",
+            }}
           >
-            💖 応援する →
+            <span>💖 {base.name} を応援する</span>
+            <span className="text-xl" aria-hidden>→</span>
           </Link>
         </section>
 
         {/* Share */}
-        <section className="mx-auto max-w-[964px] px-4 mt-8">
-          <p className="text-center text-[10px] font-bold text-muted tracking-wider mb-3">
-            SHARE
-          </p>
+        <section className="mx-auto max-w-[964px] px-4 mt-10">
+          <div className="flex items-baseline gap-3 mb-3">
+            <span className="inline-block w-2 h-2 bg-[#D41E28]" />
+            <p
+              className="text-[10px] font-black tracking-[0.32em] text-[#D41E28]"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              ━ シェア
+            </p>
+            <span className="flex-1 h-px bg-[#111]/30" aria-hidden />
+          </div>
           <ShareButtons
-            text={`#かけあがり ${base.name} を応援中！`}
+            text={`#かけあがり ${base.name} を応援中!`}
             path={`/members/${base.slug}`}
           />
         </section>

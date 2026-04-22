@@ -7,7 +7,7 @@ export default function Loading() {
           className="mt-4 text-xs font-black tracking-[0.32em] text-[#D41E28]"
           style={{ fontFamily: "var(--font-outfit)" }}
         >
-          ━ LOADING
+          ━ 読み込み中
         </p>
       </div>
     </div>

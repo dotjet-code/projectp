@@ -78,14 +78,17 @@ export function EventVoteClient({
   if (eventStatus !== "open" && phase === "code-entry") {
     return (
       <section className="mx-auto max-w-[720px] px-4 mt-6">
-        <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center">
+        <div
+          className="bg-[#F5F1E8] border-2 border-dashed border-[#111]/40 p-8 text-center"
+          style={{ fontFamily: "var(--font-noto-serif), serif" }}
+        >
           <p className="text-3xl mb-3">
             {eventStatus === "closed" ? "🏁" : "⏳"}
           </p>
-          <p className="text-sm font-bold text-foreground">
+          <p className="text-sm font-black text-[#111]">
             {eventStatus === "closed"
-              ? "投票は締め切られました。ありがとうございました！"
-              : "投票はまだ開始されていません。MCのアナウンスをお待ちください。"}
+              ? "投票は締め切られました。ありがとうございました!"
+              : "投票はまだ開始されていません。MC のアナウンスをお待ちください。"}
           </p>
         </div>
       </section>
@@ -96,16 +99,32 @@ export function EventVoteClient({
   if (phase === "code-entry") {
     return (
       <section className="mx-auto max-w-[420px] px-4 mt-6">
-        <div className="rounded-2xl border border-gray-200 bg-white p-6">
-          <h2 className="text-base font-bold text-foreground text-center mb-4">
-            投票コードを入力してください
-          </h2>
-          <p className="text-xs text-muted text-center mb-4">
+        <div
+          className="bg-[#F5F1E8] border-2 border-[#111] p-6"
+          style={{ boxShadow: "5px 5px 0 rgba(17,17,17,0.22)" }}
+        >
+          <div className="flex items-baseline gap-3 mb-3">
+            <span className="inline-block w-2 h-2 bg-[#D41E28]" />
+            <p
+              className="text-[10px] font-black tracking-[0.32em] text-[#D41E28]"
+              style={{ fontFamily: "var(--font-outfit)" }}
+            >
+              ━ 投票コード
+            </p>
+            <span className="flex-1 h-px bg-[#111]/30" aria-hidden />
+          </div>
+          <p
+            className="text-xs text-[#4A5060] text-center mb-4"
+            style={{ fontFamily: "var(--font-noto-serif), serif" }}
+          >
             入場時にお渡しした紙に記載されている 4 桁のコードを入力してください
           </p>
           <form onSubmit={onValidateCode} className="space-y-4">
             <div className="flex items-center justify-center gap-2">
-              <span className="text-xl font-[family-name:var(--font-outfit)] font-bold text-muted tracking-[0.3em]">
+              <span
+                className="text-xl font-black text-[#4A5060] tracking-[0.3em]"
+                style={{ fontFamily: "var(--font-outfit)" }}
+              >
                 PJ-
               </span>
               <input
@@ -113,12 +132,15 @@ export function EventVoteClient({
                 required
                 value={code.replace(/^PJ-/i, "")}
                 onChange={(e) => {
-                  const val = e.target.value.replace(/[^A-Za-z0-9]/g, "").slice(0, 4);
+                  const val = e.target.value
+                    .replace(/[^A-Za-z0-9]/g, "")
+                    .slice(0, 4);
                   setCode("PJ-" + val);
                 }}
                 placeholder="XXXX"
                 maxLength={4}
-                className="w-32 rounded-xl border border-gray-300 px-4 py-3 text-center text-xl font-[family-name:var(--font-outfit)] font-bold tracking-[0.3em] uppercase"
+                className="w-32 border-2 border-[#111] bg-white px-4 py-3 text-center text-xl font-black tracking-[0.3em] uppercase"
+                style={{ fontFamily: "var(--font-outfit)" }}
                 autoComplete="off"
                 autoCorrect="off"
                 autoCapitalize="characters"
@@ -126,12 +148,21 @@ export function EventVoteClient({
               />
             </div>
             {error && (
-              <p className="text-xs text-red-600 text-center">{error}</p>
+              <p
+                className="text-xs text-[#D41E28] text-center font-black"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                {error}
+              </p>
             )}
             <button
               type="submit"
               disabled={busy || code.length < 4}
-              className="w-full rounded-full bg-gradient-to-r from-live to-[#fb64b6] px-6 py-3 text-base font-bold text-white shadow-[0_10px_15px_rgba(255,100,103,0.3)] disabled:opacity-40 transition-all"
+              className="w-full bg-[#D41E28] text-white px-6 py-3 text-base font-black disabled:opacity-40 transition-transform active:translate-y-0.5"
+              style={{
+                fontFamily: "var(--font-noto-serif), serif",
+                boxShadow: "4px 4px 0 rgba(17,17,17,0.22)",
+              }}
             >
               {busy ? "確認中..." : "コードを確認する"}
             </button>
@@ -145,19 +176,29 @@ export function EventVoteClient({
   if (phase === "done") {
     return (
       <section className="mx-auto max-w-[420px] px-4 mt-6">
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-8 text-center">
+        <div
+          className="bg-[#FFE600] border-2 border-[#111] p-8 text-center"
+          style={{ boxShadow: "5px 5px 0 rgba(17,17,17,0.22)" }}
+        >
           <p className="text-5xl mb-3">🎉</p>
-          <h2 className="text-xl font-bold text-foreground mb-2">
-            投票完了！
+          <h2
+            className="text-2xl font-black text-[#111] mb-2"
+            style={{ fontFamily: "var(--font-noto-serif), serif" }}
+          >
+            投票完了!
           </h2>
-          <p className="text-sm text-muted mb-4">
-            {ticketsTotal} チケット全て使いました。結果発表をお楽しみに！
+          <p
+            className="text-sm text-[#111] mb-4"
+            style={{ fontFamily: "var(--font-noto-serif), serif" }}
+          >
+            {ticketsTotal} チケット全て使いました。結果発表をお楽しみに!
           </p>
           <div className="flex flex-wrap justify-center gap-2">
             {votedMembers.map((mid, i) => (
               <span
                 key={i}
-                className="rounded-full bg-white border border-emerald-200 px-3 py-1 text-xs font-bold text-foreground"
+                className="bg-white border-2 border-[#111] px-3 py-1 text-xs font-black text-[#111]"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
                 {memberName(mid)}
               </span>
@@ -173,46 +214,72 @@ export function EventVoteClient({
     <section className="mx-auto max-w-[720px] px-4 mt-4">
       {/* Bonus badge */}
       {bonusMultiplier > 1 && (
-        <div className="rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 px-4 py-3 mb-4 text-center">
-          <span className="text-lg font-black text-amber-700">
+        <div
+          className="bg-[#FFE600] border-2 border-[#D41E28] px-4 py-3 mb-4 text-center"
+          style={{ boxShadow: "3px 3px 0 rgba(17,17,17,0.22)" }}
+        >
+          <span
+            className="text-base md:text-lg font-black text-[#D41E28]"
+            style={{ fontFamily: "var(--font-noto-serif), serif" }}
+          >
             🎯 予想ボーナス {bonusMultiplier}x
           </span>
-          <p className="text-[10px] text-amber-700 mt-0.5">
-            順位予想の的中スコアにより投票数が {bonusMultiplier} 倍になりました
+          <p
+            className="text-[10px] text-[#111] mt-0.5"
+            style={{ fontFamily: "var(--font-noto-serif), serif" }}
+          >
+            順位予想の的中スコアにより投票数が {bonusMultiplier} 倍に
           </p>
         </div>
       )}
 
       {/* Ticket counter */}
-      <div className="rounded-2xl bg-gradient-to-r from-live/10 to-[#fb64b6]/10 border border-live/20 p-4 mb-6 text-center">
-        <p className="text-xs font-bold text-muted mb-1">残りチケット</p>
-        <div className="flex items-center justify-center gap-2">
+      <div
+        className="bg-[#F5F1E8] border-2 border-[#111] p-4 mb-6 text-center"
+        style={{ boxShadow: "4px 4px 0 rgba(17,17,17,0.18)" }}
+      >
+        <p
+          className="text-[10px] font-black tracking-[0.3em] text-[#4A5060] mb-2"
+          style={{ fontFamily: "var(--font-outfit)" }}
+        >
+          残りチケット
+        </p>
+        <div className="flex items-center justify-center gap-1.5 flex-wrap">
           {Array.from({ length: ticketsTotal }).map((_, i) => (
             <span
               key={i}
-              className={`inline-flex size-10 items-center justify-center rounded-full text-lg transition-all ${
+              className={`inline-flex size-9 items-center justify-center text-lg transition-all ${
                 i < ticketsRemaining
-                  ? "bg-gradient-to-r from-live to-[#fb64b6] text-white shadow-md scale-110"
-                  : "bg-gray-200 text-gray-400"
+                  ? "bg-[#D41E28] text-white"
+                  : "bg-[#F5F1E8] text-[#4A5060]/40 border border-[#111]/20"
               }`}
             >
               🎟️
             </span>
           ))}
         </div>
-        <p className="mt-2 text-sm font-bold text-foreground">
+        <p
+          className="mt-2 text-base font-black text-[#111]"
+          style={{ fontFamily: "var(--font-outfit)" }}
+        >
           {ticketsRemaining} / {ticketsTotal}
         </p>
       </div>
 
       {error && (
-        <p className="mb-3 rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-xs text-red-700 text-center">
+        <p
+          className="mb-3 bg-[#FFE600] border-l-4 border-[#D41E28] px-3 py-2 text-xs text-[#111] font-black"
+          style={{ fontFamily: "var(--font-noto-serif), serif" }}
+        >
           {error}
         </p>
       )}
 
       {/* Member selection */}
-      <p className="text-xs font-bold text-muted mb-3 text-center">
+      <p
+        className="text-xs font-black text-[#4A5060] mb-3 text-center tracking-wider"
+        style={{ fontFamily: "var(--font-noto-serif), serif" }}
+      >
         応援したいメンバーをタップしてください
       </p>
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
@@ -222,16 +289,20 @@ export function EventVoteClient({
             type="button"
             onClick={() => onVote(m.id)}
             disabled={busy || ticketsRemaining <= 0}
-            className="flex flex-col items-center gap-2 rounded-2xl bg-white/70 border border-white/80 p-4 shadow-sm hover:shadow-md hover:scale-[1.03] active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex flex-col items-center gap-2 bg-[#F5F1E8] border-2 border-[#111] p-4 transition-transform active:translate-y-0.5 hover:bg-[#FFE600] disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{
+              boxShadow: "3px 3px 0 rgba(17,17,17,0.18)",
+              fontFamily: "var(--font-noto-serif), serif",
+            }}
           >
             <Image
               src={m.avatarUrl}
               alt={m.name}
               width={64}
               height={64}
-              className="size-16 rounded-full object-cover object-top shadow-sm"
+              className="size-16 object-cover object-top border-2 border-[#111]"
             />
-            <p className="text-xs font-bold text-foreground text-center">
+            <p className="text-xs font-black text-[#111] text-center">
               {m.name}
             </p>
           </button>
@@ -241,12 +312,18 @@ export function EventVoteClient({
       {/* Voted history */}
       {votedMembers.length > 0 && (
         <div className="mt-6 text-center">
-          <p className="text-[10px] font-bold text-muted mb-2">投票済み</p>
+          <p
+            className="text-[10px] font-black tracking-[0.3em] text-[#4A5060] mb-2"
+            style={{ fontFamily: "var(--font-outfit)" }}
+          >
+            投票済み
+          </p>
           <div className="flex flex-wrap justify-center gap-1.5">
             {votedMembers.map((mid, i) => (
               <span
                 key={i}
-                className="rounded-full bg-live/10 border border-live/20 px-2.5 py-1 text-[11px] font-bold text-[#e7000b]"
+                className="bg-[#D41E28] text-white border-2 border-[#111] px-2.5 py-1 text-[11px] font-black"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
                 {memberName(mid)}
               </span>

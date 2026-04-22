@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getLiveEvent, getEventCodes, getEventTally } from "@/lib/projectp/live-event";
+import { SITE_URL } from "@/lib/site-url";
 import { EventActions } from "./event-actions";
 import { CopyInput } from "../../members/[id]/copy-input";
 
@@ -26,7 +27,7 @@ export default async function AdminEventDetailPage({
   const totalTickets = codes.reduce((s, c) => s + c.ticketsTotal, 0);
 
   // 投票ページURL
-  const voteUrl = `https://projectp-six.vercel.app/event/${event.id}`;
+  const voteUrl = `${SITE_URL}/event/${event.id}`;
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-12">

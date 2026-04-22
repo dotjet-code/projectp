@@ -5,6 +5,7 @@ import {
   getTodaysChinchiroByCookie,
   judgeChinchiro,
   type ChinchiroResult,
+  type ChinchiroRollRecord,
 } from "@/lib/projectp/shuyaku-vote";
 import {
   readOrCreateVoteCookie,
@@ -195,11 +196,21 @@ export async function GET(req: NextRequest) {
       ? null
       : await getTodaysChinchiroByCookie(cookieId);
 
+  // 手動 open (CTA 経由) からの再表示用に役ラベルも載せる
+  const enriched = rolled ? enrichRollWithLabel(rolled) : null;
+
   const res = NextResponse.json({
-    rolledToday: rolled,
+    rolledToday: enriched,
     devAlwaysOpen: DEV_ALWAYS_OPEN,
   });
   return withCookie(res, cookieId, created);
+}
+
+function enrichRollWithLabel(r: ChinchiroRollRecord) {
+  const d = r.dice;
+  if (d.length !== 3) return { ...r, handLabel: "" };
+  const judged = judgeChinchiro(d[0], d[1], d[2]);
+  return { ...r, handLabel: judged.handLabel };
 }
 
 export async function POST(req: NextRequest) {

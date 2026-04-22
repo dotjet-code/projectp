@@ -52,7 +52,7 @@ function MemberCard({ member, rank }: { member: RankedMember; rank: number }) {
       >
         <Image
           src={member.avatarUrl}
-          alt=""
+          alt={member.name}
           fill
           className="object-cover md:grayscale md:contrast-125 md:group-hover:grayscale-0 transition-[filter]"
           style={{ objectPosition: "50% 18%" }}
@@ -102,7 +102,6 @@ function MemberCard({ member, rank }: { member: RankedMember; rank: number }) {
 
 export default async function MembersPage() {
   const members = await getRankedMembers();
-  const active = members.filter((m) => m.name !== "Coming Soon");
 
   return (
     <>
@@ -129,7 +128,7 @@ export default async function MembersPage() {
               className="mt-3 text-4xl md:text-6xl font-black leading-[0.95] tracking-tight"
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
-              12人の<span className="text-[#D41E28]">現在地。</span>
+              ランナーの<span className="text-[#D41E28]">現在地。</span>
             </h1>
             <div className="mt-6 max-w-2xl">
               <p
@@ -138,7 +137,7 @@ export default async function MembersPage() {
               >
                 <span className="text-[#FFE600]">主役は、毎月入れ替わる。</span>
                 <br />
-                上位 6 が PLAYER、下位 6 が PIT。
+                上位 6 名が次のステージに立つ。
                 <br />
                 ──今夜、君の推しはどこで戦っている？
               </p>
@@ -163,7 +162,7 @@ export default async function MembersPage() {
             aside={<span>順位順</span>}
           />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
-            {active.map((member, i) => (
+            {members.map((member, i) => (
               <MemberCard key={member.id} member={member} rank={i + 1} />
             ))}
           </div>

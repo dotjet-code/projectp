@@ -40,7 +40,7 @@ export default function AboutPage() {
               >
                 <span className="text-[#FFE600]">数字で勝ち取り、数字で奪われる。</span>
                 <br />
-                12 人が毎月、主役の座を懸けて駆け上がる。
+                毎月、主役の座を懸けて駆け上がる。上位 6 名だけが、次のステージに立てる。
               </p>
               <div
                 className="mt-4 h-2 max-w-[220px] bg-[#D41E28]"
@@ -63,7 +63,7 @@ export default function AboutPage() {
                 className="text-base md:text-lg leading-relaxed text-[#111]"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                かけあがり は、<strong className="text-[#D41E28]">12 人のメンバーが毎月の成績で競い合い、上位 6 名が「PLAYER」として次のメインステージに立つ</strong>競争型エンタメプロジェクト。
+                かけあがり は、<strong className="text-[#D41E28]">メンバーが毎月の成績で競い合い、上位 6 名が「PLAYER」として次のメインステージに立つ</strong>競争型エンタメプロジェクト。
               </p>
               <p
                 className="text-base leading-relaxed text-[#111]"
@@ -75,7 +75,7 @@ export default function AboutPage() {
                 className="text-sm leading-relaxed text-[#4A5060]"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                勝ち取った 6 名は「かけっこ！」のメインメンバーとしてステージに立つ。
+                勝ち取った 6 名は、次月のメインステージの主役として活動する。
               </p>
             </div>
           </section>
@@ -165,13 +165,7 @@ export default function AboutPage() {
                     className="text-5xl md:text-7xl font-black leading-none tabular-nums"
                     style={{ fontFamily: "var(--font-outfit)" }}
                   >
-                    1-6
-                  </span>
-                  <span
-                    className="text-lg md:text-xl font-bold"
-                    style={{ fontFamily: "var(--font-noto-serif), serif" }}
-                  >
-                    位
+                    TOP 6
                   </span>
                 </div>
                 <p
@@ -185,7 +179,7 @@ export default function AboutPage() {
                   style={{ fontFamily: "var(--font-noto-serif), serif" }}
                 >
                   <li>— メインステージに立つ権利を持つ</li>
-                  <li>—「かけっこ！」の正規メンバーとして活動</li>
+                  <li>— メインステージの正規メンバーとして活動</li>
                   <li>— 優先的な露出・企画参加の機会</li>
                   <li>— 成績が落ちれば、翌月は PIT に降格</li>
                 </ul>
@@ -196,13 +190,7 @@ export default function AboutPage() {
                     className="text-5xl md:text-7xl font-black leading-none tabular-nums"
                     style={{ fontFamily: "var(--font-outfit)" }}
                   >
-                    7-12
-                  </span>
-                  <span
-                    className="text-lg md:text-xl font-bold"
-                    style={{ fontFamily: "var(--font-noto-serif), serif" }}
-                  >
-                    位
+                    7位〜
                   </span>
                 </div>
                 <p
@@ -256,13 +244,13 @@ export default function AboutPage() {
               className="text-base md:text-lg leading-relaxed text-[#111] max-w-3xl mb-6"
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
-              毎月末、12 人全員が集合する特別配信番組。ここで月間の戦いが最終確定し、翌月の PLAYER / PIT 編成が発表される。
+              毎月末、メンバー全員が集合する特別配信番組。ここで月間の戦いが最終確定し、翌月の PLAYER / PIT 編成が発表される。
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-t-[3px] border-[#111]">
               {[
                 { num: "01", label: "振り返り", desc: "4 指標の推移と順位変動を全員で確認" },
                 { num: "02", label: "最終決戦", desc: "最終順位に影響する特別企画を実施" },
-                { num: "03", label: "新編成", desc: "PLAYER 6 名 / PIT 6 名が決定、翌月スタート" },
+                { num: "03", label: "新編成", desc: "上位 6 名が PLAYER に昇格、翌月スタート" },
               ].map((item) => (
                 <div
                   key={item.num}
@@ -316,14 +304,35 @@ export default function AboutPage() {
           </section>
 
           {/* CTA */}
-          <section className="text-center">
-            <Link
-              href="/members"
-              className="inline-flex items-center gap-3 bg-[#D41E28] text-white px-10 py-4 text-lg font-black hover:translate-y-[-2px] transition-transform"
+          <section className="text-center space-y-4">
+            <div className="flex flex-wrap justify-center gap-3">
+              <Link
+                href="/members"
+                className="inline-flex items-center gap-3 bg-[#D41E28] text-white px-8 py-3.5 text-base md:text-lg font-black transition-transform active:translate-y-0.5"
+                style={{
+                  fontFamily: "var(--font-noto-serif), serif",
+                  boxShadow: "5px 5px 0 rgba(17,17,17,0.22)",
+                }}
+              >
+                メンバーを見る →
+              </Link>
+              <Link
+                href="/prediction"
+                className="inline-flex items-center gap-3 border-2 border-[#111] bg-white text-[#111] px-8 py-3.5 text-base md:text-lg font-black transition-transform active:translate-y-0.5 hover:bg-[#FFE600]"
+                style={{
+                  fontFamily: "var(--font-noto-serif), serif",
+                  boxShadow: "5px 5px 0 rgba(17,17,17,0.22)",
+                }}
+              >
+                予想してみる
+              </Link>
+            </div>
+            <p
+              className="text-xs text-[#4A5060]"
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
-              メンバーを見る →
-            </Link>
+              予想は無料・登録不要で試せます
+            </p>
           </section>
         </div>
       </main>

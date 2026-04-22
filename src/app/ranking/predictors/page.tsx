@@ -67,7 +67,7 @@ export default async function PredictorsRankingPage({
               className="text-xs md:text-sm font-black tracking-[0.35em] text-[#FFE600]"
               style={{ fontFamily: "var(--font-outfit)" }}
             >
-              ANNUAL HALL OF HITS
+              TOP PREDICTORS
             </p>
             <h1
               className="mt-3 text-4xl md:text-6xl font-black leading-[0.95] tracking-tight"
@@ -103,7 +103,7 @@ export default async function PredictorsRankingPage({
               className="text-[10px] font-black tracking-[0.32em] text-[#D41E28] mb-2"
               style={{ fontFamily: "var(--font-outfit)" }}
             >
-              ━ SERIES
+              ━ シリーズ
             </p>
             <div className="flex flex-wrap items-center gap-2">
               {availableSeries.map((n) => {
@@ -112,7 +112,7 @@ export default async function PredictorsRankingPage({
                   <Link
                     key={n}
                     href={`/ranking/predictors?series=${n}`}
-                    className={`px-4 py-1.5 text-xs font-black border-2 tracking-wider transition-colors ${
+                    className={`inline-flex items-center min-h-[44px] px-4 py-2 text-xs font-black border-2 tracking-wider transition-colors ${
                       active
                         ? "bg-[#111] text-[#FFE600] border-[#111]"
                         : "border-[#111] text-[#111] bg-[#F5F1E8] hover:bg-white"
@@ -151,6 +151,28 @@ export default async function PredictorsRankingPage({
               >
                 ステージ終了後に予想ランキングが集計されて表示される。
               </p>
+              <div className="mt-5 flex flex-wrap justify-center gap-3">
+                <Link
+                  href="/prediction"
+                  className="inline-flex items-center gap-2 bg-[#D41E28] text-white px-6 py-2.5 text-sm font-black hover:translate-y-0.5 transition-transform"
+                  style={{
+                    fontFamily: "var(--font-noto-serif), serif",
+                    boxShadow: "3px 3px 0 rgba(17,17,17,0.22)",
+                  }}
+                >
+                  今のステージに予想する →
+                </Link>
+                <Link
+                  href="/ranking"
+                  className="inline-flex items-center gap-2 border-2 border-[#111] bg-white text-[#111] px-6 py-2.5 text-sm font-black hover:bg-[#FFE600] transition-colors"
+                  style={{
+                    fontFamily: "var(--font-noto-serif), serif",
+                    boxShadow: "3px 3px 0 rgba(17,17,17,0.22)",
+                  }}
+                >
+                  現在のランキングを見る
+                </Link>
+              </div>
             </div>
           ) : predictors.length === 0 ? (
             <div
@@ -262,7 +284,7 @@ export default async function PredictorsRankingPage({
                     className="text-[10px] font-black tracking-[0.3em] text-[#D41E28] mr-2"
                     style={{ fontFamily: "var(--font-outfit)" }}
                   >
-                    ━ JOIN
+                    ━ 参加
                   </span>
                   <b>会員登録でランキング入り</b> — 的中を積み上げて年間王者を狙おう。
                   <Link

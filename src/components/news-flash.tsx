@@ -385,14 +385,14 @@ export function NewsFlash({
                 className="text-[9px] font-black tracking-[0.25em] text-[#111]"
                 style={{ fontFamily: "var(--font-outfit)" }}
               >
-                最新の動き
+                暫定トップ
               </p>
               <span className="flex-1 h-px bg-[#111]/30" aria-hidden />
               <p
                 className="text-[8px] font-bold tracking-[0.18em] text-[#4A5060]"
                 style={{ fontFamily: "var(--font-outfit)" }}
               >
-                TICKER
+                CURRENT
               </p>
             </div>
             <ul className="divide-y divide-[#111]/15">
@@ -403,12 +403,6 @@ export function NewsFlash({
                   teal: "#1CB4AF",
                   neutral: "#4A5060",
                 }[r.accent ?? "neutral"];
-                const arrow =
-                  r.accent === "red"
-                    ? "▼"
-                    : r.accent === "pink" || r.accent === "teal"
-                      ? "▲"
-                      : "●";
                 return (
                   <li
                     key={i}
@@ -416,17 +410,13 @@ export function NewsFlash({
                     style={{ fontFamily: "var(--font-noto-serif), serif" }}
                   >
                     <span
-                      className="w-10 shrink-0 text-[9px] font-black tabular-nums tracking-wider text-[#4A5060]"
-                      style={{ fontFamily: "var(--font-outfit)" }}
+                      className="w-9 shrink-0 text-[11px] font-black tabular-nums tracking-wider"
+                      style={{
+                        fontFamily: "var(--font-outfit)",
+                        color: accentColor,
+                      }}
                     >
                       {r.time}
-                    </span>
-                    <span
-                      className="w-3 shrink-0 text-center font-black text-[12px] leading-none"
-                      style={{ color: accentColor }}
-                      aria-hidden
-                    >
-                      {arrow}
                     </span>
                     <span className="font-bold text-[#111] leading-snug flex-1">
                       {r.text}

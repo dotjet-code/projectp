@@ -157,11 +157,11 @@ function OverviewTab() {
       <Section title="🏁 かけあがり とは？">
         <Card icon="✦" title="競争型エンタメプロジェクト">
           <p className="text-sm leading-relaxed text-[#111]">
-            かけあがり は、<b className="text-[#D41E28]">12 人のメンバーが数字で競い合い、主役の座を勝ち取る</b>競争型エンタメプロジェクト。
+            かけあがり は、<b className="text-[#D41E28]">メンバーが数字で競い合い、上位 6 名だけが主役の座を勝ち取る</b>競争型エンタメプロジェクト。
           </p>
           <p className="text-sm leading-relaxed mt-2 text-[#111]">
             毎月の「ステージ」で<b>バズ・配信・収支・投票</b>の 4 指標を競い、上位 6 名が <b>PLAYER</b>（ステージの主役）、
-            下位 6 名が <b>PIT</b>（待機組）に振り分けられる。月末の特番で順位が確定し、翌月の編成が決まる。
+            それ以外が <b>PIT</b>（待機組）に振り分けられる。月末の特番で順位が確定し、翌月の編成が決まる。
           </p>
         </Card>
       </Section>
@@ -202,8 +202,8 @@ function OverviewTab() {
 
       <Section title="👥 登場人物">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Card icon="⭐" title="メンバー（12 名）">
-            数字を競い合うプロジェクトの主役。バズ・配信・収支のポイントで順位が決まる。
+          <Card icon="⭐" title="メンバー">
+            数字を競い合うプロジェクトの主役。バズ・配信・収支のポイントで順位が決まり、上位 6 名が PLAYER に。
           </Card>
           <Card icon="🎟️" title="ファン会員">
             順位予想を提出し、的中すると景品がもらえる。ライブ投票にも参加できる。
@@ -223,7 +223,7 @@ function OverviewTab() {
             className="text-xs text-[#4A5060] mb-3"
             style={{ fontFamily: "var(--font-noto-serif), serif" }}
           >
-            全 12 名から 6 種類の賭式で予想。
+            全メンバーから 6 種類の賭式で予想。
           </p>
           <div className="space-y-1.5">
             {[
@@ -560,7 +560,7 @@ export function GuideClient() {
             className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
             style={{ fontFamily: "var(--font-outfit)" }}
           >
-            ━ HOW TO PLAY
+            ━ 遊びかた
           </p>
           <span className="flex-1 h-px bg-[#111]/30" aria-hidden />
         </div>
@@ -605,7 +605,7 @@ export function GuideClient() {
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
-              className={`px-4 py-2.5 text-sm font-black tracking-wider border-2 border-b-0 -mb-[3px] transition-colors ${
+              className={`inline-flex items-center min-h-[44px] px-4 py-2.5 text-sm font-black tracking-wider border-2 border-b-0 -mb-[3px] transition-colors ${
                 tab === t.key
                   ? "bg-[#111] text-[#FFE600] border-[#111]"
                   : "bg-[#F5F1E8] border-[#111] text-[#4A5060] hover:bg-white"

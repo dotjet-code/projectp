@@ -58,7 +58,7 @@ export function Footer() {
               className="text-base md:text-lg font-bold text-[#F5F1E8] leading-relaxed"
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
-              12 人の現在地を、いま見届けよう。
+              ランナーの現在地を、いま見届けよう。
             </p>
             <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
               <FooterLink href="/about">かけあがりとは？</FooterLink>
@@ -73,7 +73,7 @@ export function Footer() {
             </div>
           </div>
 
-          {/* 出走表マーク + 更新時刻 */}
+          {/* 号艇カラーマーク */}
           <div className="flex flex-col items-start md:items-end gap-3">
             <div className="flex items-center gap-1" aria-hidden>
               {BOAT_COLORS.map((c, i) => (
@@ -84,12 +84,6 @@ export function Footer() {
                 />
               ))}
             </div>
-            <p
-              className="text-[10px] tracking-[0.25em] text-[#9BA8BF]"
-              style={{ fontFamily: "var(--font-outfit)" }}
-            >
-              6 LANES · 12 RUNNERS
-            </p>
           </div>
         </div>
 

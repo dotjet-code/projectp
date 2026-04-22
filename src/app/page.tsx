@@ -3,15 +3,18 @@ import { Hero } from "@/components/hero";
 import { NewsFlash } from "@/components/news-flash";
 import { StageTimeline } from "@/components/stage-timeline";
 import { MemberGrid } from "@/components/member-grid";
-import { Rankings } from "@/components/rankings";
 import { TodaysLive } from "@/components/todays-live";
 import { Footer } from "@/components/footer";
 import { TornDivider } from "@/components/torn-divider";
 import { MissionStatement } from "@/components/mission-statement";
 import { PredictionCTA } from "@/components/prediction-cta";
+import { ChinchiroCTA } from "@/components/chinchiro-cta";
+import { HowItWorks } from "@/components/how-it-works";
+import { OshiPicker } from "@/components/oshi-picker";
 import { WelcomeChinchiroModal } from "@/components/welcome-chinchiro-modal";
 import { getActiveStage } from "@/lib/projectp/stage";
 import { getRankedMembers } from "@/lib/projectp/live-stats";
+import { getTodayActivityStats } from "@/lib/projectp/activity-stats";
 
 // 実データ反映のためプリレンダリング無効化
 export const dynamic = "force-dynamic";
@@ -66,29 +69,29 @@ function buildNewsFlash(
   const recent: FlashRow[] = [];
   if (top1) {
     recent.push({
-      time: "3h 前",
-      text: `${top1.name} 首位キープ (${top1.effectivePoints.toLocaleString()}pt)`,
+      time: "#1",
+      text: `${top1.name} (${top1.effectivePoints.toLocaleString()}pt)`,
       accent: "red",
     });
   }
   if (top2) {
     recent.push({
-      time: "5h 前",
-      text: `${top2.name} 2 位浮上 (${top2.effectivePoints.toLocaleString()}pt)`,
-      accent: "red",
+      time: "#2",
+      text: `${top2.name} (${top2.effectivePoints.toLocaleString()}pt)`,
+      accent: "pink",
     });
   }
   if (top3) {
     recent.push({
-      time: "8h 前",
-      text: `${top3.name} 表彰台に届く (${top3.effectivePoints.toLocaleString()}pt)`,
+      time: "#3",
+      text: `${top3.name} (${top3.effectivePoints.toLocaleString()}pt)`,
       accent: "pink",
     });
   }
   if (top4) {
     recent.push({
-      time: "昨日",
-      text: `${top4.name} 4 位を確保 (${top4.effectivePoints.toLocaleString()}pt)`,
+      time: "#4",
+      text: `${top4.name} (${top4.effectivePoints.toLocaleString()}pt)`,
       accent: "teal",
     });
   }
@@ -97,9 +100,14 @@ function buildNewsFlash(
 }
 
 export default async function Home() {
-  const [stage, ranked] = await Promise.all([
+  const [stage, ranked, activity] = await Promise.all([
     getActiveStage().catch(() => null),
     getRankedMembers().catch(() => []),
+    getTodayActivityStats().catch(() => ({
+      chinchiroRolls: 0,
+      chinchiroVotes: 0,
+      topHandToday: null,
+    })),
   ]);
   const stageLabel = stage
     ? `${stage.stageNumber ? `ステージ ${stage.stageNumber}` : ""}${stage.title ? ` 「${stage.title}」` : ""} 開催中`
@@ -149,20 +157,15 @@ export default async function Home() {
             />
           }
         />
-        <MissionStatement />
-        <TornDivider variant="bottom" height={18} />
-        <PredictionCTA
-          variant="cream"
-          label="今すぐ予想する"
-          sub="無料 · 登録不要 · 1分で完了"
-          spacing="compact"
-        />
+        <HowItWorks activity={activity} />
+        <OshiPicker members={ranked.filter((m) => m.name !== "Coming Soon")} />
+        <ChinchiroCTA />
         <TornDivider variant="top" height={18} />
         <MemberGrid />
         <TornDivider variant="bottom" height={18} color="#111111" />
         <PredictionCTA
           variant="black"
-          eyebrow="━ PLACE YOUR BET"
+          eyebrow="━ 予想"
           headline={
             <p>
               顔ぶれは、見えた。
@@ -184,9 +187,9 @@ export default async function Home() {
           spacing="compact"
         />
         <TornDivider variant="top" height={18} color="#111111" />
-        <Rankings />
-        <TornDivider variant="top" height={18} color="#111111" />
         <TodaysLive />
+        <TornDivider variant="bottom" height={18} color="#111111" />
+        <MissionStatement />
       </main>
       <Footer />
     </>

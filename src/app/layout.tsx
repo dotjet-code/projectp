@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { LiveStatusProvider } from "@/lib/projectp/live-status-client";
+import { SITE_URL } from "@/lib/site-url";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -24,17 +25,17 @@ const notoSerifJP = Noto_Serif_JP({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://projectp-six.vercel.app"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "かけあがり！",
     template: "%s | かけあがり！",
   },
   description:
-    "主役はまだ空席。12人が数字で競い、勝ち上がるのは誰だ。かけあがりは、次のステージに立つ6人を決める競争型エンタメプロジェクト。",
+    "主役はまだ空席。数字で競い、勝ち上がるのは誰だ。かけあがりは、上位6名が次のステージに立つ競争型エンタメプロジェクト。",
   openGraph: {
     title: "かけあがり！",
-    description: "主役はまだ空席。12人が数字で競い、勝ち上がるのは誰だ。",
-    url: "https://projectp-six.vercel.app",
+    description: "主役はまだ空席。数字で競い、上位6名だけが次のステージに立つ。",
+    url: SITE_URL,
     siteName: "かけあがり！",
     locale: "ja_JP",
     type: "website",
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "かけあがり！",
-    description: "主役はまだ空席。12人が数字で競い、勝ち上がるのは誰だ。",
+    description: "主役はまだ空席。数字で競い、上位6名だけが次のステージに立つ。",
   },
   robots: {
     index: true,

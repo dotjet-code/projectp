@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -48,13 +49,20 @@ export default async function EventVotePage({
             aria-hidden
           />
           <div className="relative max-w-[1100px] mx-auto">
+            <Link
+              href="/live/vote"
+              className="inline-flex items-center gap-1 text-[#F5F1E8]/70 hover:text-[#FFE600] text-xs font-black transition-colors mb-3"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              ← ライブ応援へ戻る
+            </Link>
             <div className="flex items-baseline gap-3 mb-3">
               <span className="inline-block w-2 h-2 bg-[#D41E28] animate-pulse" />
               <p
                 className="text-[10px] md:text-xs font-black tracking-[0.32em] text-[#D41E28]"
                 style={{ fontFamily: "var(--font-outfit)" }}
               >
-                ━ LIVE EVENT
+                ━ ライブイベント
               </p>
               <span className="flex-1 h-px bg-[#F5F1E8]/30" aria-hidden />
             </div>
