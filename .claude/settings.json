@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(curl -s *)",
+      "Bash(curl -sI *)",
+      "Bash(curl -sS *)",
+      "Bash(vercel list)",
+      "Bash(vercel list *)",
+      "Bash(vercel inspect *)",
+      "Bash(vercel whoami)",
+      "Bash(vercel --version)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(npm run dev)",
+      "Bash(npm run lint)",
+      "mcp__Claude_Preview__preview_screenshot",
+      "mcp__Claude_Preview__preview_logs",
+      "mcp__Claude_Preview__preview_list",
+      "mcp__Claude_Preview__preview_console_logs",
+      "mcp__Claude_Preview__preview_network",
+      "mcp__Claude_Preview__preview_snapshot",
+      "mcp__Claude_Preview__preview_inspect",
+      "mcp__Claude_Preview__preview_resize",
+      "mcp__Claude_Preview__preview_start",
+      "mcp__Claude_Preview__preview_stop"
+    ]
+  }
+}

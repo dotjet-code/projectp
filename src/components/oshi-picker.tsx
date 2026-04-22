@@ -144,18 +144,13 @@ export function OshiPicker({ members }: OshiPickerProps) {
               className="group shrink-0 snap-start flex flex-col items-center gap-1 focus:outline-none"
               aria-label={`${m.name} を推しに選ぶ`}
             >
-              <span
-                className="relative block w-16 h-16 md:w-20 md:h-20 overflow-hidden border-2 border-[#111] group-hover:border-[#D41E28] transition-colors"
-                style={{
-                  boxShadow: "3px 3px 0 rgba(17,17,17,0.18)",
-                }}
-              >
+              <span className="relative block w-20 h-28 md:w-24 md:h-32">
                 <Image
-                  src={m.avatarUrl}
+                  src={`/members/${m.slug}-left.png`}
                   alt=""
                   fill
-                  sizes="(max-width: 768px) 64px, 80px"
-                  className="object-cover transition-transform group-hover:scale-105"
+                  sizes="(max-width: 768px) 80px, 96px"
+                  className="object-contain object-bottom transition-transform group-hover:scale-105"
                 />
               </span>
               <span
