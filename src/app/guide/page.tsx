@@ -3,8 +3,9 @@ import { Footer } from "@/components/footer";
 import { GuideClient } from "./guide-client";
 
 export const metadata = {
-  title: "ガイド",
-  description: "かけあがり の使い方ガイド。ファン・メンバー・スタッフ・運営それぞれの操作方法。",
+  title: "かけあがりガイド",
+  description:
+    "5 分で分かる、かけあがり！の遊び方。推しの決め方・予想・ライブ投票・景品の受け取り方までまとめて解説。",
 };
 
 export default function GuidePage() {
