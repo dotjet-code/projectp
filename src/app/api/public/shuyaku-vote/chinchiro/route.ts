@@ -38,42 +38,6 @@ const UUID_RE =
 const RATE_LIMIT_PER_HOUR = 30;
 const RATE_LIMIT_KIND = "shuyaku.chinchiro";
 
-/**
- * 確認用テストモード。明示的に CHINCHIRO_DEV_MODE=1 をセットしたときだけ有効。
- * true のあいだ: 1 日 1 回制限を無視してモーダルが毎回開き、
- *                 振るたびに前回の行を削除して上書きする。
- *                 モーダルに役強制ボタン (ピンゾロ / シゴロ 等) が表示される。
- * 本番/通常の local dev ではどちらも常に false (1 日 1 回制約が効く)。
- */
-const DEV_ALWAYS_OPEN = process.env.CHINCHIRO_DEV_MODE === "1";
-
-function todayJst(): string {
-  const now = new Date();
-  const jst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
-  return jst.toISOString().slice(0, 10);
-}
-
-/**
- * 開発モードでのリセット。当日の chinchiro_rolls + shuyaku_votes(kind='chinchiro') を削除。
- */
-async function resetTodayChinchiroForDev(cookieId: string): Promise<void> {
-  const supabase = createAdminClient();
-  const voteDate = todayJst();
-  await Promise.all([
-    supabase
-      .from("chinchiro_rolls")
-      .delete()
-      .eq("cookie_id", cookieId)
-      .eq("vote_date", voteDate),
-    supabase
-      .from("shuyaku_votes")
-      .delete()
-      .eq("cookie_id", cookieId)
-      .eq("vote_date", voteDate)
-      .eq("kind", "chinchiro"),
-  ]);
-}
-
 function withCookie(res: NextResponse, cookieId: string, created: boolean) {
   if (created) {
     res.cookies.set(VOTE_COOKIE, cookieId, {
@@ -152,33 +116,6 @@ function rollChinchiroWithReroll(): ChinchiroResult {
   return { ...r2, value: 1 };
 }
 
-/** dev モード専用: 指定した役を出す固定出目。 */
-const FORCE_HAND_DICE: Record<
-  string,
-  [number, number, number]
-> = {
-  pinzoro: [1, 1, 1],
-  zorome:  [4, 4, 4],
-  shigoro: [4, 5, 6],
-  normal:  [2, 2, 5],
-  hifumi:  [1, 2, 3],
-  menashi: [1, 3, 5],
-};
-
-/**
- * dev モードで forceHand を指定した場合の役決定。
- * menashi だけ特殊: 再振りをスキップして 1 票救済の挙動にする。
- */
-function rollChinchiroForced(forceHand: string): ChinchiroResult | null {
-  const preset = FORCE_HAND_DICE[forceHand];
-  if (!preset) return null;
-  const r = judgeChinchiro(preset[0], preset[1], preset[2]);
-  if (r.hand === "menashi") {
-    return { ...r, value: 1 };
-  }
-  return r;
-}
-
 async function listActiveMemberIds(): Promise<string[]> {
   const supabase = createAdminClient();
   const { data } = await supabase
@@ -190,19 +127,12 @@ async function listActiveMemberIds(): Promise<string[]> {
 
 export async function GET(req: NextRequest) {
   const { cookieId, created } = readOrCreateVoteCookie(req);
-  // dev: 毎回振れる状態にしたいので常に null を返す
-  const rolled =
-    DEV_ALWAYS_OPEN || created
-      ? null
-      : await getTodaysChinchiroByCookie(cookieId);
+  const rolled = created ? null : await getTodaysChinchiroByCookie(cookieId);
 
   // 手動 open (CTA 経由) からの再表示用に役ラベルも載せる
   const enriched = rolled ? enrichRollWithLabel(rolled) : null;
 
-  const res = NextResponse.json({
-    rolledToday: enriched,
-    devAlwaysOpen: DEV_ALWAYS_OPEN,
-  });
+  const res = NextResponse.json({ rolledToday: enriched });
   return withCookie(res, cookieId, created);
 }
 
@@ -223,11 +153,6 @@ export async function POST(req: NextRequest) {
       { status: 400 },
     );
   }
-  // dev: 役を強制指定 (本番では無視)
-  const forceHand =
-    DEV_ALWAYS_OPEN && body && typeof body.forceHand === "string"
-      ? body.forceHand.trim()
-      : null;
 
   const { cookieId, created } = readOrCreateVoteCookie(req);
 
@@ -249,15 +174,8 @@ export async function POST(req: NextRequest) {
     return withCookie(res, cookieId, created);
   }
 
-  const result = forceHand
-    ? rollChinchiroForced(forceHand) ?? rollChinchiroWithReroll()
-    : rollChinchiroWithReroll();
+  const result = rollChinchiroWithReroll();
   const allMemberIds = await listActiveMemberIds();
-
-  // dev: 毎回振れるように、直前の本日分を削除してから INSERT
-  if (DEV_ALWAYS_OPEN) {
-    await resetTodayChinchiroForDev(cookieId);
-  }
 
   const saved = await castChinchiroRoll(
     cookieId,

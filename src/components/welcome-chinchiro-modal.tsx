@@ -143,15 +143,11 @@ export function WelcomeChinchiroModal({ members }: Props) {
   const [shareClaimed, setShareClaimed] = useState<boolean>(false);
   const [shareError, setShareError] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [devMode, setDevMode] = useState<boolean>(false);
-  const [forceOpen, setForceOpen] = useState<boolean>(false);
   // 推しが設定されていて、翌日以降のログインなら自動で推しに投票する。
   // この場合 idle の選択グリッドは表示せず、そのまま rolling に進む。
   const [pendingAutoPick, setPendingAutoPick] =
     useState<ChinchiroMember | null>(null);
   const [autoVotedForOshi, setAutoVotedForOshi] = useState<boolean>(false);
-  // DEV: 次に振る役を予約する。null の時は通常ランダム。
-  const [devQueuedHand, setDevQueuedHand] = useState<string | null>(null);
   const animRef = useRef<number | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
 
@@ -190,21 +186,13 @@ export function WelcomeChinchiroModal({ members }: Props) {
   };
 
   // 初回: 今日振ってなければ 500ms 後に表示
-  // ?chinchiro=1 で強制表示 (モバイル等の疎通確認用)
   useEffect(() => {
     setMounted(true);
     let cancelled = false;
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("chinchiro") === "1") {
-      setForceOpen(true);
-      setOpen(true);
-      return;
-    }
     fetch("/api/public/shuyaku-vote/chinchiro", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => {
         if (cancelled) return;
-        setDevMode(Boolean(d?.devAlwaysOpen));
         if (!d?.rolledToday) {
           const oshi = readOshi();
           const oshiMember =
@@ -325,9 +313,8 @@ export function WelcomeChinchiroModal({ members }: Props) {
     setRollFaces([finalValues[0] - 1, finalValues[1] - 1, finalValues[2] - 1]);
   };
 
-  const handlePick = async (m: ChinchiroMember, forceHandOverride?: string) => {
+  const handlePick = async (m: ChinchiroMember) => {
     if (phase !== "idle") return;
-    const forceHand = forceHandOverride ?? devQueuedHand ?? undefined;
     setPicked(m);
     setPhase("rolling");
     setErrorMsg(null);
@@ -337,9 +324,7 @@ export function WelcomeChinchiroModal({ members }: Props) {
       const r = await fetch("/api/public/shuyaku-vote/chinchiro", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify(
-          forceHand ? { memberId: m.id, forceHand } : { memberId: m.id },
-        ),
+        body: JSON.stringify({ memberId: m.id }),
       });
       const elapsed = Date.now() - startedAt;
       // 演出のため最低 1400ms は回す
@@ -431,24 +416,7 @@ export function WelcomeChinchiroModal({ members }: Props) {
 
   // SSR 時は何も描画しない (hydration mismatch 完全回避)
   if (!mounted) return null;
-
-  // デバッグ用: モーダルが閉じていても mount 確認できる浮遊ボタン。
-  const debugButtonEnabled = devMode || forceOpen;
-
-  if (!open) {
-    if (!debugButtonEnabled) return null;
-    return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="fixed bottom-4 right-4 z-[100] bg-[#D41E28] text-white px-3 py-2 text-xs font-black shadow-[3px_3px_0_rgba(0,0,0,0.3)]"
-        style={{ fontFamily: "var(--font-noto-serif), serif" }}
-        aria-label="賽を振るモーダルを開く"
-      >
-        🎲 賽を振る
-      </button>
-    );
-  }
+  if (!open) return null;
 
   const handStyle = HAND_COLOR[handKey] ?? HAND_COLOR.normal;
   const stampChar = STAMP_CHARS[handKey];
@@ -543,57 +511,6 @@ export function WelcomeChinchiroModal({ members }: Props) {
                   <li>目なし: 振り直し</li>
                 </ul>
               </details>
-
-              {/* DEV ONLY: 次に振る役を予約する (本番では表示されない) */}
-              {devMode && (
-                <div className="mt-3 rounded border border-dashed border-[#D41E28] bg-[#FFE600]/40 p-2">
-                  <p
-                    className="text-[10px] font-black tracking-widest text-[#D41E28]"
-                    style={{ fontFamily: "var(--font-outfit)" }}
-                  >
-                    🧪 DEV: 次に振る役を予約 → その後に推しをタップ
-                  </p>
-                  <div className="mt-1 flex flex-wrap gap-1">
-                    {[
-                      { key: null,      label: "ランダム" },
-                      { key: "pinzoro", label: "ピンゾロ" },
-                      { key: "zorome",  label: "ゾロ目" },
-                      { key: "shigoro", label: "シゴロ" },
-                      { key: "normal",  label: "通常役" },
-                      { key: "hifumi",  label: "ヒフミ" },
-                      { key: "menashi", label: "目なし" },
-                    ].map((h) => {
-                      const selected = devQueuedHand === h.key;
-                      return (
-                        <button
-                          key={h.key ?? "random"}
-                          type="button"
-                          onClick={() => setDevQueuedHand(h.key)}
-                          className={`flex-1 min-w-[60px] border border-[#111] px-1 py-1 text-[10px] font-black transition-colors ${
-                            selected
-                              ? "bg-[#111] text-[#FFE600]"
-                              : "bg-white hover:bg-[#FFE600]"
-                          }`}
-                          style={{ fontFamily: "var(--font-noto-serif), serif" }}
-                        >
-                          {h.label}
-                          {selected && " ✓"}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <p
-                    className="mt-1 text-[9px] text-[#4A5060] text-center"
-                    style={{ fontFamily: "var(--font-noto-serif), serif" }}
-                  >
-                    現在: {devQueuedHand
-                      ? `【${
-                          { pinzoro: "ピンゾロ", zorome: "ゾロ目", shigoro: "シゴロ", normal: "通常役", hifumi: "ヒフミ", menashi: "目なし" }[devQueuedHand]
-                        }】で振る`
-                      : "ランダム (通常)"}
-                  </p>
-                </div>
-              )}
 
               <div className="mt-4 grid grid-cols-3 gap-2">
                 {members.slice(0, 12).map((m) => (
