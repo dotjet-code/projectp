@@ -62,20 +62,20 @@ export function HowItWorks({ activity }: HowItWorksProps = {}) {
                 "linear-gradient(180deg, transparent 60%, #FFE600 60%)",
             }}
           >
-            4 つのかたち
+            3 つのかたち
           </span>
           。
         </h2>
 
-        {/* 4 アクションタイル */}
+        {/* 3 アクションタイル */}
         <ol
-          className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5"
+          className="grid grid-cols-3 gap-2 md:gap-5"
           style={{ fontFamily: "var(--font-noto-serif), serif" }}
         >
           <Tile
             icon={<DiceIcon />}
             title="毎日の賽"
-            sub="1 日 1 回 · 無料"
+            sub="毎日 1 回 · 無料"
             detail="役で 1〜100 票が推しに入る"
             accent="red"
             delay={0}
@@ -83,18 +83,10 @@ export function HowItWorks({ activity }: HowItWorksProps = {}) {
           <Tile
             icon={<PodiumIcon />}
             title="順位予想"
-            sub="6 種の賭式"
-            detail="的中で最大 63 pt"
+            sub="無料・何度でも提出"
+            detail="予想そのものが推しの票になる"
             accent="teal"
             delay={0.1}
-          />
-          <Tile
-            icon={<BallotIcon />}
-            title="ライブ投票"
-            sub="会場で直接投票"
-            detail="予想ボーナスで倍率 UP"
-            accent="pink"
-            delay={0.2}
           />
           <Tile
             icon={<PlayIcon />}
@@ -102,7 +94,7 @@ export function HowItWorks({ activity }: HowItWorksProps = {}) {
             sub="配信 · 動画を見る"
             detail="バズ · 配信指標を底上げ"
             accent="navy"
-            delay={0.3}
+            delay={0.2}
           />
         </ol>
 
@@ -138,9 +130,17 @@ export function HowItWorks({ activity }: HowItWorksProps = {}) {
               className="mt-2 text-xs md:text-sm text-[#FFE600] text-center font-black tracking-wider"
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
-              上位 6 名だけが、次のバトルステージへ。
+              上位 6 名だけが、次の主役のステージへ。
             </p>
           </div>
+
+          {/* ライブ投票の補足 (会場限定のため別扱い) */}
+          <p
+            className="mt-4 text-[11px] md:text-xs text-[#4A5060] text-center leading-relaxed"
+            style={{ fontFamily: "var(--font-noto-serif), serif" }}
+          >
+            ※ 会場に来たら、<b className="text-[#111]">ライブ投票</b>でさらに票数倍増。
+          </p>
         </div>
       </div>
 
@@ -316,36 +316,6 @@ function PodiumIcon() {
         d="M24 7 L25.6 10.2 L29.2 10.7 L26.6 13.2 L27.2 16.8 L24 15.1 L20.8 16.8 L21.4 13.2 L18.8 10.7 L22.4 10.2 Z"
         fill="#FFE600"
       />
-    </svg>
-  );
-}
-
-function BallotIcon() {
-  return (
-    <svg
-      width="60%"
-      height="60%"
-      viewBox="0 0 48 48"
-      fill="none"
-      aria-hidden
-    >
-      {/* ballot box */}
-      <rect x="7" y="22" width="34" height="20" rx="2" fill="#FFFFFF" />
-      {/* slot */}
-      <rect x="15" y="25" width="18" height="2.4" rx="1" fill="#ED2B86" />
-      {/* ticket going in */}
-      <rect
-        x="18"
-        y="7"
-        width="12"
-        height="16"
-        rx="1.5"
-        fill="#FFE600"
-        stroke="#111"
-        strokeWidth="1.2"
-      />
-      <line x1="21" y1="13" x2="27" y2="13" stroke="#111" strokeWidth="1.4" />
-      <line x1="21" y1="17" x2="27" y2="17" stroke="#111" strokeWidth="1.4" />
     </svg>
   );
 }
