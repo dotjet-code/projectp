@@ -51,7 +51,7 @@ export function HowItWorks({ activity }: HowItWorksProps = {}) {
 
         {/* Lead */}
         <h2
-          className="text-xl md:text-3xl font-black leading-tight text-[#111] mb-5 md:mb-8 max-w-2xl"
+          className="text-xl md:text-3xl font-black leading-tight text-[#111] mb-2 max-w-2xl"
           style={{ fontFamily: "var(--font-noto-serif), serif" }}
         >
           あなたの応援、
@@ -66,6 +66,22 @@ export function HowItWorks({ activity }: HowItWorksProps = {}) {
           </span>
           。
         </h2>
+        <p
+          className="text-sm md:text-base font-black text-[#D41E28] mb-5 md:mb-8"
+          style={{ fontFamily: "var(--font-noto-serif), serif" }}
+        >
+          ━ ぜんぶ
+          <span
+            className="relative inline-block px-1 text-[#111]"
+            style={{
+              background:
+                "linear-gradient(180deg, transparent 60%, #FFE600 60%)",
+            }}
+          >
+            無料
+          </span>
+          で応援できる。
+        </p>
 
         {/* 3 アクションタイル */}
         <ol
@@ -83,8 +99,8 @@ export function HowItWorks({ activity }: HowItWorksProps = {}) {
           <Tile
             icon={<PodiumIcon />}
             title="順位予想"
-            sub="無料・何度でも提出"
-            detail="予想そのものが推しの票になる"
+            sub="出すだけで推しに票"
+            detail="的中なら景品、推しにもさらに貢献"
             accent="teal"
             delay={0.1}
           />
