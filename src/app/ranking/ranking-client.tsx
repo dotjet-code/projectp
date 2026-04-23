@@ -62,7 +62,7 @@ function IndicatorRanking({
   indicator,
   members,
   limit = 10,
-  defaultOpen = false,
+  defaultOpen = true,
 }: {
   indicator: (typeof INDICATORS)[number];
   members: RankedMember[];
