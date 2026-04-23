@@ -40,7 +40,7 @@ export default function AboutPage() {
               >
                 <span className="text-[#FFE600]">数字で勝ち取り、数字で奪われる。</span>
                 <br />
-                毎月、主役の座を懸けて駆け上がる。上位 6 名だけが、次のステージに立てる。
+                ステージごとに、主役の座を懸けて駆け上がる。上位 6 名だけが、次のステージに立てる。
               </p>
               <div
                 className="mt-4 h-2 max-w-[220px] bg-[#D41E28]"
@@ -63,19 +63,19 @@ export default function AboutPage() {
                 className="text-base md:text-lg leading-relaxed text-[#111]"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                かけあがり は、<strong className="text-[#D41E28]">メンバーが毎月の成績で競い合い、上位 6 名が「PLAYER」として次のメインステージに立つ</strong>競争型エンタメプロジェクト。
+                かけあがり は、<strong className="text-[#D41E28]">メンバーが毎ステージの成績で競い合い、上位 6 名が「PLAYER」として次のステージに立つ</strong>競争型エンタメプロジェクト。1 つのステージは約 1 ヶ月の競争期間。
               </p>
               <p
                 className="text-base leading-relaxed text-[#111]"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                固定チームではない。毎月の成績でポジションが入れ替わり、誰もが主役になれる可能性と、主役を失うリスクを同時に抱えている。
+                固定チームではない。ステージ閉幕のたびにポジションが入れ替わり、誰もが主役になれる可能性と、主役を失うリスクを同時に抱えている。
               </p>
               <p
                 className="text-sm leading-relaxed text-[#4A5060]"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                勝ち取った 6 名は、次月のメインステージの主役として活動する。
+                勝ち取った 6 名は、次ステージの主役として活動する。
               </p>
             </div>
           </section>
@@ -146,7 +146,7 @@ export default function AboutPage() {
                 className="text-center text-base md:text-lg font-black"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                4 指標の合計ポイントが、毎月の総合順位を決める。
+                4 指標の合計ポイントが、そのステージの総合順位を決める。
               </p>
             </div>
           </section>
@@ -181,7 +181,7 @@ export default function AboutPage() {
                   <li>— メインステージに立つ権利を持つ</li>
                   <li>— メインステージの正規メンバーとして活動</li>
                   <li>— 優先的な露出・企画参加の機会</li>
-                  <li>— 成績が落ちれば、翌月は PIT に降格</li>
+                  <li>— 成績が落ちれば、次ステージは PIT に降格</li>
                 </ul>
               </div>
               <div className="bg-[#111111] text-[#F5F1E8] px-6 py-8 md:px-8 md:py-10 border-t-[3px] border-[#111] md:border-t-0">
@@ -206,7 +206,7 @@ export default function AboutPage() {
                   <li>— 次のチャンスに向けて準備する期間</li>
                   <li>— 個人配信や企画で巻き返しを図る</li>
                   <li>— ファンの応援がダイレクトに順位に影響</li>
-                  <li>— 成績次第で、翌月は PLAYER に昇格</li>
+                  <li>— 成績次第で、次ステージは PLAYER に昇格</li>
                 </ul>
               </div>
             </div>
@@ -228,7 +228,7 @@ export default function AboutPage() {
               className="mt-5 text-center text-sm text-[#4A5060]"
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
-              毎月の成績で全員のポジションが変わる。<br />
+              ステージ閉幕で全員のポジションが変わる。<br />
               固定チームではなく、競争が生むドラマ。
             </p>
           </section>
@@ -236,7 +236,7 @@ export default function AboutPage() {
           {/* 月1特番 */}
           <section>
             <SectionHeading
-              title="月末 特番"
+              title="閉幕 特番"
               eyebrow="MONTHLY FINAL"
               accent="red"
             />
@@ -244,13 +244,13 @@ export default function AboutPage() {
               className="text-base md:text-lg leading-relaxed text-[#111] max-w-3xl mb-6"
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
-              毎月末、メンバー全員が集合する特別配信番組。ここで月間の戦いが最終確定し、翌月の PLAYER / PIT 編成が発表される。
+              ステージ閉幕時、メンバー全員が集合する特別配信番組。ここでそのステージの戦いが最終確定し、次ステージの PLAYER / PIT 編成が発表される。
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-t-[3px] border-[#111]">
               {[
                 { num: "01", label: "振り返り", desc: "4 指標の推移と順位変動を全員で確認" },
                 { num: "02", label: "最終決戦", desc: "最終順位に影響する特別企画を実施" },
-                { num: "03", label: "新編成", desc: "上位 6 名が PLAYER に昇格、翌月スタート" },
+                { num: "03", label: "新編成", desc: "上位 6 名が PLAYER に昇格、次ステージスタート" },
               ].map((item) => (
                 <div
                   key={item.num}

@@ -36,7 +36,7 @@ export async function CountdownStatus() {
               className="text-[10px] md:text-xs font-black tracking-[0.3em] text-[#FFE600]"
               style={{ fontFamily: "var(--font-outfit)" }}
             >
-              月末特番まで
+              閉幕特番まで
             </p>
           </div>
           {remaining ? (

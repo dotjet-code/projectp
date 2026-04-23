@@ -4,7 +4,7 @@ const PHASES = [
   { key: "opening", label: "開幕" },
   { key: "mid", label: "中盤" },
   { key: "closing", label: "終盤" },
-  { key: "finale", label: "月末特番" },
+  { key: "finale", label: "閉幕特番" },
 ] as const;
 
 function computeCurrentPhaseIndex(stage: Stage | null): number {

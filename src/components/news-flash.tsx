@@ -32,7 +32,7 @@ const GRADE_STAMP: Record<string, string> = {
   E: "通常",
 };
 
-const PHASE_LABELS = ["開幕", "中盤", "終盤", "月末特番"] as const;
+const PHASE_LABELS = ["開幕", "中盤", "終盤", "閉幕特番"] as const;
 
 function computePhase(stage: Stage | null): string {
   if (!stage) return "開幕前";
@@ -308,7 +308,7 @@ export function NewsFlash({
               className="text-[8px] font-black tracking-[0.25em] text-[#4A5060]"
               style={{ fontFamily: "var(--font-outfit)" }}
             >
-              月末特番まで
+              閉幕特番まで
             </p>
             {remaining ? (
               <div className="mt-0.5 flex items-baseline gap-1">
