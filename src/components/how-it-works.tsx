@@ -8,10 +8,11 @@ interface HowItWorksProps {
 }
 
 /**
- * 0秒理解用の 4 ステップ図解。
- * モバイル: 2×2 グリッド + 下向き矢印
- * デスクトップ: 横 4 並び + 右向き矢印
- * 読ませるのではなく、見せて伝える装置。
+ * ファンができる「応援の 4 つのかたち」を並列で見せ、
+ * その全部が「彼女たちの運命を変える」に着地させる図解。
+ *
+ * モバイル: 2×2 グリッド、デスクトップ: 横 4 並び。
+ * 時系列フローではなく、4 つの入力 → 1 つの結果 という構造。
  */
 export function HowItWorks({ activity }: HowItWorksProps = {}) {
   return (
@@ -29,8 +30,9 @@ export function HowItWorks({ activity }: HowItWorksProps = {}) {
         aria-hidden
       />
 
-      <div className="relative max-w-[1200px] mx-auto px-4 py-10 md:py-12">
-        <div className="flex items-baseline gap-3 mb-6 md:mb-8">
+      <div className="relative max-w-[1200px] mx-auto px-4 py-10 md:py-14">
+        {/* Eyebrow */}
+        <div className="flex items-baseline gap-3 mb-5 md:mb-6">
           <span className="inline-block w-2 h-2 bg-[#D41E28]" />
           <p
             className="text-[11px] md:text-xs font-black tracking-[0.35em] text-[#D41E28]"
@@ -47,44 +49,99 @@ export function HowItWorks({ activity }: HowItWorksProps = {}) {
           </p>
         </div>
 
-        <ol
-          className="grid grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-8 md:gap-6"
+        {/* Lead */}
+        <h2
+          className="text-xl md:text-3xl font-black leading-tight text-[#111] mb-5 md:mb-8 max-w-2xl"
           style={{ fontFamily: "var(--font-noto-serif), serif" }}
         >
-          <Step
-            num={1}
+          あなたの応援、
+          <span
+            className="relative inline-block px-1"
+            style={{
+              background:
+                "linear-gradient(180deg, transparent 60%, #FFE600 60%)",
+            }}
+          >
+            4 つのかたち
+          </span>
+          。
+        </h2>
+
+        {/* 4 アクションタイル */}
+        <ol
+          className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5"
+          style={{ fontFamily: "var(--font-noto-serif), serif" }}
+        >
+          <Tile
             icon={<DiceIcon />}
-            title="賽を振る"
-            sub="毎日1回 無料"
+            title="毎日の賽"
+            sub="1 日 1 回 · 無料"
+            detail="役で 1〜100 票が推しに入る"
             accent="red"
             delay={0}
           />
-          <Step
-            num={2}
-            icon={<VoteIcon />}
-            title="推しに票が入る"
-            sub="役で票数が決まる"
+          <Tile
+            icon={<PodiumIcon />}
+            title="順位予想"
+            sub="6 種の賭式"
+            detail="的中で最大 63 pt"
             accent="teal"
-            delay={0.15}
+            delay={0.1}
           />
-          <Step
-            num={3}
-            icon={<ChartIcon />}
-            title="順位が動く"
-            sub="リアルタイム集計"
+          <Tile
+            icon={<BallotIcon />}
+            title="ライブ投票"
+            sub="会場で直接投票"
+            detail="予想ボーナスで倍率 UP"
             accent="pink"
+            delay={0.2}
+          />
+          <Tile
+            icon={<PlayIcon />}
+            title="視聴で応援"
+            sub="配信 · 動画を見る"
+            detail="バズ · 配信指標を底上げ"
+            accent="navy"
             delay={0.3}
           />
-          <Step
-            num={4}
-            icon={<TrophyIcon />}
-            title="上位6名 選抜"
-            sub="バトルステージ閉幕で決着"
-            accent="red"
-            highlight
-            delay={0.45}
-          />
         </ol>
+
+        {/* 結果バナー */}
+        <div className="mt-8 md:mt-10 flex flex-col items-center">
+          <span
+            className="hiw-arrow text-[#D41E28] text-2xl md:text-3xl font-black leading-none"
+            aria-hidden
+          >
+            ↓
+          </span>
+          <div
+            className="mt-3 md:mt-4 w-full max-w-[820px] bg-[#111] text-white px-5 py-5 md:px-8 md:py-6"
+            style={{ boxShadow: "6px 6px 0 rgba(17,17,17,0.25)" }}
+          >
+            <p
+              className="text-base md:text-xl font-black text-center leading-relaxed"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              その全部で、
+              <span
+                className="relative inline-block px-1"
+                style={{
+                  background:
+                    "linear-gradient(180deg, transparent 60%, #D41E28 60%)",
+                }}
+              >
+                彼女たちの運命は変わる
+              </span>
+              。
+            </p>
+            <p
+              className="mt-2 text-xs md:text-sm text-[#FFE600] text-center font-black tracking-wider"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+            >
+              上位 6 名だけが、次のバトルステージへ。
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* 本日のアクティビティ (社会的証明) */}
@@ -135,88 +192,68 @@ export function HowItWorks({ activity }: HowItWorksProps = {}) {
           0%, 100% { opacity: 0.35; transform: scale(1); }
           50% { opacity: 1; transform: scale(1.1); }
         }
-        .hiw-step {
+        .hiw-tile {
           animation: hiw-pop 0.5s ease-out both;
         }
         .hiw-arrow {
           animation: hiw-pulse 1.8s ease-in-out infinite;
         }
         @media (prefers-reduced-motion: reduce) {
-          .hiw-step, .hiw-arrow { animation: none; opacity: 1; }
+          .hiw-tile, .hiw-arrow { animation: none; opacity: 1; }
         }
       `}</style>
     </section>
   );
 }
 
-type Accent = "red" | "teal" | "pink";
+type Accent = "red" | "teal" | "pink" | "navy";
 
-function Step({
-  num,
+function Tile({
   icon,
   title,
   sub,
+  detail,
   accent,
-  highlight = false,
   delay,
 }: {
-  num: number;
   icon: React.ReactNode;
   title: string;
   sub: string;
+  detail: string;
   accent: Accent;
-  highlight?: boolean;
   delay: number;
 }) {
-  const colors: Record<Accent, { bg: string; fg: string }> = {
-    red: { bg: "#D41E28", fg: "#FFFFFF" },
-    teal: { bg: "#1CB4AF", fg: "#FFFFFF" },
-    pink: { bg: "#ED2B86", fg: "#FFFFFF" },
+  const colors: Record<Accent, { bg: string; fg: string; accent: string }> = {
+    red: { bg: "#D41E28", fg: "#FFFFFF", accent: "#D41E28" },
+    teal: { bg: "#1CB4AF", fg: "#FFFFFF", accent: "#0F7F7C" },
+    pink: { bg: "#ED2B86", fg: "#FFFFFF", accent: "#ED2B86" },
+    navy: { bg: "#1447E6", fg: "#FFFFFF", accent: "#1447E6" },
   };
   const c = colors[accent];
-  // モバイルは 2x2 → 2 と 4 が右カラム、3 と 1 が左カラム。
-  // 矢印を 1→2 (右) / 2→3 (下) / 3→4 (右) で配置。
-  const showRightArrow = num === 1 || num === 3; // 1→2, 3→4
-  const showDownArrowMobile = num === 2; // 2→3 (mobile only)
 
   return (
     <li
-      className="hiw-step relative flex flex-col items-center text-center"
-      style={{ animationDelay: `${delay}s` }}
+      className="hiw-tile relative flex flex-col items-center text-center bg-white border-2 border-[#111] px-3 py-4 md:px-4 md:py-5"
+      style={{
+        animationDelay: `${delay}s`,
+        boxShadow: "4px 4px 0 rgba(17,17,17,0.18)",
+      }}
     >
-      {/* 番号バッジ */}
-      <div
-        className="mb-3 inline-flex items-center justify-center"
-        style={{
-          width: 32,
-          height: 32,
-          backgroundColor: "#111",
-          color: "#FFE600",
-          fontFamily: "var(--font-outfit)",
-          fontSize: 14,
-          fontWeight: 900,
-          transform: "rotate(-3deg)",
-        }}
-      >
-        {num}
-      </div>
-
       {/* アイコン丸 */}
       <div
-        className={`relative flex items-center justify-center ${highlight ? "ring-[6px] ring-[#FFE600]" : ""}`}
+        className="relative flex items-center justify-center"
         style={{
-          width: "clamp(80px, 18vw, 100px)",
-          height: "clamp(80px, 18vw, 100px)",
+          width: "clamp(60px, 14vw, 78px)",
+          height: "clamp(60px, 14vw, 78px)",
           backgroundColor: c.bg,
           color: c.fg,
-          boxShadow: "5px 5px 0 rgba(17,17,17,0.3)",
           borderRadius: "50%",
+          boxShadow: "3px 3px 0 rgba(17,17,17,0.22)",
         }}
       >
         {icon}
       </div>
 
-      {/* タイトル */}
       <p
         className="mt-3 text-sm md:text-base font-black text-[#111] leading-tight"
         style={{ fontFamily: "var(--font-noto-serif), serif" }}
@@ -224,39 +261,20 @@ function Step({
         {title}
       </p>
       <p
-        className="mt-1 text-[11px] md:text-xs text-[#4A5060] leading-snug"
-        style={{ fontFamily: "var(--font-noto-serif), serif" }}
+        className="mt-1 text-[10px] md:text-xs font-black tracking-wider leading-snug"
+        style={{
+          fontFamily: "var(--font-noto-serif), serif",
+          color: c.accent,
+        }}
       >
         {sub}
       </p>
-
-      {/* 矢印: モバイルは 1→2 横 / 2→3 下 / 3→4 横 */}
-      {showRightArrow && (
-        <span
-          className="hiw-arrow absolute -right-1 md:-right-2 text-[#D41E28] text-xl md:text-3xl font-black select-none pointer-events-none"
-          aria-hidden
-          style={{
-            top: "calc(32px + 3px + clamp(80px,18vw,100px)/2 - 12px)",
-            animationDelay: `${delay + 0.3}s`,
-          }}
-        >
-          →
-        </span>
-      )}
-      {showDownArrowMobile && (
-        <span
-          className="hiw-arrow absolute md:hidden text-[#D41E28] text-xl font-black select-none pointer-events-none"
-          aria-hidden
-          style={{
-            left: "100%",
-            top: "calc(100% + 2px)",
-            animationDelay: `${delay + 0.3}s`,
-            transform: "translateX(-50%)",
-          }}
-        >
-          ↓
-        </span>
-      )}
+      <p
+        className="mt-1 text-[10px] md:text-xs text-[#4A5060] leading-snug"
+        style={{ fontFamily: "var(--font-noto-serif), serif" }}
+      >
+        {detail}
+      </p>
     </li>
   );
 }
@@ -270,55 +288,69 @@ function DiceIcon() {
       fill="none"
       aria-hidden
     >
-      <rect x="6" y="6" width="36" height="36" rx="6" fill="#FFFFFF" />
-      <circle cx="24" cy="24" r="6" fill="#D41E28" />
-      <circle cx="15" cy="15" r="2.6" fill="#111" />
-      <circle cx="33" cy="33" r="2.6" fill="#111" />
+      <rect x="8" y="8" width="32" height="32" rx="5" fill="#FFFFFF" />
+      <circle cx="16" cy="16" r="2.6" fill="#111" />
+      <circle cx="24" cy="24" r="2.6" fill="#111" />
+      <circle cx="32" cy="32" r="2.6" fill="#111" />
     </svg>
   );
 }
 
-function VoteIcon() {
+function PodiumIcon() {
   return (
     <svg
-      width="56%"
-      height="56%"
+      width="62%"
+      height="62%"
       viewBox="0 0 48 48"
       fill="none"
       aria-hidden
     >
+      {/* 3rd (left, short) */}
+      <rect x="5" y="28" width="11" height="14" fill="#FFFFFF" opacity="0.65" />
+      {/* 2nd (right, mid) */}
+      <rect x="32" y="23" width="11" height="19" fill="#FFFFFF" opacity="0.8" />
+      {/* 1st (center, tall) */}
+      <rect x="18.5" y="15" width="11" height="27" fill="#FFFFFF" />
+      {/* star on top of 1st */}
       <path
-        d="M24 6 L30 18 L43 20 L33 30 L36 43 L24 36 L12 43 L15 30 L5 20 L18 18 Z"
-        fill="#FFFFFF"
+        d="M24 7 L25.6 10.2 L29.2 10.7 L26.6 13.2 L27.2 16.8 L24 15.1 L20.8 16.8 L21.4 13.2 L18.8 10.7 L22.4 10.2 Z"
+        fill="#FFE600"
       />
     </svg>
   );
 }
 
-function ChartIcon() {
+function BallotIcon() {
   return (
     <svg
-      width="56%"
-      height="56%"
+      width="60%"
+      height="60%"
       viewBox="0 0 48 48"
       fill="none"
       aria-hidden
     >
-      <rect x="6" y="28" width="9" height="14" rx="1" fill="#FFFFFF" />
-      <rect x="19" y="18" width="9" height="24" rx="1" fill="#FFFFFF" />
-      <rect x="32" y="8" width="9" height="34" rx="1" fill="#FFFFFF" />
-      <path
-        d="M8 28 L22 18 L34 10"
-        stroke="#FFE600"
-        strokeWidth="2.5"
-        fill="none"
-        strokeLinecap="round"
+      {/* ballot box */}
+      <rect x="7" y="22" width="34" height="20" rx="2" fill="#FFFFFF" />
+      {/* slot */}
+      <rect x="15" y="25" width="18" height="2.4" rx="1" fill="#ED2B86" />
+      {/* ticket going in */}
+      <rect
+        x="18"
+        y="7"
+        width="12"
+        height="16"
+        rx="1.5"
+        fill="#FFE600"
+        stroke="#111"
+        strokeWidth="1.2"
       />
+      <line x1="21" y1="13" x2="27" y2="13" stroke="#111" strokeWidth="1.4" />
+      <line x1="21" y1="17" x2="27" y2="17" stroke="#111" strokeWidth="1.4" />
     </svg>
   );
 }
 
-function TrophyIcon() {
+function PlayIcon() {
   return (
     <svg
       width="58%"
@@ -327,23 +359,7 @@ function TrophyIcon() {
       fill="none"
       aria-hidden
     >
-      <path
-        d="M12 8 H36 V22 C36 30 30 34 24 34 C18 34 12 30 12 22 Z"
-        fill="#FFFFFF"
-      />
-      <rect x="20" y="34" width="8" height="5" fill="#FFFFFF" />
-      <rect x="13" y="39" width="22" height="3" fill="#FFFFFF" />
-      <text
-        x="24"
-        y="24"
-        textAnchor="middle"
-        fontSize="12"
-        fontWeight="900"
-        fill="#D41E28"
-        fontFamily="var(--font-outfit)"
-      >
-        6
-      </text>
+      <path d="M14 10 L14 38 L37 24 Z" fill="#FFFFFF" />
     </svg>
   );
 }
