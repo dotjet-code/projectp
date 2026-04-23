@@ -11,7 +11,7 @@ function PassLineDivider() {
         className="text-[11px] font-black tracking-[0.25em]"
         style={{ fontFamily: "var(--font-outfit)" }}
       >
-        — PASS LINE · 翌月再編成ライン —
+        — PASS LINE · 次ステージ再編成ライン —
       </span>
     </div>
   );
@@ -338,7 +338,7 @@ export function RankingClient({
             <span className="text-[#4A5060]">
               4 指標の合計ポイント順。
               <span className="inline-block ml-1 text-[#D41E28] font-bold">
-                7 位以下は次月 PIT
+                7 位以下は次ステージ PIT
               </span>
               。
             </span>
@@ -367,7 +367,7 @@ export function RankingClient({
       {/* Monthly Special Status */}
       <section className="max-w-[1200px] mx-auto px-4 mt-16">
         <SectionHeading
-          title="月末特番の反映状況"
+          title="閉幕特番の反映状況"
           eyebrow="FINAL STATUS"
           accent="red"
         />
@@ -387,14 +387,14 @@ export function RankingClient({
               className="text-base md:text-lg font-black text-[#111]"
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
-              月末特番の結果待ち
+              閉幕特番の結果待ち
             </span>
           </div>
           <p
             className="text-sm text-[#4A5060]"
             style={{ fontFamily: "var(--font-noto-serif), serif" }}
           >
-            月間 4 指標（バズ・配信・収支・投票）のみ反映中。月末特番で最終確定 → 翌月の再編成に反映される。
+            4 指標（バズ・配信・収支・投票）のみ反映中。閉幕特番で最終確定 → 次ステージの再編成に反映される。
           </p>
         </div>
       </section>

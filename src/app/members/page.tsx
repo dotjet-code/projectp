@@ -135,7 +135,7 @@ export default async function MembersPage() {
                 className="text-lg md:text-2xl font-black leading-relaxed text-[#F5F1E8]"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                <span className="text-[#FFE600]">主役は、毎月入れ替わる。</span>
+                <span className="text-[#FFE600]">主役は、ステージごとに入れ替わる。</span>
                 <br />
                 上位 6 名が次のステージに立つ。
                 <br />
@@ -175,7 +175,7 @@ export default async function MembersPage() {
               className="text-center text-base md:text-lg font-black"
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
-              月間 4 指標（バズ・配信・収支・投票）と月末特番の結果で、毎月 PLAYER / PIT が再編成される。
+              4 指標（バズ・配信・収支・投票）と閉幕特番の結果で、ステージごとに PLAYER / PIT が再編成される。
             </p>
           </div>
         </section>

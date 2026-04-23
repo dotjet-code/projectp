@@ -263,7 +263,7 @@ export default async function ResultsPage({
                             boxShadow: "2px 2px 0 rgba(17,17,17,0.22)",
                           }}
                         >
-                          ━ 翌月再編成ライン ━
+                          ━ 次ステージ再編成ライン ━
                         </span>
                       </div>
                     )}

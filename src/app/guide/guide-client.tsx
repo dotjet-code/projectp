@@ -178,7 +178,7 @@ export function GuideClient() {
           className="mt-5 text-sm md:text-base text-[#4A5060] leading-relaxed max-w-2xl"
           style={{ fontFamily: "var(--font-noto-serif), serif" }}
         >
-          かけあがり！は、<b className="text-[#111]">10 人のメンバーが毎月数字で競い合う</b>
+          かけあがり！は、<b className="text-[#111]">10 人のメンバーがステージごとに数字で競い合う</b>
           競争型エンタメ。あなたは <b className="text-[#D41E28]">推しを押し上げるファン</b> として参加できる。
         </p>
         <div
@@ -216,7 +216,7 @@ export function GuideClient() {
             <li className="flex gap-2">
               <span className="text-[#D41E28] font-black">02</span>
               <a href="#cycle" className="hover:underline">
-                月のサイクル
+                ステージのサイクル
               </a>
             </li>
             <li className="flex gap-2">
@@ -253,21 +253,41 @@ export function GuideClient() {
           <Section num="01" eyebrow="WHAT IS IT" title="かけあがり！とは?">
             <Big>
               <Highlight>バズ・配信・収支・投票</Highlight>
-              の 4 指標で毎月ポイントが積み上がる、競争型エンタメ。
+              の 4 指標でポイントを積み上げ、競い合う競争型エンタメ。
             </Big>
             <Big>
-              上位 6 名が <b className="text-[#D41E28]">PLAYER</b>（その月の主役）。残りは
+              上位 6 名が <b className="text-[#D41E28]">PLAYER</b>（そのステージの主役）。残りは
               <b> PIT</b>（待機組）。
-              翌月はまた 0 から — 誰でも駆け上がれる。
+              ステージ閉幕後はまた 0 から — 誰でも駆け上がれる。
             </Big>
+
+            <div
+              className="mt-5 bg-[#FFE600] border-2 border-[#111] p-4"
+              style={{ boxShadow: "3px 3px 0 rgba(17,17,17,0.18)" }}
+            >
+              <p
+                className="text-[10px] font-black tracking-[0.3em] text-[#D41E28] mb-2"
+                style={{ fontFamily: "var(--font-outfit)" }}
+              >
+                ━ ステージとは?
+              </p>
+              <p
+                className="text-sm md:text-base text-[#111] leading-relaxed"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                <b>1 つの「ステージ」は約 1 ヶ月の競争期間。</b>
+                ステージの中で全員がポイントを積み上げ、閉幕特番で最終順位が確定する。
+                その結果で、<b>次のステージ</b>の PLAYER / PIT が決まる。
+              </p>
+            </div>
           </Section>
         </div>
 
         <div id="cycle" className="scroll-mt-24">
-          <Section num="02" eyebrow="MONTHLY CYCLE" title="月のサイクル">
+          <Section num="02" eyebrow="STAGE CYCLE" title="ステージのサイクル">
             <div className="space-y-1">
               <div className="bg-[#D41E28] text-white px-4 py-2 text-center text-sm font-black">
-                月初 — ステージ開始
+                ステージ開幕（約 1 ヶ月）
               </div>
               <div className="flex justify-center py-1">
                 <span className="text-[#D41E28] text-lg font-black">↓</span>
@@ -291,7 +311,7 @@ export function GuideClient() {
                 <span className="text-[#D41E28] text-lg font-black">↓</span>
               </div>
               <div className="bg-[#111] text-[#FFE600] px-4 py-2 text-center text-sm font-black">
-                月末特番 → 最終順位確定 → 的中景品
+                閉幕特番 → 最終順位確定 → 的中景品 → 次ステージへ
               </div>
             </div>
           </Section>
@@ -346,7 +366,7 @@ export function GuideClient() {
                   title="結果を見て景品を受け取る"
                   desc={
                     <>
-                      月末特番で採点 → マイページに赤バッジがついたら景品アリ。QR を会場で見せるか、
+                      閉幕特番で採点 → マイページに赤バッジがついたら景品アリ。QR を会場で見せるか、
                       ライブ投票の時に自動適用される。
                     </>
                   }

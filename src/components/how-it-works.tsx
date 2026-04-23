@@ -79,7 +79,7 @@ export function HowItWorks({ activity }: HowItWorksProps = {}) {
             num={4}
             icon={<TrophyIcon />}
             title="上位6名 選抜"
-            sub="月末に決着"
+            sub="ステージ閉幕で決着"
             accent="red"
             highlight
             delay={0.45}
