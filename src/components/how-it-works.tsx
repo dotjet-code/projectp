@@ -99,8 +99,8 @@ export function HowItWorks({ activity }: HowItWorksProps = {}) {
           <Tile
             icon={<PodiumIcon />}
             title="順位予想"
-            sub="出すだけで推しに票"
-            detail="的中なら景品、推しにもさらに貢献"
+            sub="誰が勝つのか?"
+            detail="予想するだけで票、的中で景品"
             accent="teal"
             delay={0.1}
           />
