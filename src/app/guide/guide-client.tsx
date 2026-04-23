@@ -170,9 +170,9 @@ export function GuideClient() {
           className="text-3xl md:text-5xl font-black leading-tight text-[#111]"
           style={{ fontFamily: "var(--font-noto-serif), serif" }}
         >
-          5 分で分かる、
+          3 分で分かる、
           <br />
-          <Highlight>ここでの遊び方。</Highlight>
+          <Highlight>かけあがり！ガイド</Highlight>
         </h1>
         <p
           className="mt-5 text-sm md:text-base text-[#4A5060] leading-relaxed max-w-2xl"
