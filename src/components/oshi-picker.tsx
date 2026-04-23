@@ -4,8 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { RankedMember } from "@/lib/projectp/live-stats";
-
-const OSHI_KEY = "projectp.oshi";
+import {
+  OSHI_CHANGE_EVENT,
+  clearOshi,
+  readOshi,
+  writeOshi,
+} from "@/lib/oshi";
 
 interface OshiPickerProps {
   members: RankedMember[];
@@ -23,21 +27,24 @@ export function OshiPicker({ members }: OshiPickerProps) {
 
   useEffect(() => {
     setMounted(true);
-    try {
-      const saved = window.localStorage.getItem(OSHI_KEY);
-      if (saved) setOshiSlug(saved);
-    } catch {
-      // ignore
-    }
+    const sync = () => {
+      const oshi = readOshi();
+      setOshiSlug(oshi?.slug ?? null);
+    };
+    sync();
+    window.addEventListener(OSHI_CHANGE_EVENT, sync);
+    return () => window.removeEventListener(OSHI_CHANGE_EVENT, sync);
   }, []);
 
   const handlePick = (slug: string) => {
-    try {
-      window.localStorage.setItem(OSHI_KEY, slug);
-    } catch {
-      // ignore
-    }
+    writeOshi(slug);
     setOshiSlug(slug);
+  };
+
+  const handleClear = () => {
+    clearOshi();
+    setOshiSlug(null);
+    setDismissed(false);
   };
 
   const handleDismiss = () => {
@@ -57,13 +64,14 @@ export function OshiPicker({ members }: OshiPickerProps) {
       <section className="bg-[#111] text-[#F5F1E8] border-y-2 border-[#111]">
         <div className="max-w-[1200px] mx-auto px-4 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <span className="relative shrink-0 w-9 h-9 overflow-hidden">
+            <span className="relative shrink-0 w-9 h-9 overflow-hidden border border-[#F5F1E8]/40">
               <Image
                 src={oshiMember.avatarUrl}
                 alt={oshiMember.name}
                 fill
                 sizes="36px"
                 className="object-cover"
+                style={{ objectPosition: "50% 18%" }}
               />
             </span>
             <div className="min-w-0">
@@ -81,15 +89,26 @@ export function OshiPicker({ members }: OshiPickerProps) {
               </p>
             </div>
           </div>
-          <Link
-            href={`/members/${oshiMember.slug}`}
-            className="shrink-0 inline-flex items-center min-h-[40px] gap-1 bg-[#D41E28] text-white px-4 py-1.5 text-xs font-black"
-            style={{
-              fontFamily: "var(--font-noto-serif), serif",
-            }}
-          >
-            ページへ →
-          </Link>
+          <div className="shrink-0 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleClear}
+              className="text-[10px] text-[#F5F1E8]/60 hover:text-[#F5F1E8] underline-offset-2 hover:underline"
+              style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              aria-label="推しを解除する"
+            >
+              解除
+            </button>
+            <Link
+              href={`/members/${oshiMember.slug}`}
+              className="inline-flex items-center min-h-[40px] gap-1 bg-[#D41E28] text-white px-4 py-1.5 text-xs font-black"
+              style={{
+                fontFamily: "var(--font-noto-serif), serif",
+              }}
+            >
+              ページへ →
+            </Link>
+          </div>
         </div>
       </section>
     );

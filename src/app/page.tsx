@@ -122,6 +122,7 @@ export default async function Home() {
     .map((m, i) => ({
       id: m.supabaseId as string,
       name: m.name,
+      slug: m.slug,
       avatarUrl: m.avatarUrl,
       rank: i + 1,
     }));
