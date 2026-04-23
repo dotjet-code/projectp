@@ -11,7 +11,7 @@ function PassLineDivider() {
         className="text-[11px] font-black tracking-[0.25em]"
         style={{ fontFamily: "var(--font-outfit)" }}
       >
-        — PASS LINE · 次ステージ再編成ライン —
+        — PASS LINE · 次バトルステージ再編成ライン —
       </span>
     </div>
   );
@@ -338,7 +338,7 @@ export function RankingClient({
             <span className="text-[#4A5060]">
               4 指標の合計ポイント順。
               <span className="inline-block ml-1 text-[#D41E28] font-bold">
-                7 位以下は次ステージ PIT
+                7 位以下は次バトルステージ PIT
               </span>
               。
             </span>
@@ -394,7 +394,7 @@ export function RankingClient({
             className="text-sm text-[#4A5060]"
             style={{ fontFamily: "var(--font-noto-serif), serif" }}
           >
-            4 指標（バズ・配信・収支・投票）のみ反映中。閉幕特番で最終確定 → 次ステージの再編成に反映される。
+            4 指標（バズ・配信・収支・投票）のみ反映中。閉幕特番で最終確定 → 次バトルステージの再編成に反映される。
           </p>
         </div>
       </section>

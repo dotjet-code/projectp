@@ -244,7 +244,7 @@ export default async function FanMePage() {
                     className="text-[9px] text-[#4A5060] tracking-wider"
                     style={{ fontFamily: "var(--font-outfit)" }}
                   >
-                    参加ステージ
+                    参加バトルステージ
                   </p>
                   <p
                     className="text-lg font-black text-[#111]"
@@ -449,7 +449,7 @@ export default async function FanMePage() {
                           className="text-xs font-black text-[#111] truncate"
                           style={{ fontFamily: "var(--font-noto-serif), serif" }}
                         >
-                          {h.periodName ?? "ステージ"}
+                          {h.periodName ?? "バトルステージ"}
                         </p>
                         <p
                           className="text-[10px] text-[#4A5060]"
@@ -559,7 +559,7 @@ export default async function FanMePage() {
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
               <p className="text-sm text-[#4A5060]">
-                まだ景品はありません。順位予想を的中させると、ステージ終了後に発行されます。
+                まだ景品はありません。順位予想を的中させると、バトルステージ終了後に発行されます。
               </p>
             </div>
           ) : (

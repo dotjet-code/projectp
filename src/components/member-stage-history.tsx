@@ -23,7 +23,7 @@ export async function MemberStageHistory({
           className="text-2xl md:text-3xl font-black text-[#111] leading-none"
           style={{ fontFamily: "var(--font-noto-serif), serif" }}
         >
-          過去ステージの成績
+          過去バトルステージの成績
         </h2>
         <span className="flex-1 h-px bg-[#111]/30" aria-hidden />
       </div>

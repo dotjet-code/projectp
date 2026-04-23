@@ -48,7 +48,7 @@ export async function MemberGrid() {
         eyebrow="CURRENT STANDINGS"
         aside={
           <span>
-            ステージ閉幕で全員のポジションが変わる。
+            バトルステージ閉幕で全員のポジションが変わる。
           </span>
         }
       />

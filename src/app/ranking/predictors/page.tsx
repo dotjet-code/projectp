@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export const metadata = {
   title: "予想ランキング",
   description:
-    "かけあがり の順位予想の通算ランキング。Series 内の全ステージのスコアを合算した年間王者を決める。",
+    "かけあがり の順位予想の通算ランキング。Series 内の全バトルステージのスコアを合算した年間王者を決める。",
 };
 
 export default async function PredictorsRankingPage({
@@ -149,7 +149,7 @@ export default async function PredictorsRankingPage({
                 className="mt-3 text-sm text-[#4A5060] leading-relaxed"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                ステージ終了後に予想ランキングが集計されて表示される。
+                バトルステージ終了後に予想ランキングが集計されて表示される。
               </p>
               <div className="mt-5 flex flex-wrap justify-center gap-3">
                 <Link
@@ -160,7 +160,7 @@ export default async function PredictorsRankingPage({
                     boxShadow: "3px 3px 0 rgba(17,17,17,0.22)",
                   }}
                 >
-                  今のステージに予想する →
+                  今のバトルステージに予想する →
                 </Link>
                 <Link
                   href="/ranking"
@@ -197,7 +197,7 @@ export default async function PredictorsRankingPage({
                 className="text-[11px] text-[#4A5060] mb-3"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                全ステージの合計スコア（最大 {MAX_PREDICTION_SCORE} pt × ステージ数）で順位付け。
+                全バトルステージの合計スコア（最大 {MAX_PREDICTION_SCORE} pt × バトルステージ数）で順位付け。
               </p>
               <ul
                 className="border-t-[3px] border-b-[3px] border-[#111] divide-y divide-[#111]/15 bg-[#F5F1E8]"

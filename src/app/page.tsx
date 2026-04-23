@@ -41,7 +41,7 @@ function buildNewsFlash(
   if (!top1) {
     return {
       headline: "開幕、間近。",
-      sub: "次のステージで、誰が主役の座を獲るのか。",
+      sub: "次のバトルステージで、誰が主役の座を獲るのか。",
       recent: [],
     };
   }
@@ -110,8 +110,8 @@ export default async function Home() {
     })),
   ]);
   const stageLabel = stage
-    ? `${stage.stageNumber ? `ステージ ${stage.stageNumber}` : ""}${stage.title ? ` 「${stage.title}」` : ""} 開催中`
-    : "次のステージは近日開始";
+    ? `${stage.stageNumber ? `バトルステージ ${stage.stageNumber}` : ""}${stage.title ? ` 「${stage.title}」` : ""} 開催中`
+    : "次のバトルステージは近日開始";
 
   const flash = buildNewsFlash(ranked);
 

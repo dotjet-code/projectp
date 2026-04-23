@@ -33,7 +33,7 @@ export default async function MemberFansPage() {
           <p className="mt-1 font-[family-name:var(--font-outfit)] text-3xl font-black text-primary-dark">
             {engagement.totalPicks}
           </p>
-          <p className="text-[10px] text-muted">全賭式・全ステージ</p>
+          <p className="text-[10px] text-muted">全賭式・全バトルステージ</p>
         </div>
         <div className="rounded-xl border border-pink-200 bg-gradient-to-br from-pink-50 to-red-50 p-5 text-center">
           <p className="text-[10px] font-semibold text-[#e7000b]">

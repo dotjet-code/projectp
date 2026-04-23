@@ -64,7 +64,7 @@ export async function StageTrendChart({ memberName }: { memberName: string }) {
     ? `「${stageTitle}」推移`
     : stageName
       ? `${stageName} 推移`
-      : "ステージ内推移";
+      : "バトルステージ内推移";
 
   return (
     <section className="mx-auto max-w-[1100px] px-4 mt-12">
