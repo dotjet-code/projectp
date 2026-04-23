@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { StreakBadge, getStreakTier } from "@/components/streak-badge";
+import { OSHI_CHANGE_EVENT, readOshi, shouldAutoVote } from "@/lib/oshi";
 
 /**
  * 「今日の賽」ウェルカムポップアップ (チンチロ式ボーナス票) ベスト版。
@@ -16,6 +17,7 @@ import { StreakBadge, getStreakTier } from "@/components/streak-badge";
 export interface ChinchiroMember {
   id: string;             // supabase uuid
   name: string;
+  slug: string;
   avatarUrl: string;
   rank: number;
 }
@@ -143,6 +145,11 @@ export function WelcomeChinchiroModal({ members }: Props) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [devMode, setDevMode] = useState<boolean>(false);
   const [forceOpen, setForceOpen] = useState<boolean>(false);
+  // 推しが設定されていて、翌日以降のログインなら自動で推しに投票する。
+  // この場合 idle の選択グリッドは表示せず、そのまま rolling に進む。
+  const [pendingAutoPick, setPendingAutoPick] =
+    useState<ChinchiroMember | null>(null);
+  const [autoVotedForOshi, setAutoVotedForOshi] = useState<boolean>(false);
   // DEV: 次に振る役を予約する。null の時は通常ランダム。
   const [devQueuedHand, setDevQueuedHand] = useState<string | null>(null);
   const animRef = useRef<number | null>(null);
@@ -199,7 +206,23 @@ export function WelcomeChinchiroModal({ members }: Props) {
         if (cancelled) return;
         setDevMode(Boolean(d?.devAlwaysOpen));
         if (!d?.rolledToday) {
-          setTimeout(() => !cancelled && setOpen(true), 500);
+          const oshi = readOshi();
+          const oshiMember =
+            shouldAutoVote(oshi) && oshi
+              ? members.find((m) => m.slug === oshi.slug)
+              : undefined;
+          if (oshiMember) {
+            // 推し決定済み + 翌日以降 → 選択せず自動で推しに投票
+            setAutoVotedForOshi(true);
+            setOpen(true);
+            // 少し遅延させてモーダル表示後に振り始める
+            setTimeout(() => {
+              if (cancelled) return;
+              setPendingAutoPick(oshiMember);
+            }, 400);
+          } else {
+            setTimeout(() => !cancelled && setOpen(true), 500);
+          }
         } else {
           // 既に振っている → 結果を復元しておく (手動 open 時に活用)
           restoreTodayRoll(d);
@@ -211,6 +234,17 @@ export function WelcomeChinchiroModal({ members }: Props) {
     };
 
   }, []);
+
+  // 推し自動投票: pendingAutoPick が入ったら handlePick を発火
+  useEffect(() => {
+    if (!pendingAutoPick) return;
+    if (phase !== "idle") return;
+    const target = pendingAutoPick;
+    setPendingAutoPick(null);
+    void handlePick(target);
+    // handlePick は依存を増やすと再走するため、意図的に pendingAutoPick のみ監視
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingAutoPick]);
 
   // 任意の場所から window 経由で手動オープン可能にする (上部 CTA など)
   useEffect(() => {
@@ -461,7 +495,17 @@ export function WelcomeChinchiroModal({ members }: Props) {
 
         {/* 本体 */}
         <div className="px-5 pt-5 pb-6">
-          {phase === "idle" && (
+          {phase === "idle" && autoVotedForOshi && (
+            <div className="flex flex-col items-center py-10">
+              <p
+                className="text-center text-sm font-black text-[#4A5060]"
+                style={{ fontFamily: "var(--font-noto-serif), serif" }}
+              >
+                推しに自動で賽を振ります…
+              </p>
+            </div>
+          )}
+          {phase === "idle" && !autoVotedForOshi && (
             <>
               <p
                 className="text-center text-base font-black text-[#111] leading-tight"
