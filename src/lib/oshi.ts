@@ -56,8 +56,7 @@ export function clearOshi(): void {
   window.dispatchEvent(new Event(OSHI_CHANGE_EVENT));
 }
 
-// 推しを選んだ翌日以降なら true (= チンチロで自動投票する)
+// 推しが設定されていれば true (= チンチロで自動投票する)
 export function shouldAutoVote(oshi: StoredOshi | null): boolean {
-  if (!oshi) return false;
-  return oshi.setAt < todayJST();
+  return Boolean(oshi);
 }
