@@ -229,7 +229,7 @@ function commentFor(name: string): string {
 function StarterRoster({ members }: { members: PublicMember[] }) {
   return (
     <PaperCard className="px-5 py-6 md:px-7 md:py-8">
-      <SectionHeading eyebrow="STARTERS" title="出馬表" />
+      <SectionHeading eyebrow="LINEUP" title="参戦メンバー" />
       <p
         className="text-xs md:text-sm leading-relaxed text-[#4A5060] mb-5"
         style={{ fontFamily: "var(--font-noto-serif), serif" }}
@@ -734,7 +734,6 @@ export function PredictionClient({
   const [submitting, setSubmitting] = useState(false);
   const [flash, setFlash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [draftRestored, setDraftRestored] = useState(false);
   const [justSubmitted, setJustSubmitted] = useState(false);
 
   const stageId = stage?.id ?? null;
@@ -773,7 +772,6 @@ export function PredictionClient({
           const draft = loadDraft(j.stage.id);
           if (draft) {
             setBets(draft);
-            setDraftRestored(true);
           }
         }
       } catch {
@@ -844,7 +842,6 @@ export function PredictionClient({
       setFlash("予想を提出しました ✓");
       setJustSubmitted(true);
       if (stageId) clearDraft(stageId);
-      setDraftRestored(false);
       const g = await fetch("/api/public/prediction", { cache: "no-store" });
       if (g.ok) {
         const data = await g.json();
@@ -908,34 +905,6 @@ export function PredictionClient({
               </p>
             </div>
 
-            {/* エントリー切り替え */}
-            <div className="flex items-stretch shadow-[3px_3px_0_rgba(17,17,17,0.18)]">
-              <button
-                type="button"
-                onClick={() => setEntryType("normal")}
-                className={`inline-flex items-center justify-center min-h-[44px] px-4 py-2 text-xs font-black tracking-wider border-2 transition-colors ${
-                  entryType === "normal"
-                    ? "bg-[#111] text-[#FFE600] border-[#111]"
-                    : "bg-white text-[#111] border-[#111] hover:bg-[#F5F1E8]"
-                }`}
-                style={{ fontFamily: "var(--font-noto-serif), serif" }}
-              >
-                通常エントリー
-              </button>
-              <button
-                type="button"
-                onClick={() => setEntryType("welcome")}
-                className={`inline-flex items-center justify-center min-h-[44px] px-4 py-2 text-xs font-black tracking-wider border-2 border-l-0 transition-colors ${
-                  entryType === "welcome"
-                    ? "bg-[#D41E28] text-white border-[#D41E28]"
-                    : "bg-white text-[#111] border-[#111] hover:bg-[#F5F1E8]"
-                }`}
-                style={{ fontFamily: "var(--font-noto-serif), serif" }}
-                title="初めての提出者を対象にした特別エントリー"
-              >
-                初回限定
-              </button>
-            </div>
           </div>
 
           {/* 締切 / 提出数 */}
@@ -985,28 +954,7 @@ export function PredictionClient({
         </section>
       )}
 
-      {loaded && draftRestored && (
-        <section className="mx-auto max-w-[1100px] px-4 mt-4">
-          <div
-            className="bg-[#1CB4AF] text-white px-5 py-3 border-2 border-[#111] shadow-[3px_3px_0_rgba(17,17,17,0.18)]"
-            style={{ fontFamily: "var(--font-noto-serif), serif" }}
-          >
-            <span className="text-[11px] font-black tracking-[0.3em] mr-2"
-              style={{ fontFamily: "var(--font-outfit)" }}
-            >
-              ━ 下書き
-            </span>
-            <span className="text-sm font-black">未提出の下書きを復元しました。</span>
-            <span className="text-xs ml-2 opacity-90">
-              {isLoggedIn
-                ? "下の「予想を提出」を押して確定。"
-                : "会員登録を完了してから提出ボタンを押してください。"}
-            </span>
-          </div>
-        </section>
-      )}
-
-      {/* === 出馬表 === */}
+      {/* === 参戦メンバー === */}
       <section className="mx-auto max-w-[1100px] px-4 mt-8">
         <StarterRoster members={members} />
       </section>
@@ -1100,14 +1048,6 @@ export function PredictionClient({
                 →
               </span>
             </a>
-            {canSubmit && (
-              <p
-                className="text-[11px] text-[#4A5060] tracking-wide"
-                style={{ fontFamily: "var(--font-noto-serif), serif" }}
-              >
-                ✓ 下書き保存済み — 登録後、この予想がそのまま復元されます
-              </p>
-            )}
           </div>
         ) : (
           <button
