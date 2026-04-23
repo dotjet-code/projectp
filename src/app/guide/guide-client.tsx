@@ -178,8 +178,9 @@ export function GuideClient() {
           className="mt-5 text-sm md:text-base text-[#4A5060] leading-relaxed max-w-2xl"
           style={{ fontFamily: "var(--font-noto-serif), serif" }}
         >
-          かけあがり！は、<b className="text-[#111]">メンバーがバトルステージごとに数字で競い合う</b>
-          競争型エンタメ。あなたは <b className="text-[#D41E28]">推しを押し上げるファン</b> として参加できる。
+          かけあがり！は、<b className="text-[#111]">メンバーがバトルステージごとに数字で競い合う</b>競争型エンタメ。
+          <br />
+          あなたの<b className="text-[#111]">一票</b>、あなたの<b className="text-[#111]">予想</b>、あなたが見る<b className="text-[#111]">動画や配信の一本一本</b>——その全部で、<b className="text-[#D41E28]">彼女たちの運命は変わる</b>。
         </p>
         <div
           className="mt-4 h-2 max-w-[220px] bg-[#D41E28]"
