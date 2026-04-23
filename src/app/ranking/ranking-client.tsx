@@ -19,6 +19,163 @@ function PassLineDivider() {
 
 const MEDALS = ["🥇", "🥈", "🥉"] as const;
 
+type IndicatorKey = "buzz" | "concurrent" | "revenue" | "shuyaku";
+
+const INDICATORS: {
+  key: IndicatorKey;
+  label: string;
+  desc: string;
+  color: string;
+  getValue: (m: RankedMember) => number;
+}[] = [
+  {
+    key: "buzz",
+    label: "バズ",
+    desc: "SNS の話題性・動画再生数・トレンド力。注目を集めた量で点が入る。",
+    color: "#00BCFF",
+    getValue: (m) => m.detail.stats.buzz,
+  },
+  {
+    key: "concurrent",
+    label: "配信",
+    desc: "配信の同時接続数と配信時間。リアルタイムで推しを動かせたかで点が入る。",
+    color: "#1447E6",
+    getValue: (m) => m.detail.stats.concurrent,
+  },
+  {
+    key: "revenue",
+    label: "収支",
+    desc: "グッズ・投げ銭・チケットなどの経済指標。応援がそのまま数字になる。",
+    color: "#7A3DFF",
+    getValue: (m) => m.detail.stats.revenue,
+  },
+  {
+    key: "shuyaku",
+    label: "投票",
+    desc: "毎日のサイコロ投票と順位予想で集まる、ファンからの直接指名。",
+    color: "#D41E28",
+    getValue: (m) => m.detail.stats.shuyaku ?? 0,
+  },
+];
+
+function IndicatorRanking({
+  indicator,
+  members,
+  limit = 10,
+  defaultOpen = true,
+}: {
+  indicator: (typeof INDICATORS)[number];
+  members: RankedMember[];
+  limit?: number;
+  defaultOpen?: boolean;
+}) {
+  const sorted = [...members]
+    .filter((m) => m.name !== "Coming Soon")
+    .sort((a, b) => indicator.getValue(b) - indicator.getValue(a))
+    .slice(0, limit);
+  const maxVal = Math.max(...sorted.map(indicator.getValue), 1);
+
+  return (
+    <details
+      open={defaultOpen}
+      className="group bg-[#F5F1E8] border-2 border-[#111]"
+      style={{ boxShadow: "4px 4px 0 rgba(17,17,17,0.18)" }}
+    >
+      {/* ヘッダー (summary) */}
+      <summary className="list-none cursor-pointer px-4 py-3 border-b-2 border-transparent group-open:border-[#111] transition-colors hover:bg-white/40">
+        <div className="flex items-baseline gap-2 mb-1">
+          <span
+            className="inline-block w-3 h-3 shrink-0"
+            style={{ backgroundColor: indicator.color }}
+            aria-hidden
+          />
+          <h3
+            className="text-lg md:text-xl font-black text-[#111]"
+            style={{ fontFamily: "var(--font-noto-serif), serif" }}
+          >
+            {indicator.label}
+          </h3>
+          <span
+            className="ml-auto flex items-center gap-2 text-[10px] font-black tracking-[0.3em] text-[#4A5060]"
+            style={{ fontFamily: "var(--font-outfit)" }}
+          >
+            <span>TOP {sorted.length}</span>
+            <span
+              className="text-[#111] text-sm transition-transform group-open:rotate-180"
+              aria-hidden
+            >
+              ▼
+            </span>
+          </span>
+        </div>
+        <p
+          className="text-[11px] md:text-xs text-[#4A5060] leading-snug"
+          style={{ fontFamily: "var(--font-noto-serif), serif" }}
+        >
+          {indicator.desc}
+        </p>
+      </summary>
+
+      {/* リスト */}
+      <ol className="divide-y divide-[#111]/15">
+        {sorted.map((m, i) => {
+          const value = indicator.getValue(m);
+          const pct = Math.max(2, (value / maxVal) * 100);
+          return (
+            <li key={m.id}>
+              <Link
+                href={`/members/${m.slug}`}
+                className="flex items-center gap-2 md:gap-3 px-4 py-2 hover:bg-white/60 transition-colors"
+              >
+                <span
+                  className="shrink-0 w-6 text-xs font-black text-[#4A5060] tabular-nums text-center"
+                  style={{ fontFamily: "var(--font-outfit)" }}
+                >
+                  {i + 1}
+                </span>
+                <span className="shrink-0 relative w-8 h-8 overflow-hidden border border-[#111]">
+                  <Image
+                    src={m.avatarUrl}
+                    alt={m.name}
+                    fill
+                    sizes="32px"
+                    className="object-cover"
+                    style={{ objectPosition: "50% 18%" }}
+                  />
+                </span>
+                <span
+                  className="flex-1 min-w-0 text-xs md:text-sm font-black text-[#111] truncate"
+                  style={{ fontFamily: "var(--font-noto-serif), serif" }}
+                >
+                  {m.name}
+                </span>
+                {/* 値 + 小バー */}
+                <div className="shrink-0 flex items-center gap-2 w-[120px] md:w-[140px]">
+                  <span className="flex-1 relative h-1.5 bg-[#111]/10">
+                    <span
+                      className="absolute inset-y-0 left-0"
+                      style={{
+                        width: `${pct}%`,
+                        backgroundColor: indicator.color,
+                      }}
+                    />
+                  </span>
+                  <span
+                    className="text-xs font-black text-[#111] tabular-nums min-w-[40px] text-right"
+                    style={{ fontFamily: "var(--font-outfit)" }}
+                  >
+                    {value.toLocaleString()}
+                  </span>
+                </div>
+              </Link>
+            </li>
+          );
+        })}
+      </ol>
+    </details>
+  );
+}
+
 export function RankingClient({
   members,
   stageLabel,
@@ -146,6 +303,30 @@ export function RankingClient({
           </div>
         </section>
       )}
+
+      {/* 指標別ランキング */}
+      <section className="max-w-[1200px] mx-auto px-4 mt-12">
+        <SectionHeading
+          title="指標別ランキング"
+          eyebrow="CATEGORY RANKINGS"
+          accent="red"
+          aside={
+            <span className="text-[#4A5060]">
+              4 指標それぞれの TOP 10。総合順位とは違う強みが見える。
+            </span>
+          }
+        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          {INDICATORS.map((ind) => (
+            <IndicatorRanking
+              key={ind.key}
+              indicator={ind}
+              members={sortedMembers}
+              limit={10}
+            />
+          ))}
+        </div>
+      </section>
 
       {/* Ranking Table */}
       <section className="max-w-[1200px] mx-auto px-4 mt-12">
