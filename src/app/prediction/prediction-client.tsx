@@ -872,7 +872,7 @@ export function PredictionClient({
             className="text-sm text-[#4A5060]"
             style={{ fontFamily: "var(--font-noto-serif), serif" }}
           >
-            現在進行中のステージはありません。
+            現在進行中のバトルステージはありません。
             <br />
             次の開幕で予想投票が開きます。
           </p>
@@ -1140,7 +1140,7 @@ export function PredictionClient({
           style={{ fontFamily: "var(--font-noto-serif), serif" }}
         >
           {isLoggedIn
-            ? "ファン会員限定: 1 ステージ 1 予想 / 何度でも上書き可 / 的中で景品対象"
+            ? "ファン会員限定: 1 バトルステージ 1 予想 / 何度でも上書き可 / 的中で景品対象"
             : "会員登録で、あなたの予想が順位を動かす。的中で景品も。"}
         </p>
 

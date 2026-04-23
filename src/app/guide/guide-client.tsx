@@ -178,7 +178,7 @@ export function GuideClient() {
           className="mt-5 text-sm md:text-base text-[#4A5060] leading-relaxed max-w-2xl"
           style={{ fontFamily: "var(--font-noto-serif), serif" }}
         >
-          かけあがり！は、<b className="text-[#111]">10 人のメンバーがステージごとに数字で競い合う</b>
+          かけあがり！は、<b className="text-[#111]">メンバーがバトルステージごとに数字で競い合う</b>
           競争型エンタメ。あなたは <b className="text-[#D41E28]">推しを押し上げるファン</b> として参加できる。
         </p>
         <div
@@ -216,7 +216,7 @@ export function GuideClient() {
             <li className="flex gap-2">
               <span className="text-[#D41E28] font-black">02</span>
               <a href="#cycle" className="hover:underline">
-                ステージのサイクル
+                バトルステージのサイクル
               </a>
             </li>
             <li className="flex gap-2">
@@ -256,9 +256,9 @@ export function GuideClient() {
               の 4 指標でポイントを積み上げ、競い合う競争型エンタメ。
             </Big>
             <Big>
-              上位 6 名が <b className="text-[#D41E28]">PLAYER</b>（そのステージの主役）。残りは
+              上位 6 名が <b className="text-[#D41E28]">PLAYER</b>（そのバトルステージの主役）。残りは
               <b> PIT</b>（待機組）。
-              ステージ閉幕後はまた 0 から — 誰でも駆け上がれる。
+              バトルステージ閉幕後はまた 0 から — 誰でも駆け上がれる。
             </Big>
 
             <div
@@ -269,25 +269,25 @@ export function GuideClient() {
                 className="text-[10px] font-black tracking-[0.3em] text-[#D41E28] mb-2"
                 style={{ fontFamily: "var(--font-outfit)" }}
               >
-                ━ ステージとは?
+                ━ バトルステージとは?
               </p>
               <p
                 className="text-sm md:text-base text-[#111] leading-relaxed"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                <b>1 つの「ステージ」は約 1 ヶ月の競争期間。</b>
-                ステージの中で全員がポイントを積み上げ、閉幕特番で最終順位が確定する。
-                その結果で、<b>次のステージ</b>の PLAYER / PIT が決まる。
+                <b>1 つの「バトルステージ」は約 1 ヶ月の競争期間。</b>
+                バトルステージの中で全員がポイントを積み上げ、閉幕特番で最終順位が確定する。
+                その結果で、<b>次のバトルステージ</b>の PLAYER / PIT が決まる。
               </p>
             </div>
           </Section>
         </div>
 
         <div id="cycle" className="scroll-mt-24">
-          <Section num="02" eyebrow="STAGE CYCLE" title="ステージのサイクル">
+          <Section num="02" eyebrow="STAGE CYCLE" title="バトルステージのサイクル">
             <div className="space-y-1">
               <div className="bg-[#D41E28] text-white px-4 py-2 text-center text-sm font-black">
-                ステージ開幕（約 1 ヶ月）
+                バトルステージ開幕（約 1 ヶ月）
               </div>
               <div className="flex justify-center py-1">
                 <span className="text-[#D41E28] text-lg font-black">↓</span>
@@ -311,7 +311,7 @@ export function GuideClient() {
                 <span className="text-[#D41E28] text-lg font-black">↓</span>
               </div>
               <div className="bg-[#111] text-[#FFE600] px-4 py-2 text-center text-sm font-black">
-                閉幕特番 → 最終順位確定 → 的中景品 → 次ステージへ
+                閉幕特番 → 最終順位確定 → 的中景品 → 次バトルステージへ
               </div>
             </div>
           </Section>
@@ -339,7 +339,7 @@ export function GuideClient() {
                 <Step
                   num={2}
                   title="推しを選ぶ"
-                  desc="10 人のなかから 1 人、タップで決めるだけ。以降の賽は自動で推しに入る。"
+                  desc="メンバーのなかから 1 人、タップで決めるだけ。以降の賽は自動で推しに入る。"
                 />
                 <Step
                   num={3}

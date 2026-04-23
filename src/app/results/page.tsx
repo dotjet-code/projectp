@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "結果発表",
-  description: "確定済みステージの最終順位と的中者ランキング。",
+  description: "確定済みバトルステージの最終順位と的中者ランキング。",
 };
 
 const medals = ["🥇", "🥈", "🥉"];
@@ -194,7 +194,7 @@ export default async function ResultsPage({
               className="text-[10px] font-black tracking-[0.32em] text-[#D41E28] mb-2"
               style={{ fontFamily: "var(--font-outfit)" }}
             >
-              ━ 過去ステージ
+              ━ 過去バトルステージ
             </p>
             <div className="flex flex-wrap items-center gap-2">
               {closedStages.map((s) => {
@@ -211,7 +211,7 @@ export default async function ResultsPage({
                     style={{ fontFamily: "var(--font-noto-serif), serif" }}
                   >
                     {s.stageNumber !== null
-                      ? `ステージ ${s.stageNumber}`
+                      ? `バトルステージ ${s.stageNumber}`
                       : ""}
                     {s.title ? ` ${s.title}` : s.name}
                   </Link>
@@ -245,7 +245,7 @@ export default async function ResultsPage({
               className="text-sm text-[#4A5060]"
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
-              このステージには集計データがありません。
+              このバトルステージには集計データがありません。
             </p>
           ) : (
             <div className="border-t-[3px] border-[#111]">
@@ -263,7 +263,7 @@ export default async function ResultsPage({
                             boxShadow: "2px 2px 0 rgba(17,17,17,0.22)",
                           }}
                         >
-                          ━ 次ステージ再編成ライン ━
+                          ━ 次バトルステージ再編成ライン ━
                         </span>
                       </div>
                     )}
@@ -400,7 +400,7 @@ export default async function ResultsPage({
               className="text-[11px] text-[#4A5060] mb-4"
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
-              ステージ確定順位と 6 賭式予想を突合して自動採点（最大 {MAX_PREDICTION_SCORE} 点）。
+              バトルステージ確定順位と 6 賭式予想を突合して自動採点（最大 {MAX_PREDICTION_SCORE} 点）。
             </p>
             <ul className="border-t-[3px] border-b-[3px] border-[#111] divide-y divide-[#111]/15 bg-[#F5F1E8]"
               style={{
@@ -517,7 +517,7 @@ export default async function ResultsPage({
               className="text-[11px] text-[#4A5060] mb-4"
               style={{ fontFamily: "var(--font-noto-serif), serif" }}
             >
-              Series {seriesN} 全ステージの予想を合算した年間王者ランキング（ファン会員のみ・上位 10 件）。
+              Series {seriesN} 全バトルステージの予想を合算した年間王者ランキング（ファン会員のみ・上位 10 件）。
             </p>
             <ul className="border-t-[3px] border-b-[3px] border-[#111] divide-y divide-[#111]/15 bg-[#F5F1E8]"
               style={{

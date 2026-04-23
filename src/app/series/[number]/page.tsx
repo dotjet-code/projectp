@@ -54,7 +54,7 @@ export default async function SeriesPage({
               >
                 <span className="text-[#FFE600]">半年、走り抜いた者は誰か。</span>
                 <br />
-                シリーズ通算。確定済みステージの積み上げで、年間順位が決まる。
+                シリーズ通算。確定済みバトルステージの積み上げで、年間順位が決まる。
               </p>
               <p
                 className="mt-3 text-xs md:text-sm font-bold tracking-widest text-[#9BA8BF]"
@@ -81,7 +81,7 @@ export default async function SeriesPage({
               className="text-[10px] font-black tracking-[0.32em] text-[#D41E28] mb-2"
               style={{ fontFamily: "var(--font-outfit)" }}
             >
-              ━ 含まれるステージ
+              ━ 含まれるバトルステージ
             </p>
             <ul className="flex flex-wrap items-center gap-2">
               {data.stages.map((s) => (
@@ -137,7 +137,7 @@ export default async function SeriesPage({
                 className="mt-3 text-sm text-[#4A5060] leading-relaxed"
                 style={{ fontFamily: "var(--font-noto-serif), serif" }}
               >
-                ステージの結果が確定すると、ここに累計が表示される。
+                バトルステージの結果が確定すると、ここに累計が表示される。
               </p>
               <Link
                 href="/ranking"

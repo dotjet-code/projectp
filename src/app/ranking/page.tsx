@@ -13,7 +13,7 @@ export const metadata = {
 export default async function RankingPage() {
   const ctx = await getRankingContext();
   const stageLabel = ctx.stage
-    ? `${ctx.stage.stageNumber ? `ステージ ${ctx.stage.stageNumber}` : ""}${ctx.stage.title ? ` 「${ctx.stage.title}」` : ""}`
+    ? `${ctx.stage.stageNumber ? `バトルステージ ${ctx.stage.stageNumber}` : ""}${ctx.stage.title ? ` 「${ctx.stage.title}」` : ""}`
     : undefined;
 
   return (
